@@ -3,257 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purity Test | Glassmorphism</title>
+    <title>ReisTest</title>
     <style>
         :root {
             /* Light Mode */
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --text-primary: #2d3436;
-            --accent: #0084ff;
-            --item-bg: rgba(255, 255, 255, 0.3);
-            --blob-1: #00d2ff;
-            --blob-2: #92fe9d;
+            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --text-main: #102a43;
+            --accent: #482ff7;
+            --item-hover: rgba(255, 255, 255, 0.6);
+            --blob-color-1: #9fb3f8;
+            --blob-color-2: #76e4f7;
         }
 
         [data-theme="dark"] {
-            --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #24243e 100%);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #ffffff;
+            /* Dark Mode */
+            --bg-gradient: linear-gradient(135deg, #0b0e14 0%, #1a1c23 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f4f8;
             --accent: #00d4ff;
-            --item-bg: rgba(255, 255, 255, 0.02);
-            --blob-1: #4facfe;
-            --blob-2: #00f2fe;
+            --item-hover: rgba(255, 255, 255, 0.05);
+            --blob-color-1: #2a3a7a;
+            --blob-color-2: #1b4d5a;
         }
 
         body {
             margin: 0;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--bg-gradient);
             background-attachment: fixed;
-            color: var(--text-primary);
-            transition: background 0.5s ease, color 0.3s ease;
+            color: var(--text-main);
+            transition: all 0.4s ease;
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Hintergrund-Elemente */
-        .liquid-blob {
+        .blob {
             position: fixed;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             filter: blur(100px);
             z-index: -1;
-            opacity: 0.5;
             border-radius: 50%;
-            animation: move 25s infinite alternate;
+            opacity: 0.6;
+            animation: move 20s infinite alternate linear;
         }
-        .b1 { background: var(--blob-1); top: -10%; left: -5%; }
-        .b2 { background: var(--blob-2); bottom: -10%; right: -5%; animation-delay: -7s; }
+        .b1 { background: var(--blob-color-1); top: -15%; left: -10%; }
+        .b2 { background: var(--blob-color-2); bottom: -15%; right: -10%; animation-delay: -5s; }
 
         @keyframes move {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(100px, 100px) rotate(30deg); }
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 80px) scale(1.1); }
         }
 
-        .container {
-            width: 90%;
-            max-width: 850px;
-            margin: 40px 0;
+        .main-card {
+            width: 95%;
+            max-width: 800px;
+            margin: 50px 0;
             background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 40px;
+            padding: 50px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        /* Toggle Button */
-        .theme-toggle {
+        .theme-switch {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 100px;
             cursor: pointer;
-            color: var(--text-primary);
-            font-weight: 600;
-            backdrop-filter: blur(5px);
+            color: var(--text-main);
+            font-weight: bold;
+            transition: 0.3s;
         }
 
-        .q-list {
-            display: grid;
-            gap: 10px;
+        .theme-switch:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
 
-        .q-row {
-            background: var(--item-bg);
-            padding: 15px 20px;
-            border-radius: 15px;
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .q-box {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid transparent;
+            padding: 16px 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             cursor: pointer;
-            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
+            transition: 0.2s;
         }
 
-        .q-row:hover {
+        .q-box:hover {
+            background: var(--item-hover);
+            transform: translateX(8px);
+        }
+
+        .q-box.checked {
+            background: rgba(0, 212, 255, 0.08);
             border-color: var(--accent);
-            transform: scale(1.01);
         }
 
-        .q-row.selected {
-            background: rgba(0, 132, 255, 0.1);
-            border-color: var(--accent);
-        }
-
-        .check-box {
-            width: 22px;
-            height: 22px;
+        .check-circle {
+            width: 24px;
+            height: 24px;
             border: 2px solid var(--glass-border);
-            border-radius: 7px;
-            margin-right: 15px;
+            border-radius: 8px;
+            margin-right: 20px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            transition: 0.3s;
         }
 
-        .selected .check-box {
+        .checked .check-circle {
             background: var(--accent);
             border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .checked .check-circle::after {
+            content: "✓";
             color: white;
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        .selected .check-box::after { content: '✓'; }
-
-        .calc-area {
+        .footer-action {
+            margin-top: 60px;
             text-align: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid var(--glass-border);
         }
 
-        .btn-result {
+        .calc-btn {
             background: var(--accent);
             color: white;
-            padding: 18px 45px;
-            border-radius: 15px;
+            padding: 22px 60px;
+            border-radius: 20px;
             border: none;
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1.3rem;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: 0.3s;
         }
 
-        #result-screen {
+        .calc-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        #results {
             display: none;
-            margin-top: 30px;
-            animation: slideUp 0.5s ease-out;
+            margin-top: 40px;
+            padding: 40px;
+            border-radius: 30px;
+            background: var(--item-hover);
+            animation: fadeIn 0.6s ease;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .score-val {
-            font-size: 4rem;
-            font-weight: 800;
+        .score-display {
+            font-size: 5rem;
+            font-weight: 900;
             color: var(--accent);
+            margin: 10px 0;
         }
     </style>
 </head>
 <body data-theme="light">
 
-    <div class="liquid-blob b1"></div>
-    <div class="liquid-blob b2"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
 
-    <div class="container">
+    <div class="main-card">
         <header>
-            <h1>Purity Test</h1>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓 Mode wechseln</button>
+            <h1>Rice Purity Test</h1>
+            <button class="theme-switch" onclick="toggleTheme()">🌓 Dark Mode</button>
         </header>
 
-        <p>Wähle alle Erlebnisse aus, die du bereits hinter dir hast:</p>
-        
-        <div class="q-list" id="questions-container"></div>
+        <div class="question-list" id="list"></div>
 
-        <div class="calc-area">
-            <button class="btn-result" onclick="showScore()">Purity Score berechnen</button>
+        <div class="footer-action">
+            <button class="calc-btn" onclick="showScore()">Ergebnis berechnen</button>
             
-            <div id="result-screen">
-                <p>Dein Ergebnis:</p>
-                <div class="score-val" id="final-val">100</div>
-                <p id="feedback"></p>
-                <button onclick="location.reload()" style="background:none; border:none; color:var(--text-primary); cursor:pointer; text-decoration:underline; margin-top:10px;">Neu starten</button>
+            <div id="results">
+                <h3>Dein Purity Score:</h3>
+                <div class="score-display" id="score-num">100</div>
+                <p id="rank-text"></p>
+                <button onclick="location.reload()" style="background:none; border:none; color:var(--text-main); text-decoration:underline; cursor:pointer; opacity:0.6;">Test zurücksetzen</button>
             </div>
         </div>
     </div>
 
     <script>
-        const qs = [
-            "Händchengehalten?", "Jemanden gedatet?", "Kuss auf die Wange?", "Kuss auf den Mund?", "Zungenkuss gehabt?",
-            "Jemanden > 2 Min. geküsst?", "Im Regen geküsst?", "Öffentlich rumgemacht?", "Beim Tanzen eng berührt?", 
-            "Kleidung des Partners ausgezogen?", "Unterwäsche ausgezogen bekommen?", "Unter der Kleidung berührt?", 
-            "Genitalien berührt?", "Genitalien berührt bekommen?", "Knutschfleck gehabt?", "Liebesbrief geschrieben?",
-            "Sexting betrieben?", "Nacktbilder verschickt?", "Nacktbilder erhalten?", "Jemanden nackt gesehen?",
-            "Nackt im Bett gelegen?", "Zusammen geduscht?", "Striptease aufgeführt?", "Nur in Unterwäsche geküsst?",
-            "Oralverkehr gegeben?", "Oralverkehr erhalten?", "Gleitgel benutzt?", "Sex im Auto?", "Sex im Freien?",
-            "Sex im öffentlichen Gebäude?", "Sex im Haus der Eltern?", "Sex im Pool/Meer?", "Sex auf einer Party?",
-            "Beim Sex erwischt worden?", "Schwangerschaftstest gemacht?", "Auf Krankheiten getestet?", 
-            "Gefesselt worden?", "Jemanden gefesselt?", "Rollenspiele gemacht?", "Sexspielzeug benutzt?",
-            "Analsex gehabt?", "Sperma geschluckt?", "Dreier gehabt?", "Vierer oder mehr?", "Sex mit Fremden?",
-            "Porno geschaut?", "Masturbiert?", "Dabei erwischt worden?", "Im Striplokal gewesen?", "Alkohol getrunken?",
-            "Filmriss gehabt?", "Wegen Alkohol übergeben?", "In der Schulzeit getrunken?", "Gekifft?", "Härtere Drogen?",
-            "Drogen verkauft?", "Gefälschten Ausweis genutzt?", "Laden-Diebstahl begangen?", "Eingebrochen?", 
-            "Verhaftet worden?", "Nacht in der Zelle?", "Schlägerei gehabt?", "Jemanden verletzt?", "Schwarzgefahren?",
-            "Beim Schummeln erwischt?", "Von Schule suspendiert?", "Gefeuert worden?", "Tattoo stechen lassen?",
-            "Piercing (außer Ohr)?", "Nacktbaden gewesen?", "Jemanden gestalkt?", "Fremdgegangen?", 
-            "Partner zum Fremdgehen gebracht?", "Ex vom Freund/Freundin gedatet?", "Herzschmerz-Tränen?", 
-            "Per SMS Schluss gemacht?", "Für Sex bezahlt?", "Geld für Sex bekommen?", "One-Night-Stand?",
-            "Öffentlich uriniert?", "Unanständiges in der Kirche?", "Schule geschwänzt?", "Diesen Test wiederholt?",
-            "In einem Sexshop eingekauft?", "Squirting erlebt?", "Sich im Schlaf berührt?", "Sexting Bilder gespeichert?",
-            "Partner im Bett der Eltern gehabt?", "Beim Ausgehen erwischt?", "Tagebuch über Sex geführt?",
-            "Mit mehr als 5 Personen geschlafen?", "Mit mehr als 10 Personen geschlafen?", "Mehr als 3 Mal pro Woche Sex?",
-            "Sex am Arbeitsplatz?", "Sex im Flugzeug?", "Partner online kennengelernt?", "In einer Dating-App aktiv?",
-            "Blind Date gehabt?", "Jemanden geghostet?", "Jemanden geküsst und Namen vergessen?"
+        const questions = [
+            "Romantisch Händchen gehalten?", "Ein Date gehabt?", "In einer Beziehung gewesen?", 
+            "Eng getanzt (ohne Platz für 'Jesus')?", "Eine Person geküsst (kein Familienmitglied)?", 
+            "Auf den Mund geküsst?", "Einen Zungenkuss (French Kiss) gehabt?", 
+            "Zungenkuss in der Öffentlichkeit?", "Am Hals geküsst worden?", "Im Liegen geküsst?", 
+            "Einen Knutschenfleck (Hickey) gegeben oder bekommen?", "An der Brust geküsst oder geküsst worden?", 
+            "Jemanden unterhalb der Gürtellinie geküsst?", "Länger als zwei Stunden ununterbrochen geküsst?", 
+            "Ein Spiel gespielt, bei dem man sich ausziehen muss (Strip-Spiele)?", 
+            "Jemanden in einem sinnlichen Kontext nackt gesehen oder gesehen worden?", "Masturbiert?", 
+            "Zu Bildern oder Videos masturbiert?", "Masturbiert, während jemand anderes im Raum war?", 
+            "Beim Masturbieren erwischt worden?", "Masturbiert mit einem Gegenstand?", 
+            "Pornografisches Material gesehen oder gelesen?", "Sinnlich massiert oder massiert worden?", 
+            "Trockensex (Petting) in voller Kleidung gehabt?", 
+            "Vom bevorzugten Geschlecht ausgezogen worden oder jemanden ausgezogen?", 
+            "Zusammen mit dem bevorzugten Geschlecht geduscht?", "Hintern begrapscht oder begrapscht worden?", 
+            "Brüste begrapscht oder begrapscht worden?", "Genitalien begrapscht oder begrapscht worden?", 
+            "Jemanden sexuell erregt, ohne ihn zu befriedigen (Blue Balls)?", 
+            "Einen Orgasmus durch die Manipulation einer anderen Person gehabt?", 
+            "Eine sexuell explizite Textnachricht verschickt?", "Explizite Fotos verschickt oder erhalten?", 
+            "Sexuelle Aktivitäten über Video-Chat betrieben?", "Einen Partner während einer Beziehung betrogen?", 
+            "Verhütungsmittel gekauft?", "Oralverkehr gegeben?", "Oralverkehr erhalten?", 
+            "Genitalsekret von jemandem geschluckt?", "Sexspielzeug mit einem Partner benutzt?", 
+            "Die Nacht mit jemandem vom bevorzugten Geschlecht verbracht?", 
+            "Bei einem sexuellen Akt erwischt worden?", "Einen Mitbewohner rausgeworfen, um Sex zu haben?", 
+            "Alkohol getrunken (nicht-religiös)?", "Ein Trinkspiel gespielt?", "Betrunken gewesen?", 
+            "Vor Eltern oder Lehrern so getan, als sei man nüchtern?", 
+            "Schweren Gedächtnisverlust durch Alkohol gehabt (Filmriss)?", "Tabak konsumiert?", 
+            "Marihuana konsumiert?", "Drogen konsumiert, die stärker als Marihuana sind?", 
+            "Meth, Crack, PCP, Pferde-Beruhigungsmittel oder Heroin konsumiert?", 
+            "Wegen eines Verstoßes zum Schulleiter oder Dekan geschickt worden?", 
+            "Disziplinarisch suspendiert worden?", "In der Öffentlichkeit uriniert?", "Nacktbaden gewesen (Skinny-dipping)?", 
+            "Nackt durch die Öffentlichkeit gerannt (Streaking)?", "Einen Stripper/eine Stripperin gesehen?", 
+            "Wurde wegen dir die Polizei gerufen?", "Vor der Polizei weggelaufen?", "Von der Polizei verhört worden?", 
+            "Von der Polizei mit Handschellen gefesselt worden?", "Verhaftet worden?", 
+            "Wegen eines Verbrechens verurteilt worden?", "Wegen einer schweren Straftat (Felony) verurteilt worden?", 
+            "Vandalismus begangen?", "Geschlechtsverkehr gehabt?", "Drei oder mehr Mal Sex in einer Nacht gehabt?", 
+            "Schon mal eine 'Nummer' geschoben?", "10 oder mehr Mal Geschlechtsverkehr gehabt?", 
+            "Geschlechtsverkehr in vier oder mehr Stellungen gehabt?", 
+            "Sex mit einem Fremden oder einer Person, die man keine 24h kannte?", 
+            "Sex in einem Kraftfahrzeug gehabt?", "Sex im Freien gehabt?", "Sex in der Öffentlichkeit gehabt?", 
+            "Sex in einem Pool oder Whirlpool gehabt?", "Sex in einem Bett gehabt, das weder dir noch dem Partner gehört?", 
+            "Sex gehabt, während die Eltern im selben Haus waren?", 
+            "Sex gehabt, während eine unbeteiligte dritte Person im Raum war?", "Mitglied im 'Mile High Club' (Sex im Flugzeug)?", 
+            "Ein 'Booty Call' (Sex-Date) ohne Beziehung gehabt?", 
+            "Über 160km (100 Meilen) gereist, nur um Sex zu haben?", 
+            "Sex mit einem Partner mit mindestens 3 Jahren Altersunterschied?", "Sex mit einer Jungfrau gehabt?", 
+            "Sex ohne Kondom gehabt?", "Einen STI-Test (Geschlechtskrankheiten) wegen Verdachts gemacht?", 
+            "Eine Geschlechtskrankheit gehabt?", "Einen Dreier gehabt?", "An einer Orgie teilgenommen?", 
+            "Zwei verschiedene Akte mit zwei verschiedenen Personen innerhalb von 24h gehabt?", 
+            "Sex mit fünf oder mehr Partnern gehabt?", "Beim Sex fotografiert oder gefilmt worden?", 
+            "Sex während der Periode gehabt?", "Analsex gehabt?", "Einen Schwangerschafts-Schrecken gehabt?", 
+            "Jemanden geschwängert oder schwanger geworden?", "Für Sex bezahlt oder bezahlt worden?", 
+            "Voyeurismus begangen (Heimliches Beobachten)?", "Inzest begangen?", "Sodomie (Bestialität) begangen?"
         ];
 
-        const container = document.getElementById('questions-container');
-        qs.forEach((text, i) => {
-            const row = document.createElement('div');
-            row.className = 'q-row';
-            row.innerHTML = `<div class="check-box"></div><span>${i+1}. ${text}</span>`;
-            row.onclick = () => row.classList.toggle('selected');
-            container.appendChild(row);
+        const listContainer = document.getElementById('list');
+        questions.forEach((q, i) => {
+            const item = document.createElement('div');
+            item.className = 'q-box';
+            item.innerHTML = `<div class="check-circle"></div><span>${i + 1}. ${q}</span>`;
+            item.onclick = () => item.classList.toggle('checked');
+            listContainer.appendChild(item);
         });
 
         function toggleTheme() {
-            const body = document.body;
-            const current = body.getAttribute('data-theme');
-            body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+            const b = document.body;
+            const isDark = b.getAttribute('data-theme') === 'dark';
+            b.setAttribute('data-theme', isDark ? 'light' : 'dark');
         }
 
         function showScore() {
-            const count = document.querySelectorAll('.q-row.selected').length;
-            const score = 100 - count;
-            document.getElementById('final-val').innerText = score;
+            const checked = document.querySelectorAll('.q-box.checked').length;
+            const final = 100 - checked;
+            document.getElementById('score-num').innerText = final;
             
-            let msg = score > 95 ? "Ein wahrer Engel!" : score > 70 ? "Vielseitig interessiert." : "Abenteurer!";
-            document.getElementById('feedback').innerText = msg;
-            document.getElementById('result-screen').style.display = 'block';
+            let rank = "";
+            if (final > 95) rank = "Heiligenschein poliert!";
+            else if (final > 70) rank = "Vielseitige Erfahrungen.";
+            else if (final > 45) rank = "Du weißt, wie man lebt!";
+            else rank = "Legende der Sünden.";
+
+            document.getElementById('rank-text').innerText = rank;
+            document.getElementById('results').style.display = 'block';
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
     </script>
