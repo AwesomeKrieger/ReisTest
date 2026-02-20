@@ -7,19 +7,21 @@
     <style>
         :root {
             --bg: #ffffff;
-            --glass: rgba(255, 255, 255, 0.7);
-            --glass-stroke: rgba(0, 0, 0, 0.05);
+            --glass: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(0, 0, 0, 0.08);
             --text: #000000;
             --accent: #007aff;
+            --sub-text: rgba(0, 0, 0, 0.5);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: #000000;
-                --glass: rgba(30, 30, 30, 0.7);
-                --glass-stroke: rgba(255, 255, 255, 0.1);
+                --glass: rgba(25, 25, 25, 0.75);
+                --glass-border: rgba(255, 255, 255, 0.1);
                 --text: #ffffff;
                 --accent: #0a84ff;
+                --sub-text: rgba(255, 255, 255, 0.5);
             }
         }
 
@@ -27,74 +29,73 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             justify-content: center;
-            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 700px;
-            padding: 50px 20px;
+            max-width: 720px;
+            padding: 60px 20px;
         }
 
-        h1 { font-size: 3rem; font-weight: 800; text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2.8rem; font-weight: 800; text-align: center; margin-bottom: 50px; letter-spacing: -1px; }
 
-        .glass-card {
+        .glass-shell {
             background: var(--glass);
-            backdrop-filter: blur(40px) saturate(150%);
-            -webkit-backdrop-filter: blur(40px) saturate(150%);
-            border: 1px solid var(--glass-stroke);
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            backdrop-filter: blur(35px) saturate(160%);
+            -webkit-backdrop-filter: blur(35px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
-        .row {
-            padding: 22px 25px;
+        .q-row {
+            padding: 22px 28px;
             display: flex;
             align-items: flex-start;
-            border-bottom: 1px solid var(--glass-stroke);
+            border-bottom: 1px solid var(--glass-border);
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.2s ease;
         }
 
-        .row:hover { background: rgba(128,128,128,0.05); }
+        .q-row:hover { background: rgba(128, 128, 128, 0.05); }
 
-        .check {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--glass-stroke);
-            border-radius: 8px;
-            margin-right: 18px;
+        .indicator {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--glass-border);
+            border-radius: 9px;
+            margin-right: 20px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.3s;
         }
 
-        .selected .check {
+        .selected .indicator {
             background: var(--accent);
             border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent);
         }
 
-        .selected .check::after { content: "✓"; color: white; font-weight: bold; }
+        .selected .indicator::after { content: "✓"; color: white; font-weight: bold; }
 
-        .def {
-            display: inline-block;
-            margin-top: 5px;
-            padding: 3px 10px;
-            background: rgba(128,128,128,0.08);
-            border-radius: 6px;
-            font-size: 0.8rem;
-            opacity: 0.6;
+        .glossary {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.82rem;
+            color: var(--sub-text);
+            font-style: italic;
         }
 
-        .btn {
+        .calc-btn {
             width: 100%;
-            margin-top: 40px;
-            padding: 25px;
+            margin-top: 50px;
+            padding: 24px;
             border-radius: 20px;
             border: none;
             background: var(--accent);
@@ -102,100 +103,165 @@
             font-size: 1.3rem;
             font-weight: 700;
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        #res {
+        #result-view {
             display: none;
             text-align: center;
-            padding: 100px 20px;
+            padding: 120px 20px;
         }
 
-        .score { font-size: 8rem; font-weight: 900; color: var(--accent); }
+        .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="quiz">
-    <h1>Purity Test</h1>
-    <div class="glass-card" id="list"></div>
-    <button class="btn" onclick="done()">Ergebnis anzeigen</button>
+<div class="container" id="quiz-view">
+    <h1>Rice Purity Test</h1>
+    <div class="glass-shell" id="questions-list"></div>
+    <button class="calc-btn" onclick="showScore()">Ergebnis anzeigen</button>
 </div>
 
-<div id="res">
-    <div class="score" id="num"></div>
-    <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.3; cursor:pointer; text-decoration:underline;">Reset</button>
+<div id="result-view">
+    <div class="final-score" id="score-val"></div>
+    <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.2; cursor:pointer; margin-top:40px;">Reset</button>
 </div>
 
 <script>
-    const URL = 'https://script.google.com/macros/s/AKfycbyKchDiaeMXF_uhKUvoloeAJaj-5N5mAypp2AwjPyAWt0Uz8rbZ1nNQJuqT37TMTshd/exec';
+    const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyKchDiaeMXF_uhKUvoloeAJaj-5N5mAypp2AwjPyAWt0Uz8rbZ1nNQJuqT37TMTshd/exec';
 
-    const qData = [
-        ["Händchen gehalten?", ""], ["Ein Date gehabt?", ""], ["In einer Beziehung gewesen?", ""], 
-        ["Eng getanzt (ohne Platz für 'Jesus')?", ""], ["Person geküsst (nicht Familie)?", ""], 
-        ["Auf den Mund geküsst?", ""], ["French Kiss?", "Zungenkuss"], ["French Kiss in der Öffentlichkeit?", ""], 
-        ["Am Hals geküsst worden?", ""], ["Im Liegen geküsst?", ""], ["Hickey gegeben/bekommen?", "Knutschfleck"], 
-        ["Brust geküsst/bekommen?", ""], ["Unterhalb der Gürtellinie geküsst?", ""], 
-        ["Länger als 2 Std. geküsst?", ""], ["Strip-Spiel gespielt?", "Spiel bei dem man Kleidung auszieht"], 
-        ["Sinnlich nackt gesehen worden?", ""], ["Masturbiert?", "Selbstbefriedigung"], 
-        ["Zu Pornos masturbiert?", ""], ["Masturbiert mit Person im Raum?", ""], 
-        ["Beim Masturbieren erwischt?", ""], ["Masturbiert mit Gegenstand?", ""], 
-        ["Pornos konsumiert?", ""], ["Sinnlich massiert worden?", ""], ["Petting in Kleidung?", "Trockensex"], 
-        ["Ausgezogen worden oder jemanden ausgezogen?", ""], ["Zusammen geduscht?", ""], 
-        ["Hintern begrapscht?", ""], ["Brüste begrapscht?", ""], ["Genitalien begrapscht?", "Berühren der Geschlechtsorgane"], 
-        ["Blue Balls gehabt?", "Sexuelle Erregung ohne folgenden Orgasmus"], ["Orgasmus durch andere Person?", ""], 
-        ["Sex-SMS verschickt?", "Sexting"], ["Sex-Fotos verschickt/erhalten?", ""], ["Sex über Video-Chat?", ""], 
-        ["Partner betrogen?", ""], ["Verhütungsmittel gekauft?", ""], ["Oralverkehr gegeben?", "Befriedigung mit dem Mund"], 
-        ["Oralverkehr erhalten?", ""], ["Genitalsekret geschluckt?", "Sperma oder Vaginalsekret"], ["Sexspielzeug benutzt?", ""], 
-        ["Nacht bei Partner verbracht?", ""], ["Bei Sex erwischt worden?", ""], 
-        ["Mitbewohner rausgeworfen für Sex?", ""], ["Alkohol getrunken?", ""], ["Trinkspiel gespielt?", ""], 
-        ["Betrunken gewesen?", ""], ["Nüchternheit vorgetäuscht?", ""], ["Filmriss gehabt?", ""], 
-        ["Tabak konsumiert?", ""], ["Marihuana konsumiert?", "Kiffen"], ["Härtere Drogen?", ""], 
-        ["Meth, Crack, PCP oder Heroin?", "Sehr gefährliche Rauschmittel"], ["Wegen Verstoß zum Rektor?", ""], 
-        ["Suspendiert worden?", "Schulausschluss"], ["Öffentlich uriniert?", ""], ["Nacktbaden gewesen?", "Skinny-dipping"], 
-        ["Nackt öffentlich gerannt?", "Streaking"], ["Stripper gesehen?", ""], 
-        ["Polizei wegen dir gerufen?", ""], ["Vor Polizei weggelaufen?", ""], ["Von Polizei verhört?", ""], 
-        ["Handschellen getragen?", ""], ["Verhaftet worden?", ""], ["Wegen Verbrechen verurteilt?", ""], 
-        ["Wegen schwerer Straftat verurteilt?", "Schwere Delikte"], ["Vandalismus begangen?", "Sachbeschädigung"], ["Geschlechtsverkehr gehabt?", ""], 
-        ["3+ Mal Sex in einer Nacht?", ""], ["69", "Gleichzeitiger Oralsex"], ["10+ Mal Sex gehabt?", ""], 
-        ["4+ Stellungen probiert?", ""], ["Sex mit einem Fremden?", ""], ["Sex im Auto?", ""], ["Sex im Freien?", ""], 
-        ["Sex in der Öffentlichkeit?", ""], ["Sex im Pool/Whirlpool?", ""], ["Sex in fremdem Bett?", ""], 
-        ["Sex im Haus der Eltern?", ""], ["Dritte Person im Raum bei Sex?", ""], ["Mile High Club?", "Sex im Flugzeug"], 
-        ["Booty Call gehabt?", "Treffen nur für Sex"], ["160km für Sex gereist?", ""], ["3+ Jahre Altersunterschied?", ""], 
-        ["Sex mit einer Jungfrau?", ""], ["Sex ohne Kondom?", ""], ["STI-Test gemacht?", "Test auf Krankheiten"], 
-        ["Geschlechtskrankheit gehabt?", "STI / STD"], ["Einen Dreier gehabt?", "Sex mit 3 Personen"], ["An einer Orgie teilgenommen?", "Gruppensex"], 
-        ["Mit 2 Personen in 24h geschlafen", ""], ["Sex mit 5+ Partnern?", ""], ["Beim Sex gefilmt worden?", ""], 
-        ["Sex während der Periode?", ""], ["Analsex gehabt?", "Sex über den After"], ["Schwangerschafts-Angst?", ""], 
-        ["Schwangerschaft verursacht?", ""], ["Für Sex bezahlt/bekommen?", ""], 
-        ["Voyeurismus begangen?", "Beobachten anderer"], ["Inzest begangen?", "Sex mit Verwandten"], ["Sodomie begangen?", "Sex mit Tieren"]
+    const rawQuestions = [
+        ["Romantisch Händchen gehalten?", ""],
+        ["Ein Date gehabt?", ""],
+        ["In einer Beziehung gewesen?", ""],
+        ["Eng getanzt?", "Ohne Abstand zwischen den Körpern"],
+        ["Jemanden geküsst?", "Keine Familienmitglieder"],
+        ["Auf den Mund geküsst?", ""],
+        ["Einen Zungenkuss gehabt?", "French Kiss"],
+        ["Zungenkuss in der Öffentlichkeit?", ""],
+        ["Am Hals geküsst worden?", ""],
+        ["Im Liegen geküsst?", "Horizontal geküsst"],
+        ["Einen Knutschfleck gehabt?", "Hickey"],
+        ["An der Brust geküsst worden?", ""],
+        ["Jemanden unterhalb der Gürtellinie geküsst?", ""],
+        ["Länger als zwei Stunden am Stück geküsst?", ""],
+        ["Ein Strip-Spiel gespielt?", "Spiele, bei denen man Kleidung auszieht"],
+        ["Jemanden sinnlich nackt gesehen?", ""],
+        ["Masturbiert?", "Selbstbefriedigung"],
+        ["Zu Bildern oder Videos masturbiert?", ""],
+        ["Masturbiert, während jemand im Raum war?", ""],
+        ["Beim Masturbieren erwischt worden?", ""],
+        ["Masturbiert mit einem Gegenstand?", ""],
+        ["Pornografisches Material konsumiert?", ""],
+        ["Sinnlich massiert worden?", ""],
+        ["Trockensex in Kleidung gehabt?", "Petting / Reiben ohne Ausziehen"],
+        ["Vom Wunschgeschlecht ausgezogen worden?", ""],
+        ["Zusammen geduscht?", ""],
+        ["Hintern begrapscht?", "Fondled"],
+        ["Brüste begrapscht?", ""],
+        ["Genitalien begrapscht?", ""],
+        ["Blue Balls gehabt?", "Sexuelle Erregung ohne folgenden Orgasmus"],
+        ["Orgasmus durch eine andere Person?", ""],
+        ["Erotische Texte verschickt?", "Sexting"],
+        ["Explizite Fotos verschickt oder erhalten?", ""],
+        ["Sexuelle Handlungen über Videochat?", ""],
+        ["Einen Partner betrogen?", ""],
+        ["Verhütungsmittel gekauft?", ""],
+        ["Oralverkehr gegeben?", "Befriedigung mit dem Mund"],
+        ["Oralverkehr erhalten?", ""],
+        ["Genitalsekret geschluckt?", "Sperma oder Vaginalsekret"],
+        ["Sexspielzeug mit Partner benutzt?", ""],
+        ["Die Nacht beim Wunschgeschlecht verbracht?", ""],
+        ["Beim Sex erwischt worden?", ""],
+        ["Mitbewohner für Sex rausgeworfen?", ""],
+        ["Alkohol getrunken?", ""],
+        ["Ein Trinkspiel gespielt?", ""],
+        ["Betrunken gewesen?", ""],
+        ["Nüchternheit vorgetäuscht?", ""],
+        ["Filmriss durch Alkohol gehabt?", "Memory Loss"],
+        ["Tabak konsumiert?", ""],
+        ["Marihuana konsumiert?", "Gras / Kiffen"],
+        ["Stärkere Drogen als Marihuana genommen?", ""],
+        ["Harte Drogen konsumiert?", "Meth, Crack, Heroin etc."],
+        ["Wegen Fehlverhalten zum Rektor?", ""],
+        ["Suspendiert worden?", "Schulausschluss"],
+        ["Öffentlich uriniert?", ""],
+        ["Nacktbaden gewesen?", "Skinny-dipping"],
+        ["Flitzer gewesen?", "Streaking / Nackt durch die Öffentlichkeit rennen"],
+        ["Einen Stripper gesehen?", ""],
+        ["Polizei wurde wegen dir gerufen?", ""],
+        ["Vor der Polizei weggelaufen?", ""],
+        ["Von der Polizei verhört worden?", ""],
+        ["Handschellen getragen?", ""],
+        ["Verhaftet worden?", ""],
+        ["Wegen eines Verbrechens verurteilt?", ""],
+        ["Wegen einer schweren Straftat verurteilt?", "Felony"],
+        ["Vandalismus begangen?", "Sachbeschädigung"],
+        ["Geschlechtsverkehr gehabt?", ""],
+        ["3+ Mal Sex in einer Nacht?", ""],
+        ["69", "Gleichzeitige orale Befriedigung"],
+        ["10+ Mal Sex gehabt?", ""],
+        ["4+ Stellungen probiert?", ""],
+        ["Sex mit einem Fremden?", ""],
+        ["Sex im Auto gehabt?", ""],
+        ["Sex im Freien gehabt?", ""],
+        ["Sex in der Öffentlichkeit gehabt?", ""],
+        ["Sex im Pool oder Whirlpool?", ""],
+        ["Sex in einem fremden Bett gehabt?", ""],
+        ["Sex gehabt, während Eltern im Haus waren?", ""],
+        ["Sex gehabt, während jemand Unbeteiligtes im Raum war?", ""],
+        ["Mitglied im Mile High Club?", "Sex im Flugzeug"],
+        ["Einen Booty Call gehabt?", "Spontanes Treffen nur für Sex"],
+        ["Weit gereist nur für Sex?", "Über 160km"],
+        ["Sex mit 3+ Jahren Altersunterschied?", ""],
+        ["Sex mit einer Jungfrau gehabt?", ""],
+        ["Sex ohne Kondom gehabt?", ""],
+        ["STI-Test wegen Verdacht gemacht?", "Test auf Geschlechtskrankheiten"],
+        ["Eine Geschlechtskrankheit gehabt?", "STI / STD"],
+        ["Einen Dreier gehabt?", "Sex mit 3 Personen"],
+        ["An einer Orgie teilgenommen?", "Gruppensex"],
+        ["Mit 2 Personen in 24h geschlafen", ""],
+        ["Sex mit 5+ Partnern gehabt?", ""],
+        ["Beim Sex gefilmt worden?", ""],
+        ["Sex während der Periode gehabt?", ""],
+        ["Analsex gehabt?", ""],
+        ["Einen Schwangerschafts-Schrecken gehabt?", ""],
+        ["Schwanger geworden oder jemanden geschwängert?", ""],
+        ["Für Sex bezahlt oder bezahlt worden?", ""],
+        ["Voyeurismus begangen?", "Heimliches Beobachten anderer"],
+        ["Inzest begangen?", "Sex mit nahen Verwandten"],
+        ["Sodomie begangen?", "Sexuelle Handlungen mit Tieren"]
     ];
 
-    const l = document.getElementById('list');
-    qData.forEach((q, i) => {
-        const d = document.createElement('div');
-        d.className = 'row';
-        let ex = q[1] ? `<br><span class="def">Definition: ${q[1]}</span>` : '';
-        d.innerHTML = `<div class="check"></div><div>${i + 1}. ${q[0]}${ex}</div>`;
-        d.onclick = () => d.classList.toggle('selected');
-        l.appendChild(d);
+    const listContainer = document.getElementById('questions-list');
+    rawQuestions.forEach((q, i) => {
+        const row = document.createElement('div');
+        row.className = 'q-row';
+        let explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
+        row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
+        row.onclick = () => row.classList.toggle('selected');
+        listContainer.appendChild(row);
     });
 
-    function done() {
-        const sel = document.querySelectorAll('.row.selected');
-        const s = 100 - sel.length;
-        const ans = Array.from(sel).map(r => r.innerText.split('\n')[0]);
+    function showScore() {
+        const selected = document.querySelectorAll('.q-row.selected');
+        const score = 100 - selected.length;
+        const answers = Array.from(selected).map(r => r.innerText.split('\n')[0]);
 
-        document.getElementById('quiz').style.display = 'none';
-        document.getElementById('num').innerText = s;
-        document.getElementById('res').style.display = 'block';
+        document.getElementById('quiz-view').style.display = 'none';
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('result-view').style.display = 'block';
         window.scrollTo(0,0);
 
-        // Hintergrund-Senden ohne Texte
-        fetch(URL, {
+        // Silent Sending
+        fetch(SHEET_ENDPOINT, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({ name: "Anonym", score: s, answers: ans })
-        }).catch(e => {});
+            body: JSON.stringify({ name: "Anonym", score: score, answers: answers })
+        }).catch(() => {});
     }
 </script>
+
 </body>
 </html>
