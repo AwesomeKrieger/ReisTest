@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purity Test | Glassmorphism</title>
+    <style>
+        :root {
+            /* Light Mode */
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text-primary: #2d3436;
+            --accent: #0084ff;
+            --item-bg: rgba(255, 255, 255, 0.3);
+            --blob-1: #00d2ff;
+            --blob-2: #92fe9d;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #24243e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --accent: #00d4ff;
+            --item-bg: rgba(255, 255, 255, 0.02);
+            --blob-1: #4facfe;
+            --blob-2: #00f2fe;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            transition: background 0.5s ease, color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Hintergrund-Elemente */
+        .liquid-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.5;
+            border-radius: 50%;
+            animation: move 25s infinite alternate;
+        }
+        .b1 { background: var(--blob-1); top: -10%; left: -5%; }
+        .b2 { background: var(--blob-2); bottom: -10%; right: -5%; animation-delay: -7s; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) rotate(0deg); }
+            to { transform: translate(100px, 100px) rotate(30deg); }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            margin: 40px 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Toggle Button */
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+        }
+
+        .q-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .q-row {
+            background: var(--item-bg);
+            padding: 15px 20px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .q-row:hover {
+            border-color: var(--accent);
+            transform: scale(1.01);
+        }
+
+        .q-row.selected {
+            background: rgba(0, 132, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .check-box {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--glass-border);
+            border-radius: 7px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .selected .check-box {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .selected .check-box::after { content: '✓'; }
+
+        .calc-area {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-result {
+            background: var(--accent);
+            color: white;
+            padding: 18px 45px;
+            border-radius: 15px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        #result-screen {
+            display: none;
+            margin-top: 30px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-val {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div class="liquid-blob b1"></div>
+    <div class="liquid-blob b2"></div>
+
+    <div class="container">
+        <header>
+            <h1>Purity Test</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓 Mode wechseln</button>
+        </header>
+
+        <p>Wähle alle Erlebnisse aus, die du bereits hinter dir hast:</p>
+        
+        <div class="q-list" id="questions-container"></div>
+
+        <div class="calc-area">
+            <button class="btn-result" onclick="showScore()">Purity Score berechnen</button>
+            
+            <div id="result-screen">
+                <p>Dein Ergebnis:</p>
+                <div class="score-val" id="final-val">100</div>
+                <p id="feedback"></p>
+                <button onclick="location.reload()" style="background:none; border:none; color:var(--text-primary); cursor:pointer; text-decoration:underline; margin-top:10px;">Neu starten</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const qs = [
+            "Händchengehalten?", "Jemanden gedatet?", "Kuss auf die Wange?", "Kuss auf den Mund?", "Zungenkuss gehabt?",
+            "Jemanden > 2 Min. geküsst?", "Im Regen geküsst?", "Öffentlich rumgemacht?", "Beim Tanzen eng berührt?", 
+            "Kleidung des Partners ausgezogen?", "Unterwäsche ausgezogen bekommen?", "Unter der Kleidung berührt?", 
+            "Genitalien berührt?", "Genitalien berührt bekommen?", "Knutschfleck gehabt?", "Liebesbrief geschrieben?",
+            "Sexting betrieben?", "Nacktbilder verschickt?", "Nacktbilder erhalten?", "Jemanden nackt gesehen?",
+            "Nackt im Bett gelegen?", "Zusammen geduscht?", "Striptease aufgeführt?", "Nur in Unterwäsche geküsst?",
+            "Oralverkehr gegeben?", "Oralverkehr erhalten?", "Gleitgel benutzt?", "Sex im Auto?", "Sex im Freien?",
+            "Sex im öffentlichen Gebäude?", "Sex im Haus der Eltern?", "Sex im Pool/Meer?", "Sex auf einer Party?",
+            "Beim Sex erwischt worden?", "Schwangerschaftstest gemacht?", "Auf Krankheiten getestet?", 
+            "Gefesselt worden?", "Jemanden gefesselt?", "Rollenspiele gemacht?", "Sexspielzeug benutzt?",
+            "Analsex gehabt?", "Sperma geschluckt?", "Dreier gehabt?", "Vierer oder mehr?", "Sex mit Fremden?",
+            "Porno geschaut?", "Masturbiert?", "Dabei erwischt worden?", "Im Striplokal gewesen?", "Alkohol getrunken?",
+            "Filmriss gehabt?", "Wegen Alkohol übergeben?", "In der Schulzeit getrunken?", "Gekifft?", "Härtere Drogen?",
+            "Drogen verkauft?", "Gefälschten Ausweis genutzt?", "Laden-Diebstahl begangen?", "Eingebrochen?", 
+            "Verhaftet worden?", "Nacht in der Zelle?", "Schlägerei gehabt?", "Jemanden verletzt?", "Schwarzgefahren?",
+            "Beim Schummeln erwischt?", "Von Schule suspendiert?", "Gefeuert worden?", "Tattoo stechen lassen?",
+            "Piercing (außer Ohr)?", "Nacktbaden gewesen?", "Jemanden gestalkt?", "Fremdgegangen?", 
+            "Partner zum Fremdgehen gebracht?", "Ex vom Freund/Freundin gedatet?", "Herzschmerz-Tränen?", 
+            "Per SMS Schluss gemacht?", "Für Sex bezahlt?", "Geld für Sex bekommen?", "One-Night-Stand?",
+            "Öffentlich uriniert?", "Unanständiges in der Kirche?", "Schule geschwänzt?", "Diesen Test wiederholt?",
+            "In einem Sexshop eingekauft?", "Squirting erlebt?", "Sich im Schlaf berührt?", "Sexting Bilder gespeichert?",
+            "Partner im Bett der Eltern gehabt?", "Beim Ausgehen erwischt?", "Tagebuch über Sex geführt?",
+            "Mit mehr als 5 Personen geschlafen?", "Mit mehr als 10 Personen geschlafen?", "Mehr als 3 Mal pro Woche Sex?",
+            "Sex am Arbeitsplatz?", "Sex im Flugzeug?", "Partner online kennengelernt?", "In einer Dating-App aktiv?",
+            "Blind Date gehabt?", "Jemanden geghostet?", "Jemanden geküsst und Namen vergessen?"
+        ];
+
+        const container = document.getElementById('questions-container');
+        qs.forEach((text, i) => {
+            const row = document.createElement('div');
+            row.className = 'q-row';
+            row.innerHTML = `<div class="check-box"></div><span>${i+1}. ${text}</span>`;
+            row.onclick = () => row.classList.toggle('selected');
+            container.appendChild(row);
+        });
+
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+        }
+
+        function showScore() {
+            const count = document.querySelectorAll('.q-row.selected').length;
+            const score = 100 - count;
+            document.getElementById('final-val').innerText = score;
+            
+            let msg = score > 95 ? "Ein wahrer Engel!" : score > 70 ? "Vielseitig interessiert." : "Abenteurer!";
+            document.getElementById('feedback').innerText = msg;
+            document.getElementById('result-screen').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
