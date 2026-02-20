@@ -3,165 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rice Purity Test | Clean Design</title>
+    <title>Rice Purity Test | Liquid Glass</title>
     <style>
         :root {
-            --background: #ffffff;
-            --container-bg: #ffffff;
+            /* White Mode - Absolutes Weiß */
+            --bg-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(0, 0, 0, 0.1);
             --text-color: #000000;
-            --border-color: #e5e5e5;
-            --accent-blue: #007aff;
-            --hover-state: #f9f9f9;
+            --accent: #007aff;
+            --row-border: #f0f0f0;
+            --shadow: rgba(0, 0, 0, 0.05);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --background: #000000;
-                --container-bg: #111111;
+                --bg-color: #000000;
+                --glass-bg: rgba(255, 255, 255, 0.05);
+                --glass-border: rgba(255, 255, 255, 0.1);
                 --text-color: #ffffff;
-                --border-color: #262626;
-                --accent-blue: #0a84ff;
-                --hover-state: #1a1a1a;
+                --accent: #0a84ff;
+                --row-border: #1a1a1a;
+                --shadow: rgba(0, 0, 0, 0.4);
             }
         }
 
         body {
             margin: 0;
-            background-color: var(--background);
+            background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             display: flex;
             justify-content: center;
             transition: background-color 0.3s ease;
         }
 
-        .main-wrapper {
+        .main-container {
             width: 100%;
-            max-width: 600px;
-            padding: 40px 15px;
+            max-width: 700px;
+            padding: 40px 20px;
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 800;
             text-align: center;
-            letter-spacing: -0.5px;
             margin-bottom: 40px;
+            letter-spacing: -1px;
         }
 
-        .question-container {
-            border-top: 1px solid var(--border-color);
+        .quiz-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px var(--shadow);
+            overflow: hidden;
         }
 
-        .question-entry {
+        .q-row {
+            padding: 20px;
             display: flex;
             align-items: flex-start;
-            padding: 18px 10px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--row-border);
             cursor: pointer;
             transition: background 0.2s ease;
         }
 
-        .question-entry:hover {
-            background-color: var(--hover-state);
+        .q-row:last-child { border-bottom: none; }
+
+        .q-row:hover {
+            background: rgba(128, 128, 128, 0.05);
         }
 
-        .box {
-            width: 22px;
-            height: 22px;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
-            margin-right: 16px;
+        .glass-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            margin-right: 18px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .selected .box {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
+        .selected .glass-check {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 122, 255, 0.4);
         }
 
-        .selected .box::after {
+        .selected .glass-check::after {
             content: "✓";
-            color: #ffffff;
-            font-size: 14px;
+            color: white;
             font-weight: bold;
+            font-size: 14px;
         }
 
-        .explanation-text {
-            font-size: 0.85rem;
-            color: #ff453a;
-            margin-top: 4px;
+        .explanation {
+            font-size: 0.8rem;
+            color: #ff3b30;
             display: block;
+            margin-top: 4px;
             font-weight: 500;
         }
 
-        .finish-button {
+        .btn-submit {
             width: 100%;
-            padding: 20px;
-            background-color: var(--accent-blue);
-            color: #ffffff;
+            margin-top: 40px;
+            padding: 22px;
+            border-radius: 18px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            background: var(--accent);
+            color: white;
+            font-size: 1.2rem;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 50px;
-            transition: opacity 0.2s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
 
-        .finish-button:active {
-            opacity: 0.8;
-        }
+        .btn-submit:active { transform: scale(0.98); }
 
-        #result-view {
+        #result-screen {
             display: none;
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
 
-        .score-hero {
-            font-size: 5.5rem;
+        .big-score {
+            font-size: 7rem;
             font-weight: 900;
-            color: var(--accent-blue);
+            color: var(--accent);
             margin: 20px 0;
-        }
-
-        .reset-link {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            text-decoration: underline;
-            opacity: 0.5;
-            cursor: pointer;
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<div class="main-wrapper" id="content-screen">
+<div class="main-container" id="app-content">
     <h1>Rice Purity Test</h1>
 
-    <div class="question-container" id="quiz-stack"></div>
+    <div class="quiz-card" id="question-stack"></div>
 
-    <button class="finish-button" onclick="processResults()">Ergebnis berechnen & senden</button>
+    <button class="btn-submit" onclick="finishTest()">Ergebnis berechnen</button>
 </div>
 
-<div id="result-view">
-    <h2>Dein Score</h2>
-    <div class="score-hero" id="final-points"></div>
-    <p>Die Auswertung wurde erfolgreich an Google Sheets übertragen.</p>
-    <button class="reset-link" onclick="location.reload()">Test neu starten</button>
+<div id="result-screen">
+    <h2>Dein Purity Score</h2>
+    <div class="big-score" id="final-score"></div>
+    <p>Daten erfolgreich an Google Sheets übertragen.</p>
+    <button onclick="location.reload()" style="background:none; border:none; color:var(--text-color); text-decoration:underline; cursor:pointer; opacity:0.5;">Neustart</button>
 </div>
 
 <script>
-    const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyKchDiaeMXF_uhKUvoloeAJaj-5N5mAypp2AwjPyAWt0Uz8rbZ1nNQJuqT37TMTshd/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKchDiaeMXF_uhKUvoloeAJaj-5N5mAypp2AwjPyAWt0Uz8rbZ1nNQJuqT37TMTshd/exec';
 
-    const items = [
+    const questions = [
         "Romantisch Händchen gehalten?", "Ein Date gehabt?", "In einer Beziehung gewesen?", 
         "Eng getanzt (ohne Platz für 'Jesus')?", "Eine Person geküsst (nicht Familie)?", 
         "Auf den Mund geküsst?", "Einen Zungenkuss gehabt?", "Zungenkuss in der Öffentlichkeit?", 
@@ -201,43 +202,34 @@
         "Voyeurismus begangen?", "Inzest begangen?", "Sodomie begangen?"
     ];
 
-    const container = document.getElementById('quiz-stack');
-    items.forEach((text, index) => {
-        const div = document.createElement('div');
-        div.className = 'question-entry';
-        let note = (text.includes("Sodomie")) ? '<span class="explanation-text">Hinweis: Sexuelle Handlungen mit Tieren.</span>' : '';
-        div.innerHTML = `<div class="box"></div><div>${index + 1}. ${text}${note}</div>`;
-        div.onclick = () => div.classList.toggle('selected');
-        container.appendChild(div);
+    const container = document.getElementById('question-stack');
+    questions.forEach((q, i) => {
+        const row = document.createElement('div');
+        row.className = 'q-row';
+        let desc = q.includes("Sodomie") ? '<span class="explanation">Erklärung: Sexuelle Handlungen mit Tieren.</span>' : '';
+        row.innerHTML = `<div class="glass-check"></div><div>${i + 1}. ${q}${desc}</div>`;
+        row.onclick = () => row.classList.toggle('selected');
+        container.appendChild(row);
     });
 
-    async function processResults() {
-        const checkedRows = document.querySelectorAll('.question-entry.selected');
-        const calculatedScore = 100 - checkedRows.length;
-        const loggedAnswers = Array.from(checkedRows).map(row => row.innerText.split('\n')[0]);
+    async function finishTest() {
+        const selected = document.querySelectorAll('.q-row.selected');
+        const score = 100 - selected.length;
+        const answerList = Array.from(selected).map(el => el.innerText.split('\n')[0]);
 
-        document.getElementById('content-screen').style.display = 'none';
-        document.getElementById('final-points').innerText = calculatedScore;
-        document.getElementById('result-view').style.display = 'block';
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('result-screen').style.display = 'block';
         window.scrollTo(0,0);
 
-        const dataPackage = {
-            name: "Anonym",
-            score: calculatedScore,
-            answers: loggedAnswers
-        };
-
         try {
-            await fetch(SHEET_URL, {
+            await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify(dataPackage)
+                body: JSON.stringify({ name: "Anonym", score: score, answers: answerList })
             });
-        } catch (err) {
-            console.error("Übertragungsfehler:", err);
-        }
+        } catch (e) { console.error("Error sending data", e); }
     }
 </script>
-
 </body>
 </html>
