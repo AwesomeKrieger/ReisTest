@@ -3,309 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReisTest</title>
+    <title>Rice Purity Test | Clean Design</title>
     <style>
         :root {
-            /* Light Mode */
-            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            --glass-bg: rgba(255, 255, 255, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.7);
-            --text-main: #102a43;
-            --accent: #482ff7;
-            --item-hover: rgba(255, 255, 255, 0.6);
-            --blob-color-1: #9fb3f8;
-            --blob-color-2: #76e4f7;
+            --background: #ffffff;
+            --container-bg: #ffffff;
+            --text-color: #000000;
+            --border-color: #e5e5e5;
+            --accent-blue: #007aff;
+            --hover-state: #f9f9f9;
         }
 
-        [data-theme="dark"] {
-            /* Dark Mode */
-            --bg-gradient: linear-gradient(135deg, #0b0e14 0%, #1a1c23 100%);
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #f0f4f8;
-            --accent: #00d4ff;
-            --item-hover: rgba(255, 255, 255, 0.05);
-            --blob-color-1: #2a3a7a;
-            --blob-color-2: #1b4d5a;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #000000;
+                --container-bg: #111111;
+                --text-color: #ffffff;
+                --border-color: #262626;
+                --accent-blue: #0a84ff;
+                --hover-state: #1a1a1a;
+            }
         }
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-main);
-            transition: all 0.4s ease;
+            background-color: var(--background);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            transition: background-color 0.3s ease;
         }
 
-        .blob {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            filter: blur(100px);
-            z-index: -1;
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: move 20s infinite alternate linear;
-        }
-        .b1 { background: var(--blob-color-1); top: -15%; left: -10%; }
-        .b2 { background: var(--blob-color-2); bottom: -15%; right: -10%; animation-delay: -5s; }
-
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(50px, 80px) scale(1.1); }
+        .main-wrapper {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 15px;
         }
 
-        .main-card {
-            width: 95%;
-            max-width: 800px;
-            margin: 50px 0;
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 50px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -0.5px;
             margin-bottom: 40px;
         }
 
-        .theme-switch {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 12px 24px;
-            border-radius: 100px;
-            cursor: pointer;
-            color: var(--text-main);
-            font-weight: bold;
-            transition: 0.3s;
+        .question-container {
+            border-top: 1px solid var(--border-color);
         }
 
-        .theme-switch:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .question-list {
+        .question-entry {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .q-box {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid transparent;
-            padding: 16px 20px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
+            align-items: flex-start;
+            padding: 18px 10px;
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.2s ease;
         }
 
-        .q-box:hover {
-            background: var(--item-hover);
-            transform: translateX(8px);
+        .question-entry:hover {
+            background-color: var(--hover-state);
         }
 
-        .q-box.checked {
-            background: rgba(0, 212, 255, 0.08);
-            border-color: var(--accent);
-        }
-
-        .check-circle {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--glass-border);
-            border-radius: 8px;
-            margin-right: 20px;
+        .box {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            margin-right: 16px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
+            transition: all 0.2s ease;
         }
 
-        .checked .check-circle {
-            background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
+        .selected .box {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
         }
 
-        .checked .check-circle::after {
+        .selected .box::after {
             content: "✓";
-            color: white;
+            color: #ffffff;
             font-size: 14px;
             font-weight: bold;
         }
 
-        .footer-action {
-            margin-top: 60px;
-            text-align: center;
+        .explanation-text {
+            font-size: 0.85rem;
+            color: #ff453a;
+            margin-top: 4px;
+            display: block;
+            font-weight: 500;
         }
 
-        .calc-btn {
-            background: var(--accent);
-            color: white;
-            padding: 22px 60px;
-            border-radius: 20px;
+        .finish-button {
+            width: 100%;
+            padding: 20px;
+            background-color: var(--accent-blue);
+            color: #ffffff;
             border: none;
-            font-size: 1.3rem;
-            font-weight: 800;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            transition: 0.3s;
+            margin-top: 50px;
+            transition: opacity 0.2s ease;
         }
 
-        .calc-btn:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
+        .finish-button:active {
+            opacity: 0.8;
         }
 
-        #results {
+        #result-view {
             display: none;
-            margin-top: 40px;
-            padding: 40px;
-            border-radius: 30px;
-            background: var(--item-hover);
-            animation: fadeIn 0.6s ease;
+            text-align: center;
+            padding: 60px 20px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .score-display {
-            font-size: 5rem;
+        .score-hero {
+            font-size: 5.5rem;
             font-weight: 900;
-            color: var(--accent);
-            margin: 10px 0;
+            color: var(--accent-blue);
+            margin: 20px 0;
+        }
+
+        .reset-link {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            text-decoration: underline;
+            opacity: 0.5;
+            cursor: pointer;
+            margin-top: 20px;
         }
     </style>
 </head>
-<body data-theme="light">
+<body>
 
-    <div class="blob b1"></div>
-    <div class="blob b2"></div>
+<div class="main-wrapper" id="content-screen">
+    <h1>Rice Purity Test</h1>
 
-    <div class="main-card">
-        <header>
-            <h1>Rice Purity Test</h1>
-            <button class="theme-switch" onclick="toggleTheme()">🌓 Dark Mode</button>
-        </header>
+    <div class="question-container" id="quiz-stack"></div>
 
-        <div class="question-list" id="list"></div>
+    <button class="finish-button" onclick="processResults()">Ergebnis berechnen & senden</button>
+</div>
 
-        <div class="footer-action">
-            <button class="calc-btn" onclick="showScore()">Ergebnis berechnen</button>
-            
-            <div id="results">
-                <h3>Dein Purity Score:</h3>
-                <div class="score-display" id="score-num">100</div>
-                <p id="rank-text"></p>
-                <button onclick="location.reload()" style="background:none; border:none; color:var(--text-main); text-decoration:underline; cursor:pointer; opacity:0.6;">Test zurücksetzen</button>
-            </div>
-        </div>
-    </div>
+<div id="result-view">
+    <h2>Dein Score</h2>
+    <div class="score-hero" id="final-points"></div>
+    <p>Die Auswertung wurde erfolgreich an Google Sheets übertragen.</p>
+    <button class="reset-link" onclick="location.reload()">Test neu starten</button>
+</div>
 
-    <script>
-        const questions = [
-            "Romantisch Händchen gehalten?", "Ein Date gehabt?", "In einer Beziehung gewesen?", 
-            "Eng getanzt (ohne Platz für 'Jesus')?", "Eine Person geküsst (kein Familienmitglied)?", 
-            "Auf den Mund geküsst?", "Einen Zungenkuss (French Kiss) gehabt?", 
-            "Zungenkuss in der Öffentlichkeit?", "Am Hals geküsst worden?", "Im Liegen geküsst?", 
-            "Einen Knutschenfleck (Hickey) gegeben oder bekommen?", "An der Brust geküsst oder geküsst worden?", 
-            "Jemanden unterhalb der Gürtellinie geküsst?", "Länger als zwei Stunden ununterbrochen geküsst?", 
-            "Ein Spiel gespielt, bei dem man sich ausziehen muss (Strip-Spiele)?", 
-            "Jemanden in einem sinnlichen Kontext nackt gesehen oder gesehen worden?", "Masturbiert?", 
-            "Zu Bildern oder Videos masturbiert?", "Masturbiert, während jemand anderes im Raum war?", 
-            "Beim Masturbieren erwischt worden?", "Masturbiert mit einem Gegenstand?", 
-            "Pornografisches Material gesehen oder gelesen?", "Sinnlich massiert oder massiert worden?", 
-            "Trockensex (Petting) in voller Kleidung gehabt?", 
-            "Vom bevorzugten Geschlecht ausgezogen worden oder jemanden ausgezogen?", 
-            "Zusammen mit dem bevorzugten Geschlecht geduscht?", "Hintern begrapscht oder begrapscht worden?", 
-            "Brüste begrapscht oder begrapscht worden?", "Genitalien begrapscht oder begrapscht worden?", 
-            "Jemanden sexuell erregt, ohne ihn zu befriedigen (Blue Balls)?", 
-            "Einen Orgasmus durch die Manipulation einer anderen Person gehabt?", 
-            "Eine sexuell explizite Textnachricht verschickt?", "Explizite Fotos verschickt oder erhalten?", 
-            "Sexuelle Aktivitäten über Video-Chat betrieben?", "Einen Partner während einer Beziehung betrogen?", 
-            "Verhütungsmittel gekauft?", "Oralverkehr gegeben?", "Oralverkehr erhalten?", 
-            "Genitalsekret von jemandem geschluckt?", "Sexspielzeug mit einem Partner benutzt?", 
-            "Die Nacht mit jemandem vom bevorzugten Geschlecht verbracht?", 
-            "Bei einem sexuellen Akt erwischt worden?", "Einen Mitbewohner rausgeworfen, um Sex zu haben?", 
-            "Alkohol getrunken (nicht-religiös)?", "Ein Trinkspiel gespielt?", "Betrunken gewesen?", 
-            "Vor Eltern oder Lehrern so getan, als sei man nüchtern?", 
-            "Schweren Gedächtnisverlust durch Alkohol gehabt (Filmriss)?", "Tabak konsumiert?", 
-            "Marihuana konsumiert?", "Drogen konsumiert, die stärker als Marihuana sind?", 
-            "Meth, Crack, PCP, Pferde-Beruhigungsmittel oder Heroin konsumiert?", 
-            "Wegen eines Verstoßes zum Schulleiter oder Dekan geschickt worden?", 
-            "Disziplinarisch suspendiert worden?", "In der Öffentlichkeit uriniert?", "Nacktbaden gewesen (Skinny-dipping)?", 
-            "Nackt durch die Öffentlichkeit gerannt (Streaking)?", "Einen Stripper/eine Stripperin gesehen?", 
-            "Wurde wegen dir die Polizei gerufen?", "Vor der Polizei weggelaufen?", "Von der Polizei verhört worden?", 
-            "Von der Polizei mit Handschellen gefesselt worden?", "Verhaftet worden?", 
-            "Wegen eines Verbrechens verurteilt worden?", "Wegen einer schweren Straftat (Felony) verurteilt worden?", 
-            "Vandalismus begangen?", "Geschlechtsverkehr gehabt?", "Drei oder mehr Mal Sex in einer Nacht gehabt?", 
-            "Schon mal eine 'Nummer' geschoben?", "10 oder mehr Mal Geschlechtsverkehr gehabt?", 
-            "Geschlechtsverkehr in vier oder mehr Stellungen gehabt?", 
-            "Sex mit einem Fremden oder einer Person, die man keine 24h kannte?", 
-            "Sex in einem Kraftfahrzeug gehabt?", "Sex im Freien gehabt?", "Sex in der Öffentlichkeit gehabt?", 
-            "Sex in einem Pool oder Whirlpool gehabt?", "Sex in einem Bett gehabt, das weder dir noch dem Partner gehört?", 
-            "Sex gehabt, während die Eltern im selben Haus waren?", 
-            "Sex gehabt, während eine unbeteiligte dritte Person im Raum war?", "Mitglied im 'Mile High Club' (Sex im Flugzeug)?", 
-            "Ein 'Booty Call' (Sex-Date) ohne Beziehung gehabt?", 
-            "Über 160km (100 Meilen) gereist, nur um Sex zu haben?", 
-            "Sex mit einem Partner mit mindestens 3 Jahren Altersunterschied?", "Sex mit einer Jungfrau gehabt?", 
-            "Sex ohne Kondom gehabt?", "Einen STI-Test (Geschlechtskrankheiten) wegen Verdachts gemacht?", 
-            "Eine Geschlechtskrankheit gehabt?", "Einen Dreier gehabt?", "An einer Orgie teilgenommen?", 
-            "Zwei verschiedene Akte mit zwei verschiedenen Personen innerhalb von 24h gehabt?", 
-            "Sex mit fünf oder mehr Partnern gehabt?", "Beim Sex fotografiert oder gefilmt worden?", 
-            "Sex während der Periode gehabt?", "Analsex gehabt?", "Einen Schwangerschafts-Schrecken gehabt?", 
-            "Jemanden geschwängert oder schwanger geworden?", "Für Sex bezahlt oder bezahlt worden?", 
-            "Voyeurismus begangen (Heimliches Beobachten)?", "Inzest begangen?", "Sodomie (Bestialität) begangen?"
-        ];
+<script>
+    const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyKchDiaeMXF_uhKUvoloeAJaj-5N5mAypp2AwjPyAWt0Uz8rbZ1nNQJuqT37TMTshd/exec';
 
-        const listContainer = document.getElementById('list');
-        questions.forEach((q, i) => {
-            const item = document.createElement('div');
-            item.className = 'q-box';
-            item.innerHTML = `<div class="check-circle"></div><span>${i + 1}. ${q}</span>`;
-            item.onclick = () => item.classList.toggle('checked');
-            listContainer.appendChild(item);
-        });
+    const items = [
+        "Romantisch Händchen gehalten?", "Ein Date gehabt?", "In einer Beziehung gewesen?", 
+        "Eng getanzt (ohne Platz für 'Jesus')?", "Eine Person geküsst (nicht Familie)?", 
+        "Auf den Mund geküsst?", "Einen Zungenkuss gehabt?", "Zungenkuss in der Öffentlichkeit?", 
+        "Am Hals geküsst worden?", "Im Liegen geküsst?", "Einen Knutschenfleck gegeben/bekommen?", 
+        "An der Brust geküsst oder geküsst worden?", "Jemanden unterhalb der Gürtellinie geküsst?", 
+        "Länger als zwei Stunden ununterbrochen geküsst?", "Ein Strip-Spiel gespielt?", 
+        "Jemanden sinnlich nackt gesehen oder gesehen worden?", "Masturbiert?", 
+        "Zu Pornos masturbiert?", "Masturbiert, während jemand im Raum war?", 
+        "Beim Masturbieren erwischt worden?", "Masturbiert mit einem Gegenstand?", 
+        "Pornos konsumiert?", "Sinnlich massiert oder massiert worden?", "Petting in voller Kleidung?", 
+        "Ausgezogen worden oder jemanden ausgezogen?", "Zusammen geduscht?", 
+        "Hintern begrapscht?", "Brüste begrapscht?", "Genitalien begrapscht?", 
+        "Jemanden sexuell erregt ohne Befriedigung (Blue Balls)?", "Einen Orgasmus durch eine andere Person gehabt?", 
+        "Sex-SMS verschickt?", "Sex-Fotos verschickt oder erhalten?", "Sex über Video-Chat?", 
+        "Einen Partner betrogen?", "Verhütungsmittel gekauft?", "Oralverkehr gegeben?", 
+        "Oralverkehr erhalten?", "Genitalsekret geschluckt?", "Sexspielzeug mit Partner benutzt?", 
+        "Nacht bei jemandem vom bevorzugten Geschlecht verbracht?", "Bei Sex erwischt worden?", 
+        "Mitbewohner für Sex rausgeworfen?", "Alkohol getrunken?", "Trinkspiel gespielt?", 
+        "Betrunken gewesen?", "Nüchternheit vorgetäuscht?", "Filmriss gehabt?", 
+        "Tabak konsumiert?", "Marihuana konsumiert?", "Härtere Drogen als Marihuana?", 
+        "Meth, Crack, PCP oder Heroin?", "Wegen Verstoß zum Rektor geschickt?", 
+        "Suspendiert worden?", "In der Öffentlichkeit uriniert?", "Nacktbaden gewesen?", 
+        "Nackt durch die Öffentlichkeit gerannt?", "Einen Stripper gesehen?", 
+        "Polizei wegen dir gerufen?", "Vor Polizei weggelaufen?", "Von Polizei verhört?", 
+        "Handschellen getragen?", "Verhaftet worden?", "Wegen Verbrechen verurteilt?", 
+        "Wegen schwerer Straftat verurteilt?", "Vandalismus begangen?", "Geschlechtsverkehr gehabt?", 
+        "3+ Mal Sex in einer Nacht?", "Schon mal eine Nummer geschoben?", "10+ Mal Sex gehabt?", 
+        "4+ Stellungen probiert?", "Sex mit einem Fremden?", "Sex im Auto?", "Sex im Freien?", 
+        "Sex in der Öffentlichkeit?", "Sex im Pool/Whirlpool?", "Sex in fremdem Bett?", 
+        "Sex im Haus der Eltern?", "Dritte Person im Raum bei Sex?", "Mile High Club?", 
+        "Booty Call gehabt?", "160km für Sex gereist?", "3+ Jahre Altersunterschied?", 
+        "Sex mit einer Jungfrau?", "Sex ohne Kondom?", "STI-Test wegen Verdacht?", 
+        "Geschlechtskrankheit gehabt?", "Einen Dreier gehabt?", "An einer Orgie teilgenommen?", 
+        "2 Personen in 24h gehabt?", "Sex mit 5+ Partnern?", "Beim Sex gefilmt worden?", 
+        "Sex während der Periode?", "Analsex gehabt?", "Schwangerschafts-Angst?", 
+        "Schwanger geworden/jemanden geschwängert?", "Für Sex bezahlt oder bezahlt worden?", 
+        "Voyeurismus begangen?", "Inzest begangen?", "Sodomie begangen?"
+    ];
 
-        function toggleTheme() {
-            const b = document.body;
-            const isDark = b.getAttribute('data-theme') === 'dark';
-            b.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    const container = document.getElementById('quiz-stack');
+    items.forEach((text, index) => {
+        const div = document.createElement('div');
+        div.className = 'question-entry';
+        let note = (text.includes("Sodomie")) ? '<span class="explanation-text">Hinweis: Sexuelle Handlungen mit Tieren.</span>' : '';
+        div.innerHTML = `<div class="box"></div><div>${index + 1}. ${text}${note}</div>`;
+        div.onclick = () => div.classList.toggle('selected');
+        container.appendChild(div);
+    });
+
+    async function processResults() {
+        const checkedRows = document.querySelectorAll('.question-entry.selected');
+        const calculatedScore = 100 - checkedRows.length;
+        const loggedAnswers = Array.from(checkedRows).map(row => row.innerText.split('\n')[0]);
+
+        document.getElementById('content-screen').style.display = 'none';
+        document.getElementById('final-points').innerText = calculatedScore;
+        document.getElementById('result-view').style.display = 'block';
+        window.scrollTo(0,0);
+
+        const dataPackage = {
+            name: "Anonym",
+            score: calculatedScore,
+            answers: loggedAnswers
+        };
+
+        try {
+            await fetch(SHEET_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(dataPackage)
+            });
+        } catch (err) {
+            console.error("Übertragungsfehler:", err);
         }
+    }
+</script>
 
-        function showScore() {
-            const checked = document.querySelectorAll('.q-box.checked').length;
-            const final = 100 - checked;
-            document.getElementById('score-num').innerText = final;
-            
-            let rank = "";
-            if (final > 95) rank = "Heiligenschein poliert!";
-            else if (final > 70) rank = "Vielseitige Erfahrungen.";
-            else if (final > 45) rank = "Du weißt, wie man lebt!";
-            else rank = "Legende der Sünden.";
-
-            document.getElementById('rank-text').innerText = rank;
-            document.getElementById('results').style.display = 'block';
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-    </script>
 </body>
 </html>
