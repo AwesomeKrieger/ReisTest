@@ -112,6 +112,16 @@
             border-radius: 24px; max-width: 500px; width: 90%;
             max-height: 70vh; overflow-y: auto; border: 1px solid var(--glass-border);
         }
+        .next-test-promo {
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 45, 85, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0); }
+}
+
 
         .close-btn {
             background: var(--accent); color: white; border: none;
@@ -236,6 +246,14 @@
         
     </div>
     <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.4; cursor:pointer; margin-top:40px; text-decoration:underline;">Test neu starten</button>
+    <div class="next-test-promo" style="margin-top: 50px; padding: 25px; background: rgba(255, 45, 85, 0.1); border-radius: 20px; border: 1px dashed #ff2d55;">
+    <h3 style="color: #ff2d55; margin-top: 0;">🔥 Zu brav?</h3>
+    <p style="font-size: 0.9rem; opacity: 0.8;">Dein Score ist noch zu hoch? Versuch dich an der <b>Hardcore Edition</b> mit 100 extremen Fragen.</p>
+    <button onclick="window.location.href='dein-neuer-test-link.html'" class="btn-eval" style="background: #ff2d55; box-shadow: 0 10px 20px rgba(255, 45, 85, 0.3); font-size: 1rem; padding: 15px 30px;">
+        ZUM HARDCORE TEST
+    </button>
+</div>
+
 </div>
 
 <script>
