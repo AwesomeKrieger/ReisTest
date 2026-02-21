@@ -66,15 +66,12 @@
         .q-row:hover { background: rgba(128, 128, 128, 0.05); }
 
         .indicator {
-            width: 26px;
-            height: 26px;
+            width: 26px; height: 26px;
             border: 2px solid var(--glass-border);
             border-radius: 9px;
             margin-right: 20px;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             transition: 0.3s;
         }
 
@@ -87,41 +84,43 @@
         .selected .indicator::after { content: "✓"; color: white; font-weight: bold; }
 
         .glossary {
-            display: block;
-            margin-top: 6px;
-            font-size: 0.82rem;
-            color: var(--sub-text);
-            font-style: italic;
-        }
-
-        .legal-notice {
-            font-size: 0.75rem;
-            color: var(--sub-text);
-            text-align: center;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            padding: 0 20px;
+            display: block; margin-top: 6px; font-size: 0.82rem;
+            color: var(--sub-text); font-style: italic;
         }
 
         .calc-btn {
-            width: 100%;
-            padding: 24px;
-            border-radius: 20px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
+            width: 100%; padding: 24px; border-radius: 20px; border: none;
+            background: var(--accent); color: white; font-size: 1.3rem;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
         }
 
-        #result-view {
-            display: none;
-            text-align: center;
-            padding: 120px 20px;
+        .legal-notice {
+            font-size: 0.75rem; color: var(--sub-text); text-align: center;
+            margin-top: 15px; line-height: 1.4;
         }
 
+        .legal-notice span { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+        /* Modal Styles */
+        #ds-modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px); align-items: center; justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg); color: var(--text); padding: 30px;
+            border-radius: 24px; max-width: 500px; width: 90%;
+            max-height: 70vh; overflow-y: auto; border: 1px solid var(--glass-border);
+        }
+
+        .close-btn {
+            background: var(--accent); color: white; border: none;
+            padding: 10px 20px; border-radius: 12px; cursor: pointer;
+            float: right; margin-top: 20px;
+        }
+
+        #result-view { display: none; text-align: center; padding: 120px 20px; }
         .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px; }
     </style>
 </head>
@@ -130,12 +129,27 @@
 <div class="container" id="quiz-view">
     <h1>Rice Purity Test</h1>
     <div class="glass-shell" id="questions-list"></div>
+
+    <button class="calc-btn" onclick="sendData()">Berechnen</button>
     
     <div class="legal-notice">
-        Durch Klicken auf "Akzeptieren & Ergebnis anzeigen" willigst du ein, dass dein Score, die Dauer und technische Merkmale anonym in einer Cloud-Datenbank gespeichert werden.
+        Mit Klick auf "Berechnen" akzeptierst du die <span onclick="toggleModal(true)">Datenschutzerklärung</span>.
     </div>
+</div>
 
-    <button class="calc-btn" onclick="sendData()">Akzeptieren & Ergebnis anzeigen</button>
+<div id="ds-modal">
+    <div class="modal-content">
+        <h2>Datenschutzerklärung</h2>
+        <p>Wir nehmen den Schutz deiner Daten ernst. Bei diesem Test werden folgende Informationen anonymisiert in einer Supabase-Datenbank gespeichert:</p>
+        <ul>
+            <li>Dein erzielter Score</li>
+            <li>Die Dauer der Bearbeitung</li>
+            <li>Technische Daten (Betriebssystem, Bildschirmauflösung)</li>
+            <li>Das Klick-Muster der Antworten (Zeitpunkt der Auswahl)</li>
+        </ul>
+        <p>Es werden <strong>keine</strong> Namen, IP-Adressen oder persönlichen Identifikationsmerkmale gespeichert.</p>
+        <button class="close-btn" onclick="toggleModal(false)">Schließen</button>
+    </div>
 </div>
 
 <div id="result-view" class="container">
@@ -145,14 +159,19 @@
 </div>
 
 <script>
-    // Supabase Konfiguration
     const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
-    const SUPABASE_KEY = 'Sb_publishable_-opSEGfXsgVamocGzEbbKw_FJmoXuLN';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const startTime = Date.now();
     let pattern = [];
 
+    // Modal Steuerung
+    function toggleModal(show) {
+        document.getElementById('ds-modal').style.display = show ? 'flex' : 'none';
+    }
+
+    // Deine Fragenliste
     const rawQuestions = [
         ["Romantisch Händchen gehalten?", ""], ["Ein Date gehabt?", ""], ["In einer Beziehung gewesen?", ""],
         ["Eng getanzt?", "Ohne Abstand zwischen den Körpern"], ["Jemanden geküsst?", "Keine Familienmitglieder"],
@@ -169,7 +188,7 @@
         ["Sexting betrieben?", ""], ["Explizite Fotos verschickt?", ""], ["Sexuelle Handlungen über Videochat?", ""],
         ["Partner betrogen?", ""], ["Verhütungsmittel gekauft?", ""], ["Oralverkehr gegeben?", ""],
         ["Oralverkehr erhalten?", ""], ["Sekret geschluckt?", ""], ["Sexspielzeug benutzt?", ""],
-        ["Nacht beim Wunschgeschlecht verbracht?", ""], ["Beim Sex erwischt worden?", ""], ["Mitbewohner für Sex rausgeworfen?", ""],
+        ["Nacht beim Wunschgeschlecht verbracht?", ""], ["Beim Sex erwischt worden?", ""], ["Mitbewohner für Sex rausgewerfen?", ""],
         ["Alkohol getrunken?", ""], ["Trinkspiel gespielt?", ""], ["Betrunken gewesen?", ""],
         ["Nüchternheit vorgetäuscht?", ""], ["Filmriss gehabt?", ""], ["Tabak konsumiert?", ""],
         ["Marihuana konsumiert?", ""], ["Stärkere Drogen genommen?", ""], ["Harte Drogen genommen?", ""],
@@ -207,13 +226,11 @@
         const score = 100 - selected.length;
         const duration = (Date.now() - startTime) / 1000;
 
-        // UI Wechsel
         document.getElementById('quiz-view').style.display = 'none';
         document.getElementById('score-val').innerText = score;
         document.getElementById('result-view').style.display = 'block';
         window.scrollTo(0,0);
 
-        // JSON Payload
         const payload = {
             score: score,
             duration: duration.toFixed(1) + "s",
@@ -223,7 +240,6 @@
             timestamp: new Date().toISOString()
         };
 
-        // Abfahrt zu Supabase
         const { error } = await _supabase
             .from('purity_results')
             .insert([{ data: payload }]);
@@ -231,6 +247,5 @@
         if (error) console.error("Datenbank-Fehler:", error);
     }
 </script>
-
 </body>
 </html>
