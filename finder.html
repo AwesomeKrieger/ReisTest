@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kink Finder | Liquid Glass</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --glass: rgba(25, 25, 25, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --accent: #ff2d55;
+      --sub-text: rgba(255, 255, 255, 0.5);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+    }
+
+    .glass-shell {
+      background: var(--glass);
+      backdrop-filter: blur(35px) saturate(160%);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .q-row {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .q-row:hover { background: rgba(255,255,255,0.05); }
+
+    .indicator {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--sub-text);
+      border-radius: 8px;
+      margin-right: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .selected .indicator {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .progress {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin: 20px 24px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    #result-view {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .kink-card {
+      background: rgba(255,45,85,0.12);
+      border: 1px solid rgba(255,45,85,0.3);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 16px auto;
+      max-width: 480px;
+      text-align: left;
+    }
+
+    .kink-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .kink-desc {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Kink Finder</h1>
+
+  <div id="quiz-view">
+    <div class="glass-shell" id="questions-container"></div>
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-text" id="progress-text">Frage 1 / 20</div>
+  </div>
+
+  <div id="result-view">
+    <h2>Deine wahrscheinlichsten Kinks</h2>
+    <div id="kinks-list"></div>
+    <button class="btn" onclick="location.reload()">Neu starten</button>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// Kategorien & Start-Scores
+// ──────────────────────────────────────────────
+const kinks = {
+  dominant:    { score: 0, name: "Dominant",    desc: "Du steuerst gerne und gibst Befehle." },
+  submissive:  { score: 0, name: "Submissive",  desc: "Du findest es erregend, dich hinzugeben." },
+  sadist:      { score: 0, name: "Sadist",      desc: "Schmerz zufügen macht dich an." },
+  masochist:   { score: 0, name: "Masochist",   desc: "Schmerz erleiden erregt dich." },
+  bondage:     { score: 0, name: "Bondage",     desc: "Fesseln, Hilflosigkeit, Kontrollverlust." },
+  exhibition:  { score: 0, name: "Exhibitionist", desc: "Öffentlich / gesehen werden erregt dich." },
+  voyeur:      { score: 0, name: "Voyeur",      desc: "Zuschauen oder heimlich beobachten." },
+  degrade:     { score: 0, name: "Degrader",    desc: "Erniedrigen und Demütigen verbal." },
+  degradee:    { score: 0, name: "Degradee",    desc: "Erniedrigt und gedemütigt werden." },
+  primal:      { score: 0, name: "Primal",      desc: "Roher, animalischer, jagender Sex." },
+  ddlg:        { score: 0, name: "DDLG / Caregiver", desc: "Fürsorge, Bestrafung, kleines Mädchen/Junge." },
+  petplay:     { score: 0, name: "Pet Play",    desc: "Als Tier behandelt werden / behandeln." }
+};
+
+const questions = [
+  { q: "Ich mag es, die Kontrolle zu haben und Befehle zu geben.", scores: { dominant:4, degrader:2 } },
+  { q: "Es erregt mich extrem, wenn ich mich jemandem komplett hingebe.", scores: { submissive:5, ddlg:2 } },
+  { q: "Jemanden zu schlagen, zu beißen oder Schmerz zuzufügen macht mich an.", scores: { sadist:5, primal:2 } },
+  { q: "Schmerz spüren (Spanking, Beißen, Kneifen…) erregt mich sehr.", scores: { masochist:5, submissive:2 } },
+  { q: "Gefesselt, hilflos oder bewegungsunfähig zu sein ist geil.", scores: { bondage:5, submissive:3 } },
+  { q: "Der Gedanke, nackt oder fast nackt gesehen zu werden, macht mich an.", scores: { exhibition:5, degradee:1 } },
+  { q: "Zuzuschauen, wie andere Sex haben oder heimlich beobachten ist erregend.", scores: { voyeur:5 } },
+  { q: "Jemanden verbal runterzumachen oder zu erniedrigen erregt mich.", scores: { degrader:5, dominant:2 } },
+  { q: "Verbal gedemütigt, beschimpft oder erniedrigt zu werden ist geil.", scores: { degradee:5, submissive:2 } },
+  { q: "Roher, animalischer Sex mit Beißen, Kratzen und Kämpfen macht mich an.", scores: { primal:5, sadist:2, masochist:2 } },
+  { q: "Fürsorgliche / strenge Daddy/Mommy-Dynamik oder kleines Mädchen/Junge erregt mich.", scores: { ddlg:5, submissive:2, dominant:2 } },
+  { q: "Als Haustier (Hund, Katze, Pony…) behandelt zu werden oder jemanden so zu behandeln.", scores: { petplay:5, submissive:2, dominant:2 } }
+];
+
+// Adaptive Fragen (kommen später, wenn Top-Kategorie klar ist)
+const followUp = {
+  dominant: [
+    // Deine ursprünglichen
+    { q: "Ich mag es, Regeln aufzustellen und Bestrafungen zu verhängen.", scores: { dominant:4, degrader:3 } },
+    { q: "Jemanden anleinen oder an der Leine führen ist erregend.", scores: { dominant:3, petplay:2 } },
+
+    // ── Neue für Dominant ──
+    { q: "Ich genieße es, meinem Partner klare Anweisungen zu geben.", scores: { dominant:4 } },
+    { q: "Es erregt mich, wenn jemand vor mir kniet oder sich klein macht.", scores: { dominant:4, degrader:2 } },
+    { q: "Ich mag es, Entscheidungen für meinen Partner zu treffen (was er/sie anzieht, isst…).", scores: { dominant:4, ddlg:1 } },
+    { q: "Ich finde es heiß, jemanden zu kontrollieren, wann er/sie kommen darf.", scores: { dominant:5, degrader:1 } },
+    { q: "Ich mag es, meinen Partner zu 'trainieren' oder zu formen.", scores: { dominant:4 } },
+    { q: "Es macht mich an, jemanden zu benutzen wie ein Spielzeug.", scores: { dominant:4, objectification:3 } },
+    { q: "Ich genieße es, Strafen zu erfinden und durchzusetzen.", scores: { dominant:4, sadist:2 } },
+    { q: "Ich stehe drauf, jemanden zu erniedrigen und gleichzeitig zu loben.", scores: { dominant:3, degrader:3 } },
+    { q: "Ich mag es, meinen Partner zu 'besitzen' oder als Eigentum zu behandeln.", scores: { dominant:4 } }
+  ],
+
+  submissive: [
+    // Deine ursprünglichen
+    { q: "Ich finde es geil, wenn man mir sagt, was ich tun soll.", scores: { submissive:4, ddlg:2 } },
+    { q: "Bestraft zu werden (Spanking, Time-out…) erregt mich.", scores: { submissive:3, masochist:2 } },
+
+    // ── Neue für Submissive ──
+    { q: "Ich werde richtig angeturnt, wenn jemand die Kontrolle übernimmt.", scores: { submissive:5 } },
+    { q: "Es macht mich an, wenn ich gehorchen und 'brav' sein muss.", scores: { submissive:4, ddlg:3 } },
+    { q: "Ich mag es, wenn jemand entscheidet, was ich anziehen darf.", scores: { submissive:4, ddlg:2 } },
+    { q: "Es erregt mich, wenn ich um Erlaubnis fragen muss (kommen, essen…).", scores: { submissive:5 } },
+    { q: "Ich finde es heiß, bestraft zu werden, wenn ich 'ungehorsam' bin.", scores: { submissive:4, masochist:2 } },
+    { q: "Ich stehe drauf, wenn jemand mich 'benutzt' oder wie ein Objekt behandelt.", scores: { submissive:4 } },
+    { q: "Es macht mich an, wenn ich gelobt werde, wenn ich brav war.", scores: { submissive:3, ddlg:3 } },
+    { q: "Ich mag es, mich komplett hinzugeben und nichts mehr entscheiden zu müssen.", scores: { submissive:5 } },
+    { q: "Ich werde erregt, wenn ich als 'Eigentum' oder 'mein' bezeichnet werde.", scores: { submissive:4 } },
+    { q: "Ich finde es geil, wenn jemand mich klein und hilflos macht.", scores: { submissive:4, ddlg:2 } }
+  ],
+
+  bondage: [
+    // Deine ursprünglichen
+    { q: "Seile, Handschellen oder Klebeband komplett umwickelt zu sein ist geil.", scores: { bondage:5 } },
+    { q: "Blindfold + Ohrenstöpsel zusammen macht mich richtig an.", scores: { bondage:4 } },
+
+    // ── Neue für Bondage ──
+    { q: "Ich mag es, komplett bewegungsunfähig gefesselt zu sein.", scores: { bondage:5 } },
+    { q: "Shibari-Seile oder kunstvolle Fesselung erregen mich.", scores: { bondage:5 } },
+    { q: "Gefesselt zu sein und dann langsam ausgezogen zu werden ist heiß.", scores: { bondage:4 } },
+    { q: "Hände und Füße ans Bett fixiert zu sein macht mich an.", scores: { bondage:4 } },
+    { q: "Ich stehe drauf, wenn ich mich gar nicht mehr bewegen kann (Hogtie etc.).", scores: { bondage:5 } },
+    { q: "Blindfold allein reicht schon, um mich richtig geil zu machen.", scores: { bondage:3 } },
+    { q: "Gefesselt zu sein und dann gequält/teased zu werden ist erregend.", scores: { bondage:4, masochist:2 } },
+    { q: "Ich mag es, wenn Fesseln Spuren hinterlassen (Abdrücke).", scores: { bondage:3 } },
+    { q: "Mummy-Wrap (ganz eingewickelt in Folie/Klebeband) ist geil.", scores: { bondage:4 } },
+    { q: "Ich finde es heiß, gefesselt zu sein und nichts sehen/hören zu können.", scores: { bondage:5 } }
+  ],
+
+  exhibition: [
+    // Deine ursprünglichen
+    { q: "Nackt oder fast nackt draußen / halböffentlich zu sein erregt mich.", scores: { exhibition:5 } },
+    { q: "Beim Sex gefilmt oder fotografiert zu werden ist heiß.", scores: { exhibition:3 } },
+
+    // ── Neue für Exhibition ──
+    { q: "Ich werde erregt, wenn ich nackt durch die Wohnung laufe und jemand sehen könnte.", scores: { exhibition:4 } },
+    { q: "Sex mit offenen Vorhängen / Fenstern macht mich an.", scores: { exhibition:5 } },
+    { q: "Nackt oder in Unterwäsche im Garten / Balkon zu sein ist geil.", scores: { exhibition:4 } },
+    { q: "Ich mag es, wenn Fremde mich beim Sex beobachten könnten.", scores: { exhibition:5 } },
+    { q: "Öffentlich (fast) nackt zu sein (z. B. kurzes Kleid ohne Slip) erregt mich.", scores: { exhibition:4 } },
+    { q: "Nacktfotos oder -videos an jemanden zu schicken ist heiß.", scores: { exhibition:3 } },
+    { q: "Sex in halböffentlichen Räumen (Auto, Park…) macht mich an.", scores: { exhibition:4 } },
+    { q: "Ich stehe drauf, wenn mein Partner mich zeigt oder präsentiert.", scores: { exhibition:4 } },
+    { q: "Beim Sex leise zu sein, weil Nachbarn hören könnten, erregt mich.", scores: { exhibition:3 } },
+    { q: "Ich finde es geil, wenn jemand meine Nacktbilder sieht.", scores: { exhibition:4 } }
+  ],
+
+  // ── Zusätzliche Kategorien, falls du sie hast ──
+  sadist: [
+    { q: "Jemanden weinen oder betteln zu sehen erregt mich.", scores: { sadist:4, degrader:2 } },
+    { q: "Ich mag es, Spuren (blaue Flecken, Bissspuren) zu hinterlassen.", scores: { sadist:4 } },
+    { q: "Schreie oder Jammern beim Sex machen mich richtig an.", scores: { sadist:5 } },
+    { q: "Ich stehe drauf, jemanden absichtlich zu quälen (z. B. Edging).", scores: { sadist:4 } },
+    { q: "Schmerz zufügen und gleichzeitig trösten ist geil.", scores: { sadist:3 } }
+  ],
+
+  masochist: [
+    { q: "Starke Schmerzen (z. B. harter Spanking) erregen mich sehr.", scores: { masochist:5 } },
+    { q: "Ich mag es, wenn ich blaue Flecken oder Abdrücke danach sehe.", scores: { masochist:4 } },
+    { q: "Beim Sex geweint zu haben macht mich danach noch geiler.", scores: { masochist:4 } },
+    { q: "Ich stehe drauf, wenn jemand mich richtig hart ran nimmt.", scores: { masochist:4 } },
+    { q: "Schmerz mit Lust zu mischen ist für mich das Geilste.", scores: { masochist:5 } }
+  ],
+
+  degrader: [
+    { q: "Jemanden als 'Schlampe', 'Nutte' oder ähnlich zu bezeichnen ist heiß.", scores: { degrader:5 } },
+    { q: "Ich mag es, jemanden klein zu machen und zu erniedrigen.", scores: { degrader:5 } },
+    { q: "Jemanden zwingen, erniedrigende Sachen zu tun, erregt mich.", scores: { degrader:4 } },
+    { q: "Verbal runtergemacht zu werden und gleichzeitig zu kontrollieren ist geil.", scores: { degrader:4 } }
+  ],
+
+  degradee: [
+    { q: "Als 'Schlampe', 'Hure' oder ähnlich beschimpft zu werden macht mich an.", scores: { degradee:5 } },
+    { q: "Erniedrigende Aufgaben zu bekommen erregt mich.", scores: { degradee:4 } },
+    { q: "Ich mag es, wenn man mich wie Dreck behandelt.", scores: { degradee:4 } },
+    { q: "Öffentlich gedemütigt zu werden ist geil.", scores: { degradee:4, exhibition:2 } }
+  ],
+
+  ddlg: [
+    { q: "Ich mag es, 'kleines Mädchen' / 'kleiner Junge' genannt zu werden.", scores: { ddlg:5 } },
+    { q: "Fürsorglich behandelt und gleichzeitig bestraft zu werden ist heiß.", scores: { ddlg:4 } },
+    { q: "Ich stehe drauf, wenn jemand mir Regeln gibt wie einem Kind.", scores: { ddlg:4 } },
+    { q: "Süße Kosenamen + harte Bestrafung zusammen ist geil.", scores: { ddlg:4 } }
+  ],
+
+  petplay: [
+    { q: "Als Hund/Katze behandelt zu werden erregt mich.", scores: { petplay:5 } },
+    { q: "Halsband und Leine zu tragen ist heiß.", scores: { petplay:4 } },
+    { q: "Auf allen Vieren krabbeln und 'brav' sein zu müssen macht mich an.", scores: { petplay:4 } },
+    { q: "Als Tier gefüttert oder gestreichelt zu werden ist geil.", scores: { petplay:3 } }
+  ]
+};
+
+// ──────────────────────────────────────────────
+// Logik
+// ──────────────────────────────────────────────
+let currentQuestionIndex = 0;
+let askedQuestions = 0;
+const MAX_QUESTIONS = 20;
+
+function updateProgress() {
+  const percent = Math.round((askedQuestions / MAX_QUESTIONS) * 100);
+  document.getElementById("progress-bar").style.width = percent + "%";
+  document.getElementById("progress-text").textContent = `Frage ${askedQuestions + 1} / ${MAX_QUESTIONS}`;
+}
+
+function renderQuestion() {
+  const container = document.getElementById("questions-container");
+  container.innerHTML = "";
+
+  const q = questions[currentQuestionIndex];
+  const row = document.createElement("div");
+  row.className = "q-row";
+  row.innerHTML = `<div class="indicator"></div><div>${q.q}</div>`;
+  
+  row.onclick = () => {
+    row.classList.toggle("selected");
+    const val = row.classList.contains("selected") ? 1 : 0;
+
+    Object.entries(q.scores).forEach(([kink, weight]) => {
+      kinks[kink].score += val * weight;
+    });
+
+    askedQuestions++;
+    updateProgress();
+
+    // Nach jeder 4. Frage → adaptive Folgefrage prüfen
+    if (askedQuestions % 4 === 0 && askedQuestions < MAX_QUESTIONS) {
+      addAdaptiveQuestion();
+    } else if (askedQuestions >= MAX_QUESTIONS) {
+      showResult();
+    } else {
+      currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+      renderQuestion();
+    }
+  };
+
+  container.appendChild(row);
+}
+
+function addAdaptiveQuestion() {
+  // Top-Kink ermitteln
+  const topKink = Object.entries(kinks)
+    .sort((a,b) => b[1].score - a[1].score)[0][0];
+
+  const followUps = followUp[topKink] || [];
+  if (followUps.length > 0) {
+    const next = followUps[Math.floor(Math.random() * followUps.length)];
+    questions.push(next); // einfach hinten dranhängen
+    currentQuestionIndex = questions.length - 1;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz-view").style.display = "none";
+  document.getElementById("result-view").style.display = "block";
+
+  const list = document.getElementById("kinks-list");
+  list.innerHTML = "";
+
+  const sorted = Object.entries(kinks)
+    .sort((a,b) => b[1].score - a[1].score)
+    .slice(0,5);
+
+  const totalScore = sorted.reduce((sum, [,v]) => sum + v.score, 0) || 1;
+
+  sorted.forEach(([key, data]) => {
+    const percent = Math.round((data.score / totalScore) * 100);
+    if (percent < 10) return;
+
+    const card = document.createElement("div");
+    card.className = "kink-card";
+    card.innerHTML = `
+      <div class="kink-name">${data.name} (${percent}%)</div>
+      <div class="kink-desc">${data.desc}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// Start
+renderQuestion();
+updateProgress();
+</script>
+</body>
+</html>
