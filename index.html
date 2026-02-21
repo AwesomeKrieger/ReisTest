@@ -129,17 +129,32 @@
 
         .impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .stat-circle { text-align: center; }
-        .circle-visual {
-    width: 70px; height: 70px;
+       @property --p {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+.circle-visual {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto 5px;
-    font-weight: bold; font-size: 1.2rem;
+    font-weight: bold;
+    font-size: 1.2rem;
     position: relative;
-    /* Der kreisförmige Balken */
+    
+    /* Der magische Teil: Die Animation für die Variable --p */
+    --p: 0;
+    transition: --p 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    
     background: radial-gradient(closest-side, var(--bg) 80%, transparent 0%),
                 conic-gradient(var(--circle-color) calc(var(--p) * 1%), var(--glass-border) 0);
 }
+
 
 /* Farben definieren */
 .c-minor { --circle-color: #4cd964; }
@@ -428,7 +443,7 @@
         if (error) console.error("Datenbank-Fehler:", error);
     }
 
-    function revealDetails() {
+  function revealDetails() {
     // Stage 1 Button verstecken und Stage 2 (Lila Box) einblenden
     document.getElementById('stage-1-actions').style.display = 'none';
     document.getElementById('stage-2').style.display = 'block';
@@ -436,48 +451,51 @@
     const scoreBoxEl = document.getElementById('score-val');
     const indicator = document.getElementById('purity-indicator');
     
-    // Ergebnistext basierend auf dem Score setzen
+    // Ergebnistext setzen
     document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
 
-    // Maximalwerte der Fragen pro Kategorie für die Prozent-Berechnung
     const maxValues = {
-        minor: 19,
-        immortal: 28,
-        raunchy: 21,
-        scandalous: 23,
-        unspeakable: 9
+        minor: 19, immortal: 28, raunchy: 21, scandalous: 23, unspeakable: 9
     };
 
     let current = 100;
     
-    // Intervall auf 40ms erhöht, damit die Zahl langsamer und spannender runterzählt
+    // Score-Zähler Animation (40ms für mehr Spannung)
     const timer = setInterval(() => {
         if (current <= finalScoreVal) {
             clearInterval(timer);
 
-            // Wenn der Score steht: Kreise mit Zahlen und visuellem Fortschritt füllen
-            Object.keys(finalStats).forEach(key => {
-                const count = finalStats[key];
-                const total = maxValues[key];
-                const percent = (count / total) * 100;
-                
-                const valEl = document.getElementById('val-' + key);
-                if (valEl) {
-                    valEl.innerText = count; // Die Zahl im Kreis
-                    // Setzt die CSS-Variable --p für den conic-gradient Fülleffekt
-                    valEl.parentElement.style.setProperty('--p', percent.toFixed(0));
-                }
-            });
+            // NEU: Animation der Kreise mit kurzer Verzögerung starten
+            setTimeout(() => {
+                Object.keys(finalStats).forEach((key, index) => {
+                    const count = finalStats[key];
+                    const total = maxValues[key];
+                    const percent = (count / total) * 100;
+                    
+                    const valEl = document.getElementById('val-' + key);
+                    if (valEl) {
+                        // Zahl sofort reinschreiben
+                        valEl.innerText = count; 
+                        
+                        // Animation des Kreises durch versetztes Timeout (Wellen-Effekt)
+                        setTimeout(() => {
+                            // WICHTIG: Greift auf das äußere div (.circle-visual) zu
+                            valEl.parentElement.style.setProperty('--p', percent.toFixed(0));
+                        }, index * 150); // Jeder Kreis startet 150ms nach dem vorherigen
+                    }
+                });
+            }, 200); // Kurze Pause nachdem der Score steht
+
         } else {
             current--;
             scoreBoxEl.innerText = current;
-            // Balken-Indikator bewegt sich synchron mit der Zahl
             if (indicator) {
                 indicator.style.left = current + "%";
             }
         }
-    }, 40); // Hier kannst du die Geschwindigkeit steuern (höher = langsamer)
+    }, 40);
 }
+
 
 </script>
 </body>
