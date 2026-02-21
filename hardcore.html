@@ -640,6 +640,12 @@
             console.error('Fehler beim Laden der Fragen:', e);
             questions = [["Fehler beim Laden der Fragen. Bitte Seite neu laden.", ""]];
         }
+        // Shuffle questions (Fisher-Yates)
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+
         renderQuestions();
     }
 
