@@ -127,9 +127,18 @@
         .big-number { font-size: 5rem; font-weight: 900; }
         .result-text { font-size: 1rem; margin-top: 15px; line-height: 1.4; }
 
-        .impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
-        .stat-circle { text-align: center; }
-       @property --p {
+       .impurity-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 15px; 
+    margin-top: 30px; 
+}
+
+.stat-circle { 
+    text-align: center; 
+}
+
+@property --p {
     syntax: '<number>';
     inherits: true;
     initial-value: 0;
@@ -147,21 +156,23 @@
     font-size: 1.2rem;
     position: relative;
     
-    /* Der magische Teil: Die Animation für die Variable --p */
+    /* Die magische Animation */
     --p: 0;
-    transition: --p 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    transition: --p 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     
-    background: radial-gradient(closest-side, var(--bg) 80%, transparent 0%),
-                conic-gradient(var(--circle-color) calc(var(--p) * 1%), var(--glass-border) 0);
+    /* Zeichnet den Fortschrittsring */
+    background: 
+        radial-gradient(closest-side, var(--bg) 80%, transparent 0%),
+        conic-gradient(var(--circle-color, var(--accent)) calc(var(--p) * 1%), var(--glass-border) 0);
 }
 
-
-/* Farben definieren */
+/* Zuweisung der Farben für die Kategorien */
 .c-minor { --circle-color: #4cd964; }
 .c-immortal { --circle-color: #007aff; }
 .c-raunchy { --circle-color: #ffcc00; }
 .c-scandalous { --circle-color: #ff3b30; }
 .c-unspeakable { --circle-color: #ff2d55; }
+
 
 #result-view { display: none; text-align: center; padding: 80px 20px; }
 .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px); }
