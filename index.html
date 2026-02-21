@@ -101,7 +101,6 @@
 
         .legal-notice span { color: var(--accent); cursor: pointer; text-decoration: underline; }
 
-        /* Modal Styles */
         #ds-modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);
@@ -119,28 +118,26 @@
             padding: 10px 20px; border-radius: 12px; cursor: pointer;
             float: right; margin-top: 20px;
         }
-        /* Purity Skala & Lila Box */
-.purity-scale { width: 100%; margin: 20px 0; }
-.scale-bar { height: 10px; background: linear-gradient(to right, #4a148c, #e91e63, #ffb300); border-radius: 5px; position: relative; }
-.indicator-arrow { position: absolute; top: -15px; transform: translateX(-50%); transition: left 1s ease-out; font-size: 12px; }
-.scale-labels { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; font-weight: bold; opacity: 0.5; }
-.score-box { background: #6a1b9a; color: white; padding: 30px; border-radius: 25px; margin: 20px 0; }
-.big-number { font-size: 5rem; font-weight: 900; }
-.result-text { font-size: 1rem; margin-top: 15px; line-height: 1.4; }
 
-/* Grid für die Kreise */
-.impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
-.stat-circle { text-align: center; }
-.circle-visual { width: 60px; height: 60px; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-weight: bold; font-size: 1.1rem; }
-.c-minor { border-color: #4cd964; color: #4cd964; }
-.c-immortal { border-color: #007aff; color: #007aff; }
-.c-raunchy { border-color: #ffcc00; color: #ffcc00; }
-.c-scandalous { border-color: #ff3b30; color: #ff3b30; }
-.c-unspeakable { border-color: #ff2d55; color: #ff2d55; }
-.cat-label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+        .purity-scale { width: 100%; margin: 20px 0; }
+        .scale-bar { height: 10px; background: linear-gradient(to right, #4a148c, #e91e63, #ffb300); border-radius: 5px; position: relative; }
+        .indicator-arrow { position: absolute; top: -15px; transform: translateX(-50%); transition: left 1s ease-out; font-size: 12px; }
+        .scale-labels { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; font-weight: bold; opacity: 0.5; }
+        .score-box { background: #6a1b9a; color: white; padding: 30px; border-radius: 25px; margin: 20px 0; }
+        .big-number { font-size: 5rem; font-weight: 900; }
+        .result-text { font-size: 1rem; margin-top: 15px; line-height: 1.4; }
 
+        .impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .stat-circle { text-align: center; }
+        .circle-visual { width: 60px; height: 60px; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-weight: bold; font-size: 1.1rem; }
+        .c-minor { border-color: #4cd964; color: #4cd964; }
+        .c-immortal { border-color: #007aff; color: #007aff; }
+        .c-raunchy { border-color: #ffcc00; color: #ffcc00; }
+        .c-scandalous { border-color: #ff3b30; color: #ff3b30; }
+        .c-unspeakable { border-color: #ff2d55; color: #ff2d55; }
+        .cat-label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
 
-        #result-view { display: none; text-align: center; padding: 120px 20px; }
+        #result-view { display: none; text-align: center; padding: 80px 20px; }
         .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px; }
     </style>
 </head>
@@ -149,9 +146,7 @@
 <div class="container" id="quiz-view">
     <h1>Rice Purity Test</h1>
     <div class="glass-shell" id="questions-list"></div>
-
     <button class="calc-btn" onclick="sendData()">Berechnen</button>
-    
     <div class="legal-notice">
         Mit Klick auf "Berechnen" akzeptierst du die <span onclick="toggleModal(true)">Datenschutzerklärung</span>.
     </div>
@@ -175,16 +170,16 @@
 <div id="result-view" class="container">
     <div style="font-size: 1.5rem; opacity: 0.6;">Dein Score:</div>
     <div class="final-score" id="quick-score">100</div>
-    
+
     <div id="stage-1-actions">
-        <button class="calc-btn" onclick="revealDetails()" style="max-width:300px; margin: 0 auto;">DETAILS AUSWERTEN</button>
+        <button class="calc-btn" onclick="revealDetails()" style="max-width:300px; margin: 0 auto; display:block;">DETAILS AUSWERTEN</button>
     </div>
 
     <div id="stage-2" style="display:none; margin-top: 40px;">
         <div class="purity-scale">
             <div class="scale-labels"><span>I2</span><span>I1</span><span>P1</span><span>P2</span><span>Purity 👑</span></div>
             <div class="scale-bar"><div id="purity-indicator" class="indicator-arrow">▼</div></div>
-            <div class="scale-footer" style="text-align:left; font-size:10px; font-weight:bold; margin-top:5px;">😈 Impurity</div>
+            <div style="text-align:left; font-size:10px; font-weight:bold; margin-top:5px;">😈 Impurity</div>
         </div>
 
         <div class="score-box">
@@ -199,188 +194,185 @@
             <div class="stat-circle"><div class="circle-visual c-scandalous" id="val-scandalous">0</div><div class="cat-label">Skandalös<br><small>/23</small></div></div>
             <div class="stat-circle"><div class="circle-visual c-unspeakable" id="val-unspeakable">0</div><div class="cat-label">Extrem<br><small>/9</small></div></div>
         </div>
-        
+
         <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.4; cursor:pointer; margin-top:40px; text-decoration:underline;">Test neu starten</button>
     </div>
 </div>
 
-
 <script>
     const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let finalScoreVal = 100;
-let finalStats = { minor: 0, immortal: 0, raunchy: 0, scandalous: 0, unspeakable: 0 };
-const startTime = Date.now();
-let pattern = [];
-
-// Exakte Zuordnung für die 5 Kreise
-function getDetailedCategory(id) {
-    if ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,44,45,46,53,55].includes(id)) return "minor";
-    if ([15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,54,56,57,58].includes(id)) return "immortal";
-    if ([35,36,37,38,39,40,41,42,43,67,68,69,70,71,72,73,74,75,80,81,92].includes(id)) return "raunchy"; // Anal inkludiert
-    if ([51,52,59,60,61,62,63,64,65,66,76,77,78,79,82,83,84,85,86,87,88,89,90].includes(id)) return "scandalous";
-    return "unspeakable";
-}
-
-function getResultText(s) {
-    if (s >= 98) return "Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich.";
-    if (s >= 85) return "Sehr anständig. Ein Vorbild für die Gesellschaft.";
-    if (s >= 65) return "Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind.";
-    if (s >= 35) return "Du lebst das Leben! Ziemlich versaut.";
-    if (s >= 10) return "Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast.";
-    return "Legende! Du hast das Leben im Hardcore-Modus durchgespielt.";
-}
-
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const startTime = Date.now();
     let pattern = [];
+    let finalScoreVal = 100;
+    let finalStats = { minor: 0, immortal: 0, raunchy: 0, scandalous: 0, unspeakable: 0 };
 
-    // Modal Steuerung
     function toggleModal(show) {
         document.getElementById('ds-modal').style.display = show ? 'flex' : 'none';
     }
 
-    // Fragenliste (unverändert)
+    function getDetailedCategory(id) {
+        if ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,44,45,46,53,55].includes(id)) return "minor";
+        if ([15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,54,56,57,58].includes(id)) return "immortal";
+        if ([35,36,37,38,39,40,41,42,43,67,68,69,70,71,72,73,74,75,80,81,92].includes(id)) return "raunchy";
+        if ([51,52,59,60,61,62,63,64,65,66,76,77,78,79,82,83,84,85,86,87,88,89,90].includes(id)) return "scandalous";
+        return "unspeakable";
+    }
+
+    function getResultText(s) {
+        if (s >= 98) return "Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich.";
+        if (s >= 85) return "Sehr anständig. Ein Vorbild für die Gesellschaft.";
+        if (s >= 65) return "Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind.";
+        if (s >= 35) return "Du lebst das Leben! Ziemlich versaut.";
+        if (s >= 10) return "Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast.";
+        return "Legende! Du hast das Leben im Hardcore-Modus durchgespielt.";
+    }
+
     const rawQuestions = [
         ["Romantisch Händchen gehalten?", ""],
-["Ein Date gehabt?", ""],
-["In einer Beziehung gewesen?", ""],
-["Eng getanzt?", "Ohne Abstand zwischen den Körpern"],
-["Jemanden geküsst?", "Keine Familienmitglieder"],
-["Auf den Mund geküsst?", ""],
-["Einen Zungenkuss gehabt?", "French Kiss"],
-["Zungenkuss in der Öffentlichkeit gehabt?", ""],
-["Am Hals geküsst?", ""],
-["Liegend geküsst?", "Horizontal, also liegend"],
-["Einen Knutschfleck gegeben oder bekommen?", "Hickey = Saugfleck am Hals"],
-["An der Brust geküsst oder dort geküsst worden?", ""],
-["Unterhalb des Gürtels geküsst oder dort geküsst worden?", ""],
-["Mehr als zwei Stunden am Stück geküsst?", ""],
-["Bei einem Spiel mitgemacht, bei dem man sich auszieht?", ""],
-["Jemanden in einem sinnlichen Kontext gesehen oder selbst so gesehen worden?", ""],
-["Masturbiert?", ""],
-["Zu einem Bild oder Video masturbiert?", ""],
-["Masturbiert, während jemand anderes im Raum war?", ""],
-["Beim Masturbieren erwischt worden?", ""],
-["Mit einem unbelebten Gegenstand masturbiert?", ""],
-["Pornografisches Material gesehen oder gelesen?", ""],
-["Sinnlich massiert oder sinnlich massiert worden?", ""],
-["Voll angezogen die Bewegungen von Geschlechtsverkehr nachgeahmt?", "Dry humping oder Grinding"],
-["Von einer Person deines bevorzugten Geschlechts ausgezogen oder jemanden ausgezogen?", ""],
-["Mit einer Person deines bevorzugten Geschlechts zusammen geduscht?", ""],
-["Den Po begrapscht oder den Po begrapschen lassen?", ""],
-["Die Brüste begrapscht oder die Brüste begrapschen lassen?", ""],
-["Die Genitalien begrapscht oder die Genitalien begrapschen lassen?", ""],
-["Blue Balls gegeben oder bekommen?", "Schmerzhafte Erregung ohne Erlösung"],
-["Einen Orgasmus durch Manipulation von jemand anderem gehabt?", ""],
-["Sexuell explizite Textnachrichten oder Chats geschickt?", ""],
-["Sexuell explizite Fotos geschickt oder erhalten?", ""],
-["Sexuell explizite Aktivitäten per Videochat gemacht?", ""],
-["In einer Beziehung jemanden betrogen?", ""],
-["Verhütungsmittel gekauft?", ""],
-["Oralverkehr gegeben?", ""],
-["Oralverkehr erhalten?", ""],
-["Genitalsekret von jemand anderem geschluckt?", ""],
-["Ein Sexspielzeug mit einem Partner benutzt?", ""],
-["Die Nacht mit einer Person deines bevorzugten Geschlechts verbracht?", ""],
-["Beim Ausüben einer sexuellen Handlung hereingekommen worden?", ""],
-["Einen Mitbewohner rausgeschickt, um eine sexuelle Handlung zu begehen?", ""],
-["Alkohol in einem nicht-religiösen Kontext getrunken?", ""],
-["Ein Trinkspiel gespielt?", ""],
-["Betrunken gewesen?", ""],
-["Nüchternheit vor Eltern oder Lehrern vorgetäuscht?", ""],
-["Schweren Gedächtnisverlust durch Alkohol gehabt?", ""],
-["Tabak konsumiert?", ""],
-["Marihuana konsumiert?", ""],
-["Eine Droge stärker als Marihuana konsumiert?", ""],
-["Methamphetamin, Crack-Cocain, PCP, Pferdetranquilizer oder Heroin konsumiert?", ""],
-["Wegen eines disziplinarischen Verstoßes zum Schulleiter, Dekan oder Justizbeauftragten geschickt worden?", ""],
-["Auf disziplinarische Probe oder suspendiert worden?", ""],
-["In der Öffentlichkeit uriniert?", ""],
-["Nacktbaden gegangen?", "Skinny-dipping"],
-["Nackt durch die Gegend gelaufen?", "Streaking"],
-["Einen Stripper gesehen?", ""],
-["Die Polizei wegen dir gerufen worden?", ""],
-["Vor der Polizei weggelaufen?", ""],
-["Von der Polizei befragt worden?", ""],
-["Von der Polizei Handschellen angelegt bekommen?", ""],
-["Verhaftet worden?", ""],
-["Verurteilt worden?", ""],
-["Wegen eines Verbrechens verurteilt worden?", "Felony = Schweres Verbrechen"],
-["Einen Akt des Vandalismus begangen?", ""],
-["Geschlechtsverkehr gehabt?", ""],
-["Dreimal oder öfter in einer Nacht Geschlechtsverkehr gehabt?", ""],
-["Zehnmal oder öfter Geschlechtsverkehr gehabt?", ""],
-["Geschlechtsverkehr in vier oder mehr Positionen gehabt?", ""],
-["Geschlechtsverkehr mit einem Fremden oder einer Person gehabt, die du innerhalb von 24 Stunden kennengelernt hast?", ""],
-["Geschlechtsverkehr in einem Fahrzeug gehabt?", ""],
-["Geschlechtsverkehr im Freien gehabt?", ""],
-["Geschlechtsverkehr in der Öffentlichkeit gehabt?", ""],
-["Geschlechtsverkehr in einem Schwimmbad oder Whirlpool gehabt?", ""],
-["Geschlechtsverkehr in einem Bett gehabt, das weder dir noch deinem Partner gehört?", ""],
-["Geschlechtsverkehr gehabt, während die Eltern von dir oder deinem Partner im selben Haus waren?", ""],
-["Geschlechtsverkehr mit einer nicht-beteiligten dritten Person im selben Raum gehabt?", ""],
-["Dem Mile-High-Club beigetreten?", "Sex im Flugzeug"],
-["Einen Booty Call gemacht oder bekommen?", "Spontan jemanden nur für Sex angerufen/geschrieben, ohne Beziehung (z. B. 'u up?')"],
-["160 km oder mehr gereist, hauptsächlich für Geschlechtsverkehr?", ""],
-["Geschlechtsverkehr mit einem Partner gehabt, der 3 oder mehr Jahre Altersunterschied hat?", ""],
-["Geschlechtsverkehr mit einer Jungfrau gehabt?", ""],
-["Geschlechtsverkehr ohne Kondom gehabt?", ""],
-["Auf eine STI getestet worden wegen begründeten Verdachts?", "STI = Sexuell übertragbare Infektion"],
-["Eine STI gehabt?", ""],
-["Einen Dreier gehabt?", ""],
-["An einer Orgie teilgenommen?", ""],
-["Zwei oder mehr separate Akte von Geschlechtsverkehr mit zwei oder mehr Personen innerhalb von 24 Stunden gehabt?", ""],
-["Geschlechtsverkehr mit fünf oder mehr Partnern gehabt?", ""],
-["Während Geschlechtsverkehr fotografiert oder gefilmt worden?", ""],
-["Sex während der Menstruation gehabt?", ""],
-["Analverkehr gehabt?", ""],
-["Einen Schwangerschaftsschreck gehabt?", ""],
-["Jemanden geschwängert oder selbst geschwängert worden?", ""],
-["Für eine sexuelle Handlung bezahlt oder bezahlt worden?", ""],
-["Einen Akt des Voyeurismus begangen?", "Heimlich zugeschaut"],
-["Einen Akt des Inzests begangen?", ""],
-["An Bestialität teilgenommen?", "Sex mit Tieren"] ];
+        ["Ein Date gehabt?", ""],
+        ["In einer Beziehung gewesen?", ""],
+        ["Eng getanzt?", "Ohne Abstand zwischen den Körpern"],
+        ["Jemanden geküsst?", "Keine Familienmitglieder"],
+        ["Auf den Mund geküsst?", ""],
+        ["Einen Zungenkuss gehabt?", "French Kiss"],
+        ["Zungenkuss in der Öffentlichkeit gehabt?", ""],
+        ["Am Hals geküsst?", ""],
+        ["Liegend geküsst?", "Horizontal, also liegend"],
+        ["Einen Knutschfleck gegeben oder bekommen?", "Hickey = Saugfleck am Hals"],
+        ["An der Brust geküsst oder dort geküsst worden?", ""],
+        ["Unterhalb des Gürtels geküsst oder dort geküsst worden?", ""],
+        ["Mehr als zwei Stunden am Stück geküsst?", ""],
+        ["Bei einem Spiel mitgemacht, bei dem man sich auszieht?", ""],
+        ["Jemanden in einem sinnlichen Kontext gesehen oder selbst so gesehen worden?", ""],
+        ["Masturbiert?", ""],
+        ["Zu einem Bild oder Video masturbiert?", ""],
+        ["Masturbiert, während jemand anderes im Raum war?", ""],
+        ["Beim Masturbieren erwischt worden?", ""],
+        ["Mit einem unbelebten Gegenstand masturbiert?", ""],
+        ["Pornografisches Material gesehen oder gelesen?", ""],
+        ["Sinnlich massiert oder sinnlich massiert worden?", ""],
+        ["Voll angezogen die Bewegungen von Geschlechtsverkehr nachgeahmt?", "Dry humping oder Grinding"],
+        ["Von einer Person deines bevorzugten Geschlechts ausgezogen oder jemanden ausgezogen?", ""],
+        ["Mit einer Person deines bevorzugten Geschlechts zusammen geduscht?", ""],
+        ["Den Po begrapscht oder den Po begrapschen lassen?", ""],
+        ["Die Brüste begrapscht oder die Brüste begrapschen lassen?", ""],
+        ["Die Genitalien begrapscht oder die Genitalien begrapschen lassen?", ""],
+        ["Blue Balls gegeben oder bekommen?", "Schmerzhafte Erregung ohne Erlösung"],
+        ["Einen Orgasmus durch Manipulation von jemand anderem gehabt?", ""],
+        ["Sexuell explizite Textnachrichten oder Chats geschickt?", ""],
+        ["Sexuell explizite Fotos geschickt oder erhalten?", ""],
+        ["Sexuell explizite Aktivitäten per Videochat gemacht?", ""],
+        ["In einer Beziehung jemanden betrogen?", ""],
+        ["Verhütungsmittel gekauft?", ""],
+        ["Oralverkehr gegeben?", ""],
+        ["Oralverkehr erhalten?", ""],
+        ["Genitalsekret von jemand anderem geschluckt?", ""],
+        ["Ein Sexspielzeug mit einem Partner benutzt?", ""],
+        ["Die Nacht mit einer Person deines bevorzugten Geschlechts verbracht?", ""],
+        ["Beim Ausüben einer sexuellen Handlung hereingekommen worden?", ""],
+        ["Einen Mitbewohner rausgeschickt, um eine sexuelle Handlung zu begehen?", ""],
+        ["Alkohol in einem nicht-religiösen Kontext getrunken?", ""],
+        ["Ein Trinkspiel gespielt?", ""],
+        ["Betrunken gewesen?", ""],
+        ["Nüchternheit vor Eltern oder Lehrern vorgetäuscht?", ""],
+        ["Schweren Gedächtnisverlust durch Alkohol gehabt?", ""],
+        ["Tabak konsumiert?", ""],
+        ["Marihuana konsumiert?", ""],
+        ["Eine Droge stärker als Marihuana konsumiert?", ""],
+        ["Methamphetamin, Crack-Cocain, PCP, Pferdetranquilizer oder Heroin konsumiert?", ""],
+        ["Wegen eines disziplinarischen Verstoßes zum Schulleiter, Dekan oder Justizbeauftragten geschickt worden?", ""],
+        ["Auf disziplinarische Probe oder suspendiert worden?", ""],
+        ["In der Öffentlichkeit uriniert?", ""],
+        ["Nacktbaden gegangen?", "Skinny-dipping"],
+        ["Nackt durch die Gegend gelaufen?", "Streaking"],
+        ["Einen Stripper gesehen?", ""],
+        ["Die Polizei wegen dir gerufen worden?", ""],
+        ["Vor der Polizei weggelaufen?", ""],
+        ["Von der Polizei befragt worden?", ""],
+        ["Von der Polizei Handschellen angelegt bekommen?", ""],
+        ["Verhaftet worden?", ""],
+        ["Verurteilt worden?", ""],
+        ["Wegen eines Verbrechens verurteilt worden?", "Felony = Schweres Verbrechen"],
+        ["Einen Akt des Vandalismus begangen?", ""],
+        ["Geschlechtsverkehr gehabt?", ""],
+        ["Dreimal oder öfter in einer Nacht Geschlechtsverkehr gehabt?", ""],
+        ["Zehnmal oder öfter Geschlechtsverkehr gehabt?", ""],
+        ["Geschlechtsverkehr in vier oder mehr Positionen gehabt?", ""],
+        ["Geschlechtsverkehr mit einem Fremden oder einer Person gehabt, die du innerhalb von 24 Stunden kennengelernt hast?", ""],
+        ["Geschlechtsverkehr in einem Fahrzeug gehabt?", ""],
+        ["Geschlechtsverkehr im Freien gehabt?", ""],
+        ["Geschlechtsverkehr in der Öffentlichkeit gehabt?", ""],
+        ["Geschlechtsverkehr in einem Schwimmbad oder Whirlpool gehabt?", ""],
+        ["Geschlechtsverkehr in einem Bett gehabt, das weder dir noch deinem Partner gehört?", ""],
+        ["Geschlechtsverkehr gehabt, während die Eltern von dir oder deinem Partner im selben Haus waren?", ""],
+        ["Geschlechtsverkehr mit einer nicht-beteiligten dritten Person im selben Raum gehabt?", ""],
+        ["Dem Mile-High-Club beigetreten?", "Sex im Flugzeug"],
+        ["Einen Booty Call gemacht oder bekommen?", "Spontan jemanden nur für Sex angerufen/geschrieben, ohne Beziehung (z. B. 'u up?')"],
+        ["160 km oder mehr gereist, hauptsächlich für Geschlechtsverkehr?", ""],
+        ["Geschlechtsverkehr mit einem Partner gehabt, der 3 oder mehr Jahre Altersunterschied hat?", ""],
+        ["Geschlechtsverkehr mit einer Jungfrau gehabt?", ""],
+        ["Geschlechtsverkehr ohne Kondom gehabt?", ""],
+        ["Auf eine STI getestet worden wegen begründeten Verdachts?", "STI = Sexuell übertragbare Infektion"],
+        ["Eine STI gehabt?", ""],
+        ["Einen Dreier gehabt?", ""],
+        ["An einer Orgie teilgenommen?", ""],
+        ["Zwei oder mehr separate Akte von Geschlechtsverkehr mit zwei oder mehr Personen innerhalb von 24 Stunden gehabt?", ""],
+        ["Geschlechtsverkehr mit fünf oder mehr Partnern gehabt?", ""],
+        ["Während Geschlechtsverkehr fotografiert oder gefilmt worden?", ""],
+        ["Sex während der Menstruation gehabt?", ""],
+        ["Analverkehr gehabt?", ""],
+        ["Einen Schwangerschaftsschreck gehabt?", ""],
+        ["Jemanden geschwängert oder selbst geschwängert worden?", ""],
+        ["Für eine sexuelle Handlung bezahlt oder bezahlt worden?", ""],
+        ["Einen Akt des Voyeurismus begangen?", "Heimlich zugeschaut"],
+        ["Einen Akt des Inzests begangen?", ""],
+        ["An Bestialität teilgenommen?", "Sex mit Tieren"]
+    ];
 
-    const listContainer = document.getElementById('questions-list');
-    rawQuestions.forEach((q, i) => {
-        const row = document.createElement('div');
-        row.className = 'q-row';
-        let explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
-        row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
-        row.onclick = () => {
-    const isSelected = row.classList.toggle('selected');
-    // Wir speichern jetzt: ID, Zeit seit Start, Aktion und Kategorie
-    pattern.push({ 
-        id: i+1, 
-        t: Date.now() - startTime, 
-        action: isSelected ? "select" : "deselect",
-        cat: getCategory(i+1)
+    // Render questions on load
+    window.addEventListener('DOMContentLoaded', () => {
+        const listContainer = document.getElementById('questions-list');
+        rawQuestions.forEach((q, i) => {
+            const row = document.createElement('div');
+            row.className = 'q-row';
+            const explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
+            row.innerHTML = `<div class="indicator"></div><div>${i + 1}. ${q[0]}${explanation}</div>`;
+            row.onclick = () => {
+                const isSelected = row.classList.toggle('selected');
+                pattern.push({
+                    id: i + 1,
+                    t: Date.now() - startTime,
+                    action: isSelected ? "select" : "deselect",
+                    cat: getDetailedCategory(i + 1)
+                });
+            };
+            listContainer.appendChild(row);
+        });
     });
-};
 
+    async function sendData() {
+        const selected = document.querySelectorAll('.q-row.selected');
+        finalScoreVal = 100 - selected.length;
+        const duration = (Date.now() - startTime) / 1000;
 
-            // 1. Statistiken für die 5 Kreise berechnen (Vorbereitung für Stage 2)
+        // Calculate category stats
         finalStats = { minor: 0, immortal: 0, raunchy: 0, scandalous: 0, unspeakable: 0 };
         selected.forEach(row => {
             const id = parseInt(row.innerText.split('.')[0]);
             finalStats[getDetailedCategory(id)]++;
         });
 
-        // 2. Score zwischenspeichern für die spätere Animation
-        finalScoreVal = 100 - selected.length;
-        const duration = (Date.now() - startTime) / 1000;
-
-        // 3. UI umschalten auf Stage 1 (Nur die große Zahl anzeigen)
+        // Switch to result view
         document.getElementById('quiz-view').style.display = 'none';
         document.getElementById('result-view').style.display = 'block';
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
 
-        // 4. Animation: Die Zahl oben (quick-score) zählt sofort von 100 runter
+        // Animate count down
         let current = 100;
-        const quickEl = document.getElementById('quick-score'); // Nutzt die neue ID für Stage 1
+        const quickEl = document.getElementById('quick-score');
         const timer = setInterval(() => {
             if (current <= finalScoreVal) {
                 clearInterval(timer);
@@ -390,86 +382,64 @@ function getResultText(s) {
             }
         }, 20);
 
+        // Geo data
+        let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+            const geoRes = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+            const geoJson = await geoRes.json();
+            clearTimeout(timeoutId);
+            if (!geoJson.error) {
+                locationData = { city: geoJson.city, country: geoJson.country_name, ip: geoJson.ip, region: geoJson.region };
+            }
+        } catch (e) { console.warn("Geo-Block aktiv."); }
 
-        // 1. Demografie & IP holen (Location Insight)
-        // Standort mit Sicherheits-Timeout (falls der Dienst hakt)
-let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
-try {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 2500);
-    const geoRes = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-    const geoJson = await geoRes.json();
-    clearTimeout(id);
-    if(!geoJson.error) {
-        locationData = { city: geoJson.city, country: geoJson.country_name, ip: geoJson.ip, region: geoJson.region };
-    }
-} catch (e) { console.warn("Geo-Block aktiv."); }
+        const payload = {
+            score: finalScoreVal,
+            duration: duration.toFixed(1) + "s",
+            device: navigator.userAgent,
+            platform: navigator.platform,
+            vendor: navigator.vendor,
+            screen: window.screen.width + "x" + window.screen.height,
+            inner: window.innerWidth + "x" + window.innerHeight,
+            location: locationData,
+            pattern: pattern,
+            timestamp: new Date().toISOString(),
+            ver: "2.5-Lite"
+        };
 
-// Das vollständige Paket für dein Dashboard
-const payload = {
-    score: score,
-    duration: duration.toFixed(1) + "s",
-    device: navigator.userAgent,
-    platform: navigator.platform,
-    vendor: navigator.vendor, // Wichtig für iPhone-Check
-    screen: window.screen.width + "x" + window.screen.height,
-    inner: window.innerWidth + "x" + window.innerHeight, // Browser-Zoom
-    location: locationData,
-    pattern: pattern, // Enthält jetzt Kategorien & Abwahlen
-    timestamp: new Date().toISOString(),
-    ver: "2.5-Lite"
-};
-
-        // 3. Daten zu Supabase senden
         const { error } = await _supabase
             .from('purity_results')
             .insert([{ data: payload }]);
 
         if (error) console.error("Datenbank-Fehler:", error);
     }
+
     function revealDetails() {
-    document.getElementById('stage-1-actions').style.display = 'none';
-    document.getElementById('stage-2').style.display = 'block';
-    
-    const scoreBoxEl = document.getElementById('score-val');
-    const indicator = document.getElementById('purity-indicator');
-    document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
+        document.getElementById('stage-1-actions').style.display = 'none';
+        document.getElementById('stage-2').style.display = 'block';
 
-    // Stage 2 Animation: Balken füllen & Zahl in Box
-    let current = 100;
-    const timer = setInterval(() => {
-        if (current <= finalScoreVal) {
-            clearInterval(timer);
-            // Zahlen in die Kreise schreiben
-            document.getElementById('val-minor').innerText = finalStats.minor;
-            document.getElementById('val-immortal').innerText = finalStats.immortal;
-            document.getElementById('val-raunchy').innerText = finalStats.raunchy;
-            document.getElementById('val-scandalous').innerText = finalStats.scandalous;
-            document.getElementById('val-unspeakable').innerText = finalStats.unspeakable;
-        } else {
-            current--;
-            scoreBoxEl.innerText = current;
-            indicator.style.left = current + "%";
-        }
-    }, 15);
-}
+        const scoreBoxEl = document.getElementById('score-val');
+        const indicator = document.getElementById('purity-indicator');
+        document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
 
-// Initialisierung der Fragen beim Laden (Damit die Liste erscheint)
-window.onload = () => {
-    const listContainer = document.getElementById('questions-list');
-    rawQuestions.forEach((q, i) => {
-        const row = document.createElement('div');
-        row.className = 'q-row';
-        let explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
-        row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
-        row.onclick = () => {
-            const isSelected = row.classList.toggle('selected');
-            pattern.push({ id: i+1, action: isSelected ? "select" : "deselect" });
-        };
-        listContainer.appendChild(row);
-    });
-};
-
+        let current = 100;
+        const timer = setInterval(() => {
+            if (current <= finalScoreVal) {
+                clearInterval(timer);
+                document.getElementById('val-minor').innerText = finalStats.minor;
+                document.getElementById('val-immortal').innerText = finalStats.immortal;
+                document.getElementById('val-raunchy').innerText = finalStats.raunchy;
+                document.getElementById('val-scandalous').innerText = finalStats.scandalous;
+                document.getElementById('val-unspeakable').innerText = finalStats.unspeakable;
+            } else {
+                current--;
+                scoreBoxEl.innerText = current;
+                indicator.style.left = current + "%";
+            }
+        }, 15);
+    }
 </script>
 </body>
 </html>
