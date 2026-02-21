@@ -709,6 +709,9 @@
             [questions[i], questions[j]] = [questions[j], questions[i]];
         }
 
+        // Only use 100 random questions
+        questions = questions.slice(0, 100);
+
         dismissLoader();
         renderQuestions();
     }
