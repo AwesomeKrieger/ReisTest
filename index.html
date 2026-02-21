@@ -129,16 +129,25 @@
 
         .impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .stat-circle { text-align: center; }
-        .circle-visual { width: 60px; height: 60px; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-weight: bold; font-size: 1.1rem; }
-        .c-minor { border-color: #4cd964; color: #4cd964; }
-        .c-immortal { border-color: #007aff; color: #007aff; }
-        .c-raunchy { border-color: #ffcc00; color: #ffcc00; }
-        .c-scandalous { border-color: #ff3b30; color: #ff3b30; }
-        .c-unspeakable { border-color: #ff2d55; color: #ff2d55; }
-        .cat-label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+        .circle-visual {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 5px;
+    font-weight: bold; font-size: 1.2rem;
+    position: relative;
+    /* Der kreisförmige Balken */
+    background: radial-gradient(closest-side, var(--bg) 80%, transparent 0%),
+                conic-gradient(var(--circle-color) calc(var(--p) * 1%), var(--glass-border) 0);
+}
 
-        #result-view { display: none; text-align: center; padding: 80px 20px; }
-        .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px; }
+/* Farben definieren */
+.c-minor { --circle-color: #4cd964; }
+.c-immortal { --circle-color: #007aff; }
+.c-raunchy { --circle-color: #ffcc00; }
+.c-scandalous { --circle-color: #ff3b30; }
+.c-unspeakable { --circle-color: #ff2d55; }
+
     </style>
 </head>
 <body>
@@ -380,7 +389,7 @@
                 current--;
                 quickEl.innerText = current;
             }
-        }, 20);
+        }, 70);
 
         // Geo data
         let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
@@ -417,29 +426,56 @@
     }
 
     function revealDetails() {
-        document.getElementById('stage-1-actions').style.display = 'none';
-        document.getElementById('stage-2').style.display = 'block';
+    // Stage 1 Button verstecken und Stage 2 (Lila Box) einblenden
+    document.getElementById('stage-1-actions').style.display = 'none';
+    document.getElementById('stage-2').style.display = 'block';
 
-        const scoreBoxEl = document.getElementById('score-val');
-        const indicator = document.getElementById('purity-indicator');
-        document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
+    const scoreBoxEl = document.getElementById('score-val');
+    const indicator = document.getElementById('purity-indicator');
+    
+    // Ergebnistext basierend auf dem Score setzen
+    document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
 
-        let current = 100;
-        const timer = setInterval(() => {
-            if (current <= finalScoreVal) {
-                clearInterval(timer);
-                document.getElementById('val-minor').innerText = finalStats.minor;
-                document.getElementById('val-immortal').innerText = finalStats.immortal;
-                document.getElementById('val-raunchy').innerText = finalStats.raunchy;
-                document.getElementById('val-scandalous').innerText = finalStats.scandalous;
-                document.getElementById('val-unspeakable').innerText = finalStats.unspeakable;
-            } else {
-                current--;
-                scoreBoxEl.innerText = current;
+    // Maximalwerte der Fragen pro Kategorie für die Prozent-Berechnung
+    const maxValues = {
+        minor: 19,
+        immortal: 28,
+        raunchy: 21,
+        scandalous: 23,
+        unspeakable: 9
+    };
+
+    let current = 100;
+    
+    // Intervall auf 40ms erhöht, damit die Zahl langsamer und spannender runterzählt
+    const timer = setInterval(() => {
+        if (current <= finalScoreVal) {
+            clearInterval(timer);
+
+            // Wenn der Score steht: Kreise mit Zahlen und visuellem Fortschritt füllen
+            Object.keys(finalStats).forEach(key => {
+                const count = finalStats[key];
+                const total = maxValues[key];
+                const percent = (count / total) * 100;
+                
+                const valEl = document.getElementById('val-' + key);
+                if (valEl) {
+                    valEl.innerText = count; // Die Zahl im Kreis
+                    // Setzt die CSS-Variable --p für den conic-gradient Fülleffekt
+                    valEl.parentElement.style.setProperty('--p', percent.toFixed(0));
+                }
+            });
+        } else {
+            current--;
+            scoreBoxEl.innerText = current;
+            // Balken-Indikator bewegt sich synchron mit der Zahl
+            if (indicator) {
                 indicator.style.left = current + "%";
             }
-        }, 15);
-    }
+        }
+    }, 40); // Hier kannst du die Geschwindigkeit steuern (höher = langsamer)
+}
+
 </script>
 </body>
 </html>
