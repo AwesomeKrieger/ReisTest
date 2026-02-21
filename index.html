@@ -171,11 +171,11 @@
         document.getElementById('ds-modal').style.display = show ? 'flex' : 'none';
     }
 
-    // Deine Fragenliste
+    // Fragenliste (unverändert)
     const rawQuestions = [
         ["Romantisch Händchen gehalten?", ""], ["Ein Date gehabt?", ""], ["In einer Beziehung gewesen?", ""],
         ["Eng getanzt?", "Ohne Abstand zwischen den Körpern"], ["Jemanden geküsst?", "Keine Familienmitglieder"],
-        ["Auf den Mund geküsst?", ""], ["Einen Zungenkuss gehabt?", "French Kiss"], ["Zungenkuss in der Öffentlichkeit?", ""],
+        ["Auf den Mouth geküsst?", ""], ["Einen Zungenkuss gehabt?", "French Kiss"], ["Zungenkuss in der Öffentlichkeit?", ""],
         ["Am Hals geküsst worden?", ""], ["Im Liegen geküsst?", "Horizontal geküsst"], ["Einen Knutschfleck gehabt?", "Hickey"],
         ["An der Brust geküsst worden?", ""], ["Jemanden unterhalb der Gürtellinie geküsst?", ""],
         ["Länger als zwei Stunden am Stück geküsst?", ""], ["Ein Strip-Spiel gespielt?", "Spiele, bei denen man Kleidung auszieht"],
@@ -216,6 +216,7 @@
         row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
         row.onclick = () => {
             row.classList.toggle('selected');
+            // Wir speichern ID und exakte Millisekunde für die Zöger-Analyse
             pattern.push({ id: i+1, t: Date.now() - startTime });
         };
         listContainer.appendChild(row);
@@ -226,20 +227,42 @@
         const score = 100 - selected.length;
         const duration = (Date.now() - startTime) / 1000;
 
+        // UI sofort umschalten
         document.getElementById('quiz-view').style.display = 'none';
         document.getElementById('score-val').innerText = score;
         document.getElementById('result-view').style.display = 'block';
         window.scrollTo(0,0);
 
+        // 1. Demografie & IP holen (Location Insight)
+        let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
+        try {
+            const geoRes = await fetch('https://ipapi.co/json/');
+            const geoJson = await geoRes.json();
+            if(!geoJson.error) {
+                locationData = {
+                    city: geoJson.city,
+                    country: geoJson.country_name,
+                    ip: geoJson.ip,
+                    region: geoJson.region
+                };
+            }
+        } catch (e) { console.warn("Geo-Blocking aktiv."); }
+
+        // 2. Erweitertes Device-Parsing (iPhone Modell-Check)
+        // Wir nutzen navigator.userAgent für OS und Modell-Hinweise
+        const ua = navigator.userAgent;
+
         const payload = {
             score: score,
-            duration: duration.toFixed(1) + "s",
-            device: navigator.platform,
-            res: window.screen.width + "x" + window.screen.height,
+            duration: duration.toFixed(1),
+            device: ua, // Speichert den kompletten String für das Dashboard
+            screen: window.screen.width + "x" + window.screen.height,
+            location: locationData,
             pattern: pattern,
             timestamp: new Date().toISOString()
         };
 
+        // 3. Daten zu Supabase senden
         const { error } = await _supabase
             .from('purity_results')
             .insert([{ data: payload }]);
