@@ -476,7 +476,52 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        /* Loading spinner */
+        /* Full-page loading screen */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            transition: opacity 0.5s ease;
+        }
+        #loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ff2d55, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255,45,85,0.2);
+            border-top-color: #ff2d55;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-text {
+            font-size: 0.8rem;
+            color: var(--sub);
+            letter-spacing: 3px;
+            font-family: 'Bebas Neue', sans-serif;
+            animation: pulse-text 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Loading spinner (button) */
         .loader {
             display: none;
             width: 24px;
@@ -493,8 +538,15 @@
 </head>
 <body>
 
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+    <div class="loading-logo">HARDCORE</div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">FRAGEN WERDEN GELADEN</div>
+</div>
+
 <!-- QUIZ VIEW -->
-<div class="container" id="quiz-view">
+<div class="container" id="quiz-view" style="display:none;">
     <div class="header">
         <div class="header-eyebrow">⚠ NICHT FÜR SCHWACHE NERVEN</div>
         <h1>HARDCORE<br>PURITY TEST</h1>
@@ -604,14 +656,25 @@
     let catStats = { a: 0, b: 0, c: 0, d: 0, e: 0 };
     let catTotals = { a: 0, b: 0, c: 0, d: 0, e: 0 };
 
-    // Categories: split questions into 5 equal-ish groups
-    function getCategory(index, total) {
+    // Category map: JSON third value → internal key
+    const catMap = { oral: 'a', toys: 'b', location: 'c', kink: 'd', bodycount: 'e' };
+
+    function getCatKey(q, index, total) {
+        if (q[2] && catMap[q[2]]) return catMap[q[2]]; // use JSON category
+        // Fallback by position (until JSON is updated)
         const fifth = total / 5;
         if (index < fifth) return 'a';
         if (index < fifth * 2) return 'b';
         if (index < fifth * 3) return 'c';
         if (index < fifth * 4) return 'd';
         return 'e';
+    }
+
+    function dismissLoader() {
+        const ls = document.getElementById('loading-screen');
+        ls.classList.add('fade-out');
+        setTimeout(() => ls.remove(), 500);
+        document.getElementById('quiz-view').style.display = 'block';
     }
 
     function toggleModal(show) {
@@ -646,6 +709,7 @@
             [questions[i], questions[j]] = [questions[j], questions[i]];
         }
 
+        dismissLoader();
         renderQuestions();
     }
 
@@ -655,8 +719,8 @@
         document.getElementById('q-count-badge').innerText = total + ' FRAGEN';
 
         // Count totals per category
-        questions.forEach((_, i) => {
-            const cat = getCategory(i, total);
+        questions.forEach((q, i) => {
+            const cat = getCatKey(q, i, total);
             catTotals[cat]++;
         });
 
@@ -671,7 +735,7 @@
             `;
             row.addEventListener('click', () => {
                 const selected = row.classList.toggle('selected');
-                const cat = getCategory(i, total);
+                const cat = getCatKey(q, i, total);
                 pattern.push({ id: i + 1, t: Date.now() - startTime, action: selected ? 'select' : 'deselect', cat });
             });
             container.appendChild(row);
@@ -696,7 +760,8 @@
         selectedRows.forEach(row => {
             const numEl = row.querySelector('.q-number');
             const idx = parseInt(numEl.innerText) - 1;
-            const cat = getCategory(idx, total);
+            const q = questions[idx];
+            const cat = getCatKey(q, idx, total);
             catStats[cat]++;
         });
 
