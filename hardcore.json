@@ -93,7 +93,7 @@
   ["Sex bei Freunden im Haus?", "", "bodycount"],
   ["Mitbewohner für Sex rausgeschickt?", "", "bodycount"],
   ["Beim Sex erwischt worden?", "", "bodycount"],
-  ["Jemanden beim Sex erwischt?", "", "bodycount"]
+  ["Jemanden beim Sex erwischt?", "", "bodycount"],
 
 
   ["Strap-on benutzt (gegeben)?", "", "kink"],
@@ -192,7 +192,7 @@
   ["Pegging mit Partner mehrmals pro Woche?", "", "kink"],
   ["Pegging mit verschiedenen Partnern?", "", "bodycount"],
   ["Strap-on von Partner gekauft bekommen?", "", "kink"],
-  ["Strap-on selbst gekauft und benutzt?", "", "toys"]
+  ["Strap-on selbst gekauft und benutzt?", "", "toys"],
 
   ["Handjob bis zum Schlucken gegeben?", "", "oral"],
   ["Handjob mit Cum auf Hand?", "", "oral"],
@@ -286,7 +286,7 @@
   ["Sex in Bett von Freunden?", "", "bodycount"],
   ["Mitbewohner raus für Sex?", "", "bodycount"],
   ["Beim Sex fast erwischt?", "", "bodycount"],
-  ["Jemand beim Sex beobachtet?", "", "bodycount"]
+  ["Jemand beim Sex beobachtet?", "", "bodycount"],
 [
   ["Blowjob im Stehen gegeben?", "", "oral"],
   ["Blowjob auf Knien gegeben?", "", "oral"],
@@ -380,4 +380,4 @@
   ["Mitbewohner für Sex rausgeschickt?", "", "bodycount"],
   ["Beim Sex erwischt von Mitbewohner?", "", "bodycount"],
   ["Jemanden beim Sex durch Tür beobachtet?", "", "bodycount"]
-];
+]]
