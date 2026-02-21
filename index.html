@@ -119,6 +119,26 @@
             padding: 10px 20px; border-radius: 12px; cursor: pointer;
             float: right; margin-top: 20px;
         }
+        /* Purity Skala & Lila Box */
+.purity-scale { width: 100%; margin: 20px 0; }
+.scale-bar { height: 10px; background: linear-gradient(to right, #4a148c, #e91e63, #ffb300); border-radius: 5px; position: relative; }
+.indicator-arrow { position: absolute; top: -15px; transform: translateX(-50%); transition: left 1s ease-out; font-size: 12px; }
+.scale-labels { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 5px; font-weight: bold; opacity: 0.5; }
+.score-box { background: #6a1b9a; color: white; padding: 30px; border-radius: 25px; margin: 20px 0; }
+.big-number { font-size: 5rem; font-weight: 900; }
+.result-text { font-size: 1rem; margin-top: 15px; line-height: 1.4; }
+
+/* Grid für die Kreise */
+.impurity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+.stat-circle { text-align: center; }
+.circle-visual { width: 60px; height: 60px; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-weight: bold; font-size: 1.1rem; }
+.c-minor { border-color: #4cd964; color: #4cd964; }
+.c-immortal { border-color: #007aff; color: #007aff; }
+.c-raunchy { border-color: #ffcc00; color: #ffcc00; }
+.c-scandalous { border-color: #ff3b30; color: #ff3b30; }
+.c-unspeakable { border-color: #ff2d55; color: #ff2d55; }
+.cat-label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+
 
         #result-view { display: none; text-align: center; padding: 120px 20px; }
         .final-score { font-size: 9rem; font-weight: 900; color: var(--accent); letter-spacing: -5px; }
@@ -153,22 +173,65 @@
 </div>
 
 <div id="result-view" class="container">
-    <div class="final-score" id="score-val"></div>
-    <div style="font-size: 1.2rem; opacity: 0.6;">Dein Reinheitsgrad</div>
-    <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.2; cursor:pointer; margin-top:60px;">Test zurücksetzen</button>
+    <div style="font-size: 1.5rem; opacity: 0.6;">Dein Score:</div>
+    <div class="final-score" id="quick-score">100</div>
+    
+    <div id="stage-1-actions">
+        <button class="calc-btn" onclick="revealDetails()" style="max-width:300px; margin: 0 auto;">DETAILS AUSWERTEN</button>
+    </div>
+
+    <div id="stage-2" style="display:none; margin-top: 40px;">
+        <div class="purity-scale">
+            <div class="scale-labels"><span>I2</span><span>I1</span><span>P1</span><span>P2</span><span>Purity 👑</span></div>
+            <div class="scale-bar"><div id="purity-indicator" class="indicator-arrow">▼</div></div>
+            <div class="scale-footer" style="text-align:left; font-size:10px; font-weight:bold; margin-top:5px;">😈 Impurity</div>
+        </div>
+
+        <div class="score-box">
+            <div id="score-val" class="big-number">100</div>
+            <p id="result-msg" class="result-text"></p>
+        </div>
+
+        <div class="impurity-grid">
+            <div class="stat-circle"><div class="circle-visual c-minor" id="val-minor">0</div><div class="cat-label">Kleine Sünden<br><small>/19</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-immortal" id="val-immortal">0</div><div class="cat-label">Unmoralisch<br><small>/28</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-raunchy" id="val-raunchy">0</div><div class="cat-label">Versaut<br><small>/21</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-scandalous" id="val-scandalous">0</div><div class="cat-label">Skandalös<br><small>/23</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-unspeakable" id="val-unspeakable">0</div><div class="cat-label">Extrem<br><small>/9</small></div></div>
+        </div>
+        
+        <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.4; cursor:pointer; margin-top:40px; text-decoration:underline;">Test neu starten</button>
+    </div>
 </div>
+
 
 <script>
     const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const getCategory = (id) => {
-    if (id <= 14) return "Romantik & Küsse";
-    if (id <= 43) return "Intimität & Web";
-    if (id <= 52) return "Substanzen";
-    if (id <= 66) return "Recht & Schule";
-    return "Sexualität";
-};
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let finalScoreVal = 100;
+let finalStats = { minor: 0, immortal: 0, raunchy: 0, scandalous: 0, unspeakable: 0 };
+const startTime = Date.now();
+let pattern = [];
+
+// Exakte Zuordnung für die 5 Kreise
+function getDetailedCategory(id) {
+    if ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,44,45,46,53,55].includes(id)) return "minor";
+    if ([15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,54,56,57,58].includes(id)) return "immortal";
+    if ([35,36,37,38,39,40,41,42,43,67,68,69,70,71,72,73,74,75,80,81,92].includes(id)) return "raunchy"; // Anal inkludiert
+    if ([51,52,59,60,61,62,63,64,65,66,76,77,78,79,82,83,84,85,86,87,88,89,90].includes(id)) return "scandalous";
+    return "unspeakable";
+}
+
+function getResultText(s) {
+    if (s >= 98) return "Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich.";
+    if (s >= 85) return "Sehr anständig. Ein Vorbild für die Gesellschaft.";
+    if (s >= 65) return "Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind.";
+    if (s >= 35) return "Du lebst das Leben! Ziemlich versaut.";
+    if (s >= 10) return "Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast.";
+    return "Legende! Du hast das Leben im Hardcore-Modus durchgespielt.";
+}
 
 
     const startTime = Date.now();
@@ -299,16 +362,34 @@
 };
 
 
-    async function sendData() {
-        const selected = document.querySelectorAll('.q-row.selected');
-        const score = 100 - selected.length;
+            // 1. Statistiken für die 5 Kreise berechnen (Vorbereitung für Stage 2)
+        finalStats = { minor: 0, immortal: 0, raunchy: 0, scandalous: 0, unspeakable: 0 };
+        selected.forEach(row => {
+            const id = parseInt(row.innerText.split('.')[0]);
+            finalStats[getDetailedCategory(id)]++;
+        });
+
+        // 2. Score zwischenspeichern für die spätere Animation
+        finalScoreVal = 100 - selected.length;
         const duration = (Date.now() - startTime) / 1000;
 
-        // UI sofort umschalten
+        // 3. UI umschalten auf Stage 1 (Nur die große Zahl anzeigen)
         document.getElementById('quiz-view').style.display = 'none';
-        document.getElementById('score-val').innerText = score;
         document.getElementById('result-view').style.display = 'block';
         window.scrollTo(0,0);
+
+        // 4. Animation: Die Zahl oben (quick-score) zählt sofort von 100 runter
+        let current = 100;
+        const quickEl = document.getElementById('quick-score'); // Nutzt die neue ID für Stage 1
+        const timer = setInterval(() => {
+            if (current <= finalScoreVal) {
+                clearInterval(timer);
+            } else {
+                current--;
+                quickEl.innerText = current;
+            }
+        }, 20);
+
 
         // 1. Demografie & IP holen (Location Insight)
         // Standort mit Sicherheits-Timeout (falls der Dienst hakt)
@@ -346,6 +427,49 @@ const payload = {
 
         if (error) console.error("Datenbank-Fehler:", error);
     }
+    function revealDetails() {
+    document.getElementById('stage-1-actions').style.display = 'none';
+    document.getElementById('stage-2').style.display = 'block';
+    
+    const scoreBoxEl = document.getElementById('score-val');
+    const indicator = document.getElementById('purity-indicator');
+    document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
+
+    // Stage 2 Animation: Balken füllen & Zahl in Box
+    let current = 100;
+    const timer = setInterval(() => {
+        if (current <= finalScoreVal) {
+            clearInterval(timer);
+            // Zahlen in die Kreise schreiben
+            document.getElementById('val-minor').innerText = finalStats.minor;
+            document.getElementById('val-immortal').innerText = finalStats.immortal;
+            document.getElementById('val-raunchy').innerText = finalStats.raunchy;
+            document.getElementById('val-scandalous').innerText = finalStats.scandalous;
+            document.getElementById('val-unspeakable').innerText = finalStats.unspeakable;
+        } else {
+            current--;
+            scoreBoxEl.innerText = current;
+            indicator.style.left = current + "%";
+        }
+    }, 15);
+}
+
+// Initialisierung der Fragen beim Laden (Damit die Liste erscheint)
+window.onload = () => {
+    const listContainer = document.getElementById('questions-list');
+    rawQuestions.forEach((q, i) => {
+        const row = document.createElement('div');
+        row.className = 'q-row';
+        let explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
+        row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
+        row.onclick = () => {
+            const isSelected = row.classList.toggle('selected');
+            pattern.push({ id: i+1, action: isSelected ? "select" : "deselect" });
+        };
+        listContainer.appendChild(row);
+    });
+};
+
 </script>
 </body>
 </html>
