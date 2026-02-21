@@ -490,12 +490,19 @@
                         
                         // Animation des Kreises durch versetztes Timeout (Wellen-Effekt)
                         setTimeout(() => {
-                            // WICHTIG: Greift auf das äußere div (.circle-visual) zu
-                            valEl.parentElement.style.setProperty('--p', percent.toFixed(0));
-                        }, index * 150); // Jeder Kreis startet 150ms nach dem vorherigen
-                    }
-                });
-            }, 200); // Kurze Pause nachdem der Score steht
+    Object.keys(finalStats).forEach((key, index) => {
+        const count = finalStats[key];
+        const total = maxValues[key];
+        const percent = (count / total) * 100;
+        const valEl = document.getElementById('val-' + key);
+        if (valEl) {
+            valEl.innerText = count;
+            setTimeout(() => {
+                valEl.style.setProperty('--p', percent.toFixed(0)); // ← auf valEl, nicht parentElement
+            }, index * 150);
+        }
+    });
+}, 200);
 
         } else {
             current--;
