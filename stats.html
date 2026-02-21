@@ -89,6 +89,15 @@
 
 <script>
     const PW = "gekdyr-hopmyx-kawze1";
+    const getCategory = (id) => {
+    if (id <= 14) return "❤️ Romantik";
+    if (id <= 43) return "🌐 Intimität/Web";
+    if (id <= 52) return "💊 Substanzen";
+    if (id <= 66) return "⚖️ Recht/Schule";
+    if (id <= 95) return "🔞 Sexualität";
+    return "🔥 Extrem";
+};
+
     let globalData = [];
     let currentSort = { key: 'timestamp', asc: false };
 
@@ -180,21 +189,39 @@
     }
 
     function showModal(idx) {
-        const r = globalData[idx];
-        document.getElementById('m-title').innerText = `Sitzung: Score ${r.score}`;
-        document.getElementById('m-meta').innerText = `Ort: ${r.location?.city}, ${r.location?.country} | IP: ${r.location?.ip || 'Anonym'} | OS: ${r.device}`;
-        const det = document.getElementById('m-details');
-        det.innerHTML = "<h3>Fragen-Verlauf (Zögern markiert):</h3>";
-        
-        if(r.pattern) {
-            r.pattern.forEach((p, i) => {
-                const time = i === 0 ? 0 : (p.t - r.pattern[i-1].t);
-                const isSlow = time > 3500;
-                det.innerHTML += `<div class="q-pill ${isSlow ? 'hesitate' : ''}">ID #${p.id} (${(time/1000).toFixed(1)}s)</div>`;
-            });
-        }
-        document.getElementById('detail-modal').style.display = 'block';
+    const r = globalData[idx];
+    const modal = document.getElementById('detail-modal');
+    document.getElementById('m-meta').innerHTML = `
+        <b>Datum:</b> ${new Date(r.timestamp).toLocaleString()}<br>
+        <b>Ort:</b> ${r.location?.city || '?'}, ${r.location?.country || '?'}<br>
+        <b>Gerät:</b> ${r.device || 'Unbekannt'}
+    `;
+    
+    const det = document.getElementById('m-details');
+    det.innerHTML = "<h3 style='font-size:1rem; margin-bottom:10px;'>Klick-Verlauf & Kategorien:</h3><div class='q-flow'></div>";
+    const flow = det.querySelector('.q-flow');
+    
+    if(r.pattern) {
+        r.pattern.forEach((p, i) => {
+            const time = i === 0 ? 0 : (p.t - r.pattern[i-1].t);
+            const isSlow = time > 4000;
+            const category = getCategory(p.id); // Hier wird die Kategorie geholt
+            
+            const pill = document.createElement('div');
+            pill.className = `q-pill ${isSlow ? 'hesitate' : ''}`;
+            // Wir zeigen jetzt ID, Kategorie und Zeit an
+            pill.innerHTML = `
+                <small style="opacity:0.6">${category}</small>
+                <span>Frage <b>#${p.id}</b></span>
+                <b style="font-size:0.7rem">${(time/1000).toFixed(1)}s</b>
+            `;
+            flow.appendChild(pill);
+        });
     }
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
 
     function sortData(key) {
         currentSort.asc = currentSort.key === key ? !currentSort.asc : false;
