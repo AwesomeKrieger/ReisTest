@@ -455,14 +455,11 @@
     }
 
   function revealDetails() {
-    // Stage 1 Button verstecken und Stage 2 (Lila Box) einblenden
     document.getElementById('stage-1-actions').style.display = 'none';
     document.getElementById('stage-2').style.display = 'block';
 
     const scoreBoxEl = document.getElementById('score-val');
     const indicator = document.getElementById('purity-indicator');
-    
-    // Ergebnistext setzen
     document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
 
     const maxValues = {
@@ -470,46 +467,29 @@
     };
 
     let current = 100;
-    
-    // Score-Zähler Animation (40ms für mehr Spannung)
     const timer = setInterval(() => {
         if (current <= finalScoreVal) {
             clearInterval(timer);
 
-            // NEU: Animation der Kreise mit kurzer Verzögerung starten
             setTimeout(() => {
                 Object.keys(finalStats).forEach((key, index) => {
                     const count = finalStats[key];
                     const total = maxValues[key];
                     const percent = (count / total) * 100;
-                    
                     const valEl = document.getElementById('val-' + key);
                     if (valEl) {
-                        // Zahl sofort reinschreiben
-                        valEl.innerText = count; 
-                        
-                        // Animation des Kreises durch versetztes Timeout (Wellen-Effekt)
+                        valEl.innerText = count;
                         setTimeout(() => {
-    Object.keys(finalStats).forEach((key, index) => {
-        const count = finalStats[key];
-        const total = maxValues[key];
-        const percent = (count / total) * 100;
-        const valEl = document.getElementById('val-' + key);
-        if (valEl) {
-            valEl.innerText = count;
-            setTimeout(() => {
-                valEl.style.setProperty('--p', percent.toFixed(0)); // ← auf valEl, nicht parentElement
-            }, index * 150);
-        }
-    });
-}, 200);
+                            valEl.style.setProperty('--p', percent.toFixed(0));
+                        }, index * 150);
+                    }
+                });
+            }, 200);
 
         } else {
             current--;
             scoreBoxEl.innerText = current;
-            if (indicator) {
-                indicator.style.left = current + "%";
-            }
+            if (indicator) indicator.style.left = current + "%";
         }
     }, 40);
 }
