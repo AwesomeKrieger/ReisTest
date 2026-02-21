@@ -162,6 +162,14 @@
     const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const getCategory = (id) => {
+    if (id <= 14) return "Romantik & Küsse";
+    if (id <= 43) return "Intimität & Web";
+    if (id <= 52) return "Substanzen";
+    if (id <= 66) return "Recht & Schule";
+    return "Sexualität";
+};
+
 
     const startTime = Date.now();
     let pattern = [];
@@ -280,12 +288,16 @@
         let explanation = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
         row.innerHTML = `<div class="indicator"></div><div>${i+1}. ${q[0]}${explanation}</div>`;
         row.onclick = () => {
-            row.classList.toggle('selected');
-            // Wir speichern ID und exakte Millisekunde für die Zöger-Analyse
-            pattern.push({ id: i+1, t: Date.now() - startTime });
-        };
-        listContainer.appendChild(row);
+    const isSelected = row.classList.toggle('selected');
+    // Wir speichern jetzt: ID, Zeit seit Start, Aktion und Kategorie
+    pattern.push({ 
+        id: i+1, 
+        t: Date.now() - startTime, 
+        action: isSelected ? "select" : "deselect",
+        cat: getCategory(i+1)
     });
+};
+
 
     async function sendData() {
         const selected = document.querySelectorAll('.q-row.selected');
@@ -299,33 +311,33 @@
         window.scrollTo(0,0);
 
         // 1. Demografie & IP holen (Location Insight)
-        let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
-        try {
-            const geoRes = await fetch('https://ipapi.co/json/');
-            const geoJson = await geoRes.json();
-            if(!geoJson.error) {
-                locationData = {
-                    city: geoJson.city,
-                    country: geoJson.country_name,
-                    ip: geoJson.ip,
-                    region: geoJson.region
-                };
-            }
-        } catch (e) { console.warn("Geo-Blocking aktiv."); }
+        // Standort mit Sicherheits-Timeout (falls der Dienst hakt)
+let locationData = { city: "Anonym", country: "Anonym", ip: "0.0.0.0" };
+try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 2500);
+    const geoRes = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+    const geoJson = await geoRes.json();
+    clearTimeout(id);
+    if(!geoJson.error) {
+        locationData = { city: geoJson.city, country: geoJson.country_name, ip: geoJson.ip, region: geoJson.region };
+    }
+} catch (e) { console.warn("Geo-Block aktiv."); }
 
-        // 2. Erweitertes Device-Parsing (iPhone Modell-Check)
-        // Wir nutzen navigator.userAgent für OS und Modell-Hinweise
-        const ua = navigator.userAgent;
-
-        const payload = {
-            score: score,
-            duration: duration.toFixed(1),
-            device: ua, // Speichert den kompletten String für das Dashboard
-            screen: window.screen.width + "x" + window.screen.height,
-            location: locationData,
-            pattern: pattern,
-            timestamp: new Date().toISOString()
-        };
+// Das vollständige Paket für dein Dashboard
+const payload = {
+    score: score,
+    duration: duration.toFixed(1) + "s",
+    device: navigator.userAgent,
+    platform: navigator.platform,
+    vendor: navigator.vendor, // Wichtig für iPhone-Check
+    screen: window.screen.width + "x" + window.screen.height,
+    inner: window.innerWidth + "x" + window.innerHeight, // Browser-Zoom
+    location: locationData,
+    pattern: pattern, // Enthält jetzt Kategorien & Abwahlen
+    timestamp: new Date().toISOString(),
+    ver: "2.5-Lite"
+};
 
         // 3. Daten zu Supabase senden
         const { error } = await _supabase
