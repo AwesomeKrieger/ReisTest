@@ -245,13 +245,30 @@
 
         
     </div>
-    <button onclick="location.reload()" style="background:none; border:none; color:var(--text); opacity:0.4; cursor:pointer; margin-top:40px; text-decoration:underline;">Test neu starten</button>
-    <div class="next-test-promo" style="margin-top: 50px; padding: 25px; background: rgba(255, 45, 85, 0.1); border-radius: 20px; border: 1px dashed #ff2d55;">
-    <h3 style="color: #ff2d55; margin-top: 0;">🔥 Zu brav?</h3>
-    <p style="font-size: 0.9rem; opacity: 0.8;">Dein Score ist noch zu hoch? Versuch dich an der <b>Hardcore Edition</b> mit 100 extremen Fragen.</p>
-    <button onclick="window.location.href='hardcore.html'" class="btn-eval" style="background: #ff2d55; box-shadow: 0 10px 20px rgba(255, 45, 85, 0.3); font-size: 1rem; padding: 15px 30px;">
-        ZUM HARDCORE TEST
-    </button>
+   <div id="promo-carousel" class="next-test-promo" style="margin-top: 50px; padding: 30px; background: rgba(255, 45, 85, 0.1); border-radius: 24px; border: 1px dashed #ff2d55; position: relative; min-height: 200px; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);">
+    
+    <div id="slide-hardcore" class="promo-slide">
+        <h3 style="color: #ff2d55; margin-top: 0; font-family: 'Playfair Display', serif; font-size: 1.4rem;">🔥 Zu brav?</h3>
+        <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 24px; font-weight: 300;">Dein Score ist noch zu hoch? Versuch dich an der <b>Hardcore Edition</b> mit 100 extremen Fragen.</p>
+        <button onclick="window.location.href='hardcore.html'" style="background: #ff2d55; color: #0a0a0f; border: none; border-radius: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; padding: 14px 28px; transition: transform 0.2s;">
+            ZUM HARDCORE TEST
+        </button>
+    </div>
+
+    <div id="slide-kink" class="promo-slide" style="display: none;">
+        <h3 style="color: #8b6fd8; margin-top: 0; font-family: 'Playfair Display', serif; font-size: 1.4rem;">🧬 Kink Finder</h3>
+        <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 24px; font-weight: 300;">Willst du wissen, was dich wirklich antörnt? Unser Algorithmus analysiert deine tiefsten Vorlieben.</p>
+        <button onclick="window.location.href='finder.html'" style="background: #8b6fd8; color: #0a0a0f; border: none; border-radius: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; padding: 14px 28px; transition: transform 0.2s;">
+            ZUM FINDER
+        </button>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 25px;">
+        <div id="dot1" style="width: 6px; height: 6px; border-radius: 50%; background: #ff2d55; transition: all 0.4s;"></div>
+        <div id="dot2" style="width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.4s;"></div>
+    </div>
+</div>
+
 </div>
 
 </div>
@@ -511,6 +528,48 @@
             if (indicator) indicator.style.left = current + "%";
         }
     }, 40);
+ let currentSlide = 1;
+
+function rotatePromo() {
+    const slide1 = document.getElementById('slide-hardcore');
+    const slide2 = document.getElementById('slide-kink');
+    const box = document.getElementById('promo-carousel');
+    const dot1 = document.getElementById('dot1');
+    const dot2 = document.getElementById('dot2');
+
+    if (currentSlide === 1) {
+        // Zu Kink Finder wechseln
+        slide1.style.opacity = '0';
+        setTimeout(() => {
+            slide1.style.display = 'none';
+            slide2.style.display = 'block';
+            slide2.style.opacity = '1';
+            box.style.background = 'rgba(139, 111, 216, 0.1)';
+            box.style.borderColor = '#8b6fd8';
+            dot1.style.background = 'rgba(255,255,255,0.15)';
+            dot2.style.background = '#8b6fd8';
+        }, 300);
+        currentSlide = 2;
+    } else {
+        // Zu Hardcore zurück
+        slide2.style.opacity = '0';
+        setTimeout(() => {
+            slide2.style.display = 'none';
+            slide1.style.display = 'block';
+            slide1.style.opacity = '1';
+            box.style.background = 'rgba(255, 45, 85, 0.1)';
+            box.style.borderColor = '#ff2d55';
+            dot1.style.background = '#ff2d55';
+            dot2.style.background = 'rgba(255,255,255,0.15)';
+        }, 300);
+        currentSlide = 1;
+    }
+}
+
+// Intervall starten
+setInterval(rotatePromo, 5000);
+
+
 }
 
 
