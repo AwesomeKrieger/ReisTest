@@ -6,386 +6,75 @@
   <title>Discover Yourself</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #0a0a0f;
-      --surface: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.08);
-      --text: #f0ece8;
-      --muted: rgba(240,236,232,0.45);
-      --accent: #c9a96e;
-      --accent2: #8b6fd8;
-      --accent3: #d86fa0;
-      --glow: rgba(201,169,110,0.15);
+      --bg: #0a0a0f; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #f0ece8; --muted: rgba(240,236,232,0.45); --accent: #c9a96e; --accent2: #8b6fd8; --accent3: #d86fa0;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 32px 20px;
-      overflow-x: hidden;
-    }
-
-    /* Atmospheric background */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background: 
-        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(139,111,216,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(201,169,110,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(216,111,160,0.04) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 32px 20px; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(139,111,216,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 80% 80%, rgba(201,169,110,0.06) 0%, transparent 60%); pointer-events: none; }
     .wrap { width: 100%; max-width: 620px; position: relative; z-index: 1; }
-
-    /* Header */
     .header { text-align: center; margin-bottom: 48px; }
-    .eyebrow {
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-      font-weight: 500;
-    }
-    .title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.4rem, 6vw, 3.6rem);
-      font-weight: 400;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
+    .eyebrow { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; font-weight: 500; }
+    .title { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; }
     .title em { font-style: italic; color: var(--accent); }
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-top: 12px;
-      font-weight: 300;
-      line-height: 1.6;
-    }
-
-    /* Card */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 40px;
-      backdrop-filter: blur(20px);
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-    }
-
-    /* Progress */
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-    }
+    .subtitle { color: var(--muted); font-size: 0.95rem; margin-top: 12px; font-weight: 300; line-height: 1.6; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
     .progress-label { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.05em; }
-    .progress-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      color: var(--accent);
-    }
-    .progress-track {
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
-      margin-bottom: 36px;
-      position: relative;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      border-radius: 1px;
-      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    /* Question */
-    .category-tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent2);
-      background: rgba(139,111,216,0.1);
-      border: 1px solid rgba(139,111,216,0.2);
-      border-radius: 20px;
-      padding: 4px 12px;
-      margin-bottom: 20px;
-    }
-
-    .q-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      line-height: 1.5;
-      font-weight: 400;
-      margin-bottom: 44px;
-      color: var(--text);
-    }
-
-    /* Slider */
+    .progress-num { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); }
+    .progress-track { height: 2px; background: var(--border); border-radius: 1px; margin-bottom: 36px; position: relative; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 1px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .category-tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent2); background: rgba(139,111,216,0.1); border: 1px solid rgba(139,111,216,0.2); border-radius: 20px; padding: 4px 12px; margin-bottom: 20px; }
+    .q-text { font-family: 'Playfair Display', serif; font-size: 1.35rem; line-height: 1.5; font-weight: 400; margin-bottom: 44px; color: var(--text); }
     .slider-wrap { padding: 0 4px; margin-bottom: 20px; }
-
-    .slider-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .slider-labels span {
-      font-size: 0.72rem;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    .slider-track {
-      position: relative;
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .slider-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      border-radius: 3px;
-      transition: width 0.1s;
-      pointer-events: none;
-    }
-    .slider-thumb {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 28px; height: 28px;
-      background: var(--text);
-      border-radius: 50%;
-      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent), 0 8px 20px rgba(0,0,0,0.4);
-      transition: left 0.1s, transform 0.15s;
-      pointer-events: none;
-    }
+    .slider-labels { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    .slider-labels span { font-size: 0.72rem; color: var(--muted); font-weight: 300; }
+    .slider-track { position: relative; height: 6px; background: var(--border); border-radius: 3px; cursor: pointer; }
+    .slider-fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 3px; transition: width 0.1s; pointer-events: none; }
+    .slider-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 28px; height: 28px; background: var(--text); border-radius: 50%; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent), 0 8px 20px rgba(0,0,0,0.4); transition: left 0.1s, transform 0.15s; pointer-events: none; }
     .slider-thumb.active { transform: translate(-50%, -50%) scale(1.15); }
-
-    input[type=range] {
-      position: absolute; inset: -10px 0;
-      width: 100%;
-      opacity: 0;
-      cursor: pointer;
-      height: 26px;
-      -webkit-appearance: none;
-    }
-
-    /* Tick marks */
-    .ticks {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 0;
-      margin-top: 10px;
-    }
-    .tick {
-      width: 1px;
-      height: 6px;
-      background: var(--border);
-      transition: background 0.2s;
-    }
+    input[type=range] { position: absolute; inset: -10px 0; width: 100%; opacity: 0; cursor: pointer; height: 26px; -webkit-appearance: none; }
+    .ticks { display: flex; justify-content: space-between; margin-top: 10px; }
+    .tick { width: 1px; height: 6px; background: var(--border); transition: background 0.2s; }
     .tick.active { background: var(--accent); }
-
-    .value-display {
-      text-align: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 14px;
-      min-height: 1.2em;
-      transition: color 0.2s;
-    }
+    .value-display { text-align: center; font-family: 'Playfair Display', serif; font-size: 0.85rem; color: var(--muted); margin-top: 14px; min-height: 1.2em; transition: color 0.2s; }
     .value-display.touched { color: var(--accent); }
-
-    /* Next button */
-    .next-btn {
-      width: 100%;
-      padding: 18px;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      color: var(--bg);
-      border: none;
-      border-radius: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 32px;
-      letter-spacing: 0.02em;
-      transition: all 0.25s;
-      opacity: 0.35;
-      pointer-events: none;
-      position: relative;
-      overflow: hidden;
-    }
-    .next-btn::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: rgba(255,255,255,0);
-      transition: background 0.2s;
-    }
-    .next-btn.enabled {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .next-btn.enabled:hover::after { background: rgba(255,255,255,0.08); }
+    .next-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--accent2), var(--accent)); color: var(--bg); border: none; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 32px; letter-spacing: 0.02em; transition: all 0.25s; opacity: 0.35; pointer-events: none; position: relative; overflow: hidden; }
+    .next-btn.enabled { opacity: 1; pointer-events: auto; }
     .next-btn.enabled:active { transform: scale(0.98); }
-
-    /* Fade transitions */
     .fade-out { animation: fadeOut 0.3s ease forwards; }
     .fade-in { animation: fadeIn 0.4s ease forwards; }
     @keyframes fadeOut { to { opacity: 0; transform: translateX(-20px); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
-
-    /* ─── RESULTS ─── */
     #result-view { display: none; }
-
     .result-header { text-align: center; margin-bottom: 40px; }
-    .result-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 400;
-      margin-bottom: 8px;
-    }
+    .result-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; margin-bottom: 8px; }
     .result-header p { color: var(--muted); font-size: 0.9rem; font-weight: 300; }
-
-    /* Orientation section */
-    .section-title {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
+    .section-title { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
     .orientation-bar-wrap { margin-bottom: 32px; }
-    .orientation-spectrum {
-      position: relative;
-      height: 10px;
-      background: linear-gradient(90deg, #e879a0, #9b79e8, #79b4e8);
-      border-radius: 5px;
-      margin: 20px 0 8px;
-    }
-    .orientation-marker {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 22px; height: 22px;
-      background: white;
-      border-radius: 50%;
-      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
-    }
-    .orientation-labels {
-      display: flex; justify-content: space-between;
-      font-size: 0.72rem; color: var(--muted);
-    }
-    .orientation-result {
-      text-align: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      margin-top: 16px;
-      color: var(--text);
-    }
-
-    /* Kink bars */
-    .kink-row {
-      margin-bottom: 18px;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: slideUp 0.5s ease forwards;
-    }
+    .orientation-spectrum { position: relative; height: 10px; background: linear-gradient(90deg, #e879a0, #9b79e8, #79b4e8); border-radius: 5px; margin: 20px 0 8px; }
+    .orientation-marker { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 22px; height: 22px; background: white; border-radius: 50%; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent); transition: left 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .orientation-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); }
+    .orientation-result { text-align: center; font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-top: 16px; color: var(--text); }
+    .kink-row { margin-bottom: 18px; opacity: 0; transform: translateY(10px); animation: slideUp 0.5s ease forwards; }
     @keyframes slideUp { to { opacity: 1; transform: none; } }
-
-    .kink-row-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 8px;
-    }
+    .kink-row-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
     .kink-row-name { font-weight: 500; font-size: 0.95rem; }
-    .kink-row-pct {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.05rem;
-      color: var(--accent);
-    }
-    .kink-bar-track {
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .kink-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      width: 0%;
-      transition: width 1s cubic-bezier(0.4,0,0.2,1);
-    }
+    .kink-row-pct { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--accent); }
+    .kink-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .kink-bar-fill { height: 100%; border-radius: 3px; width: 0%; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
     .kink-row-desc { font-size: 0.8rem; color: var(--muted); margin-top: 6px; font-weight: 300; }
-
-    /* Possible section */
-    .possible-grid {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      margin-top: 12px;
-    }
-    .possible-chip {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 7px 16px;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    .possible-chip:hover { border-color: var(--accent); color: var(--text); transition: all 0.2s; cursor: default; }
-
-    .section-block {
-      margin-bottom: 36px;
-      padding-bottom: 36px;
-      border-bottom: 1px solid var(--border);
-    }
+    .possible-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .possible-chip { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; color: var(--muted); }
+    .section-block { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid var(--border); }
     .section-block:last-child { border-bottom: none; }
-
-    .restart-btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      cursor: pointer;
-      margin-top: 16px;
-      transition: all 0.2s;
-    }
+    .restart-btn { display: block; width: 100%; padding: 16px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; margin-top: 16px; transition: all 0.2s; }
     .restart-btn:hover { border-color: var(--accent); color: var(--text); }
-
-    .disclaimer {
-      text-align: center;
-      font-size: 0.72rem;
-      color: rgba(240,236,232,0.2);
-      margin-top: 24px;
-      line-height: 1.7;
-    }
+    .disclaimer { text-align: center; font-size: 0.72rem; color: rgba(240,236,232,0.2); margin-top: 24px; line-height: 1.7; }
   </style>
 </head>
 <body>
@@ -395,7 +84,6 @@
     <h1 class="title">Kenne dich<br><em>selbst.</em></h1>
     <p class="subtitle">Beantworte 28 Fragen ehrlich. Das Ergebnis bleibt privat.</p>
   </div>
-
   <div id="quiz-view">
     <div class="card" id="question-card">
       <div class="progress-header">
@@ -406,10 +94,7 @@
       <div class="category-tag" id="cat-tag"></div>
       <div class="q-text" id="q-text"></div>
       <div class="slider-wrap">
-        <div class="slider-labels">
-          <span>Überhaupt nicht</span>
-          <span>Sehr stark</span>
-        </div>
+        <div class="slider-labels"><span>Überhaupt nicht</span><span>Sehr stark</span></div>
         <div class="slider-track" id="slider-track">
           <div class="slider-fill" id="slider-fill" style="width:0%"></div>
           <div class="slider-thumb" id="slider-thumb" style="left:0%"></div>
@@ -420,297 +105,206 @@
       </div>
       <button class="next-btn" id="next-btn">Weiter →</button>
     </div>
-    <div class="disclaimer">Alle Antworten werden nur lokal verarbeitet. Keine Daten werden gespeichert oder übertragen.</div>
+    <div class="disclaimer">Ergebnisse werden anonym für Statistiken gespeichert. Keine persönlichen Daten.</div>
   </div>
-
   <div id="result-view">
     <div class="card">
-      <div class="result-header">
-        <h2>Dein Profil</h2>
-        <p>Basierend auf deinen Antworten</p>
-      </div>
-
+      <div class="result-header"><h2>Dein Profil</h2><p>Basierend auf deinen Antworten</p></div>
       <div class="section-block">
         <div class="section-title">Sexuelle Orientierung</div>
         <div class="orientation-bar-wrap">
-          <div class="orientation-spectrum">
-            <div class="orientation-marker" id="orient-marker" style="left:50%"></div>
-          </div>
-          <div class="orientation-labels">
-            <span>Homosexuell</span>
-            <span>Bisexuell</span>
-            <span>Heterosexuell</span>
-          </div>
+          <div class="orientation-spectrum"><div class="orientation-marker" id="orient-marker" style="left:50%"></div></div>
+          <div class="orientation-labels"><span>Homosexuell</span><span>Bisexuell</span><span>Heterosexuell</span></div>
           <div class="orientation-result" id="orient-label"></div>
         </div>
       </div>
-
       <div class="section-block">
         <div class="section-title">Dominante Vorlieben</div>
         <div id="kinks-list"></div>
       </div>
-
       <div class="section-block">
         <div class="section-title">Auch möglich für dich</div>
         <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;font-weight:300;">Diese Bereiche zeigten schwächere, aber vorhandene Signale</p>
         <div class="possible-grid" id="possible-list"></div>
       </div>
-
       <button class="restart-btn" onclick="location.reload()">↺ Neu starten</button>
     </div>
     <div class="disclaimer">Ergebnisse sind rein informativ und dienen der Selbstreflexion.</div>
   </div>
 </div>
-
 <script>
-// ═══════════════════════════════════════════════════
-// SCORES
-// ═══════════════════════════════════════════════════
+const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const startTime = Date.now();
+
 const kinks = {
-  dominant:    { score:0, name:"Dominant / Top",      desc:"Du übernimmst gerne die Führung und Kontrolle.", color:"#c9a96e" },
-  submissive:  { score:0, name:"Submissiv / Bottom",  desc:"Hingabe und Kontrollabgabe erregen dich.", color:"#8b6fd8" },
-  sadist:      { score:0, name:"Sadismus",             desc:"Das Zufügen von (einvernehmlichem) Schmerz.", color:"#d86fa0" },
-  masochist:   { score:0, name:"Masochismus",          desc:"Schmerz erleben als erotisches Erlebnis.", color:"#6fbcd8" },
-  bondage:     { score:0, name:"Bondage & Restraint",  desc:"Fesselung, Bewegungseinschränkung, Hilflosigkeit.", color:"#d8a86f" },
-  exhibition:  { score:0, name:"Exhibitionismus",      desc:"Gesehen werden, Zurschaustellung des Körpers.", color:"#a8d86f" },
-  voyeur:      { score:0, name:"Voyeurismus",          desc:"Beobachten und Zuschauen als Erregungsquelle.", color:"#6fd8b4" },
-  degrader:    { score:0, name:"Verbale Dominanz",     desc:"Erniedrigen, Befehlen, sprachliche Macht.", color:"#d86fb4" },
-  degradee:    { score:0, name:"Verbale Submission",   desc:"Gedemütigt und kontrolliert werden.", color:"#7b6fd8" },
-  primal:      { score:0, name:"Primal / Tierhaft",    desc:"Roher, instinktiver, unkontrollierter Sex.", color:"#d8836f" },
-  ddlg:        { score:0, name:"Caregiver / Little",   desc:"Fürsorge-Dynamiken, Bestrafung, Rollenspiel.", color:"#d86fb4" },
-  petplay:     { score:0, name:"Pet Play",             desc:"Als Tier oder Haustier behandelt werden/jmd. behandeln.", color:"#8bd86f" },
-  roleplay:    { score:0, name:"Rollenspiele",         desc:"Szenarien, Fantasien, Charakterrollen.", color:"#6fa8d8" },
-  sensory:     { score:0, name:"Sensorisches",         desc:"Augenbinden, Tasten, Temperatur, Überreizung.", color:"#d8d86f" },
-  group:       { score:0, name:"Gruppenszenen",        desc:"Dreier, Voyeurismus im Realkontext, Gruppen-Sex.", color:"#6fd88b" },
+  dominant:   { score:0, name:"Dominant / Top",     desc:"Du übernimmst gerne die Führung und Kontrolle.", color:"#c9a96e" },
+  submissive: { score:0, name:"Submissiv / Bottom",  desc:"Hingabe und Kontrollabgabe erregen dich.", color:"#8b6fd8" },
+  sadist:     { score:0, name:"Sadismus",            desc:"Das Zufügen von (einvernehmlichem) Schmerz.", color:"#d86fa0" },
+  masochist:  { score:0, name:"Masochismus",         desc:"Schmerz erleben als erotisches Erlebnis.", color:"#6fbcd8" },
+  bondage:    { score:0, name:"Bondage & Restraint", desc:"Fesselung, Bewegungseinschränkung, Hilflosigkeit.", color:"#d8a86f" },
+  exhibition: { score:0, name:"Exhibitionismus",     desc:"Gesehen werden, Zurschaustellung des Körpers.", color:"#a8d86f" },
+  voyeur:     { score:0, name:"Voyeurismus",         desc:"Beobachten und Zuschauen als Erregungsquelle.", color:"#6fd8b4" },
+  degrader:   { score:0, name:"Verbale Dominanz",    desc:"Erniedrigen, Befehlen, sprachliche Macht.", color:"#d86fb4" },
+  degradee:   { score:0, name:"Verbale Submission",  desc:"Gedemütigt und kontrolliert werden.", color:"#7b6fd8" },
+  primal:     { score:0, name:"Primal / Tierhaft",   desc:"Roher, instinktiver, unkontrollierter Sex.", color:"#d8836f" },
+  ddlg:       { score:0, name:"Caregiver / Little",  desc:"Fürsorge-Dynamiken, Bestrafung, Rollenspiel.", color:"#d86fb4" },
+  petplay:    { score:0, name:"Pet Play",            desc:"Als Tier oder Haustier behandelt werden/jmd. behandeln.", color:"#8bd86f" },
+  roleplay:   { score:0, name:"Rollenspiele",        desc:"Szenarien, Fantasien, Charakterrollen.", color:"#6fa8d8" },
+  sensory:    { score:0, name:"Sensorisches",        desc:"Augenbinden, Tasten, Temperatur, Überreizung.", color:"#d8d86f" },
+  group:      { score:0, name:"Gruppenszenen",       desc:"Dreier, Voyeurismus im Realkontext, Gruppen-Sex.", color:"#6fd88b" },
 };
+let orientScore = 0, orientCount = 0;
+let allAnswers = []; // Stores {qi, cat, text, val, label} per question
 
-// Orientation: -100 = homo, 0 = bi, +100 = hetero
-let orientScore = 0;
-let orientCount = 0;
-
-// ═══════════════════════════════════════════════════
-// QUESTIONS  (subtil formuliert – kein offensichtlicher Hinweis)
-// ═══════════════════════════════════════════════════
 const questions = [
-  // Orientierung
   { cat:"Allgemeines", q:"Wenn du jemandem auf der Straße begegnest, wie stark bemerkst du normalerweise Menschen deines eigenen Geschlechts als attraktiv?", orient: -1 },
   { cat:"Allgemeines", q:"Ich finde Menschen des entgegengesetzten Geschlechts erotisch attraktiv.", orient: +1 },
   { cat:"Allgemeines", q:"Ich könnte mir vorstellen, mich emotional und körperlich zu jemandem hingezogen zu fühlen, dessen Geschlecht dem meinen entspricht.", orient: -1 },
   { cat:"Allgemeines", q:"Erotische Fantasien in meinem Kopf drehen sich überwiegend um Menschen des anderen Geschlechts.", orient: +1 },
-  { cat:"Allgemeines", q:"Ich bin grundsätzlich offen dafür, Zärtlichkeit und körperliche Nähe mit Menschen aller Geschlechter zu erleben.", orient: -0.5 }, // leicht bi
-
-  // Dominanz / Submission
+  { cat:"Allgemeines", q:"Ich bin grundsätzlich offen dafür, Zärtlichkeit und körperliche Nähe mit Menschen aller Geschlechter zu erleben.", orient: -0.5 },
   { cat:"Dynamiken", q:"Es macht mir Freude, Situationen und Menschen um mich herum zu steuern und zu organisieren.", scores:{ dominant:4, degrader:2 } },
   { cat:"Dynamiken", q:"Ich genieße es, Verantwortung abzugeben und mich von jemandem führen zu lassen.", scores:{ submissive:5, ddlg:2 } },
   { cat:"Dynamiken", q:"Der Gedanke, in einer Begegnung das letzte Wort zu haben und Grenzen zu setzen, erregt mich.", scores:{ dominant:4, sadist:1 } },
   { cat:"Dynamiken", q:"Wenn jemand anderes für mich entscheidet, fühle ich mich eher befreit als eingeengt.", scores:{ submissive:5, bondage:2 } },
-
-  // Schmerz
   { cat:"Empfindungen", q:"Leichter körperlicher Schmerz – z. B. ein Kneifen – empfinde ich manchmal als angenehm oder prickelnd.", scores:{ masochist:5, submissive:1 } },
   { cat:"Empfindungen", q:"Die Reaktion eines anderen Menschen auf Schmerz – Zucken, Laute – übt einen merkwürdigen Reiz auf mich aus.", scores:{ sadist:5, voyeur:2, dominant:1 } },
   { cat:"Empfindungen", q:"Ich mag intensive körperliche Empfindungen allgemein, auch wenn sie an der Grenze zum Schmerz liegen.", scores:{ masochist:4, sensory:3 } },
-
-  // Bondage / Kontrolle
   { cat:"Grenzen & Kontrolle", q:"Das Gefühl, festgehalten zu werden oder sich nicht frei bewegen zu können, hat etwas Faszinierendes.", scores:{ bondage:5, submissive:3 } },
   { cat:"Grenzen & Kontrolle", q:"Den Körper eines anderen Menschen zu fixieren oder in seiner Bewegung einzuschränken empfinde ich als reizvoll.", scores:{ bondage:4, dominant:3, sadist:1 } },
   { cat:"Grenzen & Kontrolle", q:"Ich mag es, wenn ich mich in einer Situation völlig sicher und dennoch völlig ausgeliefert fühle.", scores:{ bondage:5, masochist:2, submissive:3 } },
-
-  // Exhibition / Voyeur
   { cat:"Sehen & Gesehen werden", q:"Der Gedanke, meinen Körper vor jemandem zu zeigen, der mich wirklich wahrnimmt, ist aufregend.", scores:{ exhibition:5, degradee:1 } },
   { cat:"Sehen & Gesehen werden", q:"Ich beobachte Menschen gerne und stelle mir dabei vor, was sie im Verborgenen tun oder denken.", scores:{ voyeur:5, primal:1 } },
   { cat:"Sehen & Gesehen werden", q:"Ein verführerischer Blick oder die Vorstellung, begehrt zu werden, macht mich sehr an.", scores:{ exhibition:4, degradee:2, roleplay:1 } },
-
-  // Verbal
   { cat:"Sprache & Macht", q:"Worte können mich sehr erregen – besonders wenn sie Macht oder Unterwerfung ausdrücken.", scores:{ degrader:3, degradee:3, dominant:2, submissive:2 } },
   { cat:"Sprache & Macht", q:"Jemanden sprachlich zu kontrollieren oder zu provozieren gibt mir ein Gefühl von Stärke.", scores:{ degrader:5, dominant:3 } },
   { cat:"Sprache & Macht", q:"Wenn ich verbal zurechtgewiesen oder angewiesen werde, reagiert mein Körper darauf.", scores:{ degradee:5, submissive:3 } },
-
-  // Primal
   { cat:"Instinkte", q:"Roher, unkontrollierter, intensiver Sex spricht mich mehr an als langsame Zärtlichkeit.", scores:{ primal:5, sadist:1, masochist:1 } },
   { cat:"Instinkte", q:"Das Beißen, Kratzen und Kämpfen im Spiel mit jemandem fühlt sich instinktiv richtig an.", scores:{ primal:5, masochist:2, sadist:2 } },
-
-  // Rollenspiele & Fantasy
   { cat:"Fantasie", q:"Ich habe sehr lebhafte erotische Vorstellungen, in denen ich eine andere Rolle einnehme.", scores:{ roleplay:5, ddlg:2, petplay:1 } },
   { cat:"Fantasie", q:"Verbotene oder gesellschaftlich tabuisierte Szenarien finde ich in der Fantasie besonders aufregend.", scores:{ roleplay:4, degrader:2, degradee:2, primal:1 } },
   { cat:"Fantasie", q:"Die Vorstellung, als etwas anderes behandelt zu werden – z. B. als jemand Schutzloses oder Tierisches – hat einen Reiz.", scores:{ petplay:5, ddlg:3, submissive:2 } },
-
-  // Sensorik
   { cat:"Sinne", q:"Berührungen auf unerwarteten Körperstellen oder mit unerwarteten Materialien (Seide, Leder, Eis…) reizen mich.", scores:{ sensory:5, bondage:1 } },
   { cat:"Sinne", q:"Wenn ich nichts sehen kann (verbundene Augen, Dunkelheit), werden meine anderen Sinne intensiver und das ist aufregend.", scores:{ sensory:5, bondage:3, submissive:2 } },
-
-  // Gruppe
   { cat:"Dynamiken", q:"Die Vorstellung, mit mehreren Personen gleichzeitig intime Situationen zu erleben, ist für mich reizvoll.", scores:{ group:5, exhibition:2, voyeur:2 } },
   { cat:"Dynamiken", q:"Ich finde es aufregend, wenn jemand zuschaut oder partizipiert, ohne direkt beteiligt zu sein.", scores:{ voyeur:3, group:3, exhibition:2 } },
 ];
 
-// ═══════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════
-let qi = 0;
-let sliderTouched = false;
-let sliderVal = 50;
+let qi = 0, sliderVal = 50;
+const valLabels = ["Überhaupt nicht","Kaum","Wenig","Etwas","Leicht","Mittel","Merklich","Ziemlich","Stark","Sehr stark","Extrem stark"];
 
-// Build ticks
 const ticksEl = document.getElementById('ticks');
-for (let i = 0; i <= 10; i++) {
-  const t = document.createElement('div');
-  t.className = 'tick';
-  t.id = 'tick' + i;
-  ticksEl.appendChild(t);
-}
+for (let i = 0; i <= 10; i++) { const t = document.createElement('div'); t.className='tick'; t.id='tick'+i; ticksEl.appendChild(t); }
+function updateTicks(val) { const a=Math.round(val/10); for(let i=0;i<=10;i++) document.getElementById('tick'+i).classList.toggle('active',i<=a); }
 
-function updateTicks(val) {
-  const active = Math.round(val / 10);
-  for (let i = 0; i <= 10; i++) {
-    document.getElementById('tick' + i).classList.toggle('active', i <= active);
-  }
-}
-
-const slider = document.getElementById('slider');
-const fill = document.getElementById('slider-fill');
-const thumb = document.getElementById('slider-thumb');
-const valDisp = document.getElementById('val-display');
-const nextBtn = document.getElementById('next-btn');
-
-const valLabels = [
-  "Überhaupt nicht", "Kaum", "Wenig", "Etwas", "Leicht",
-  "Mittel", "Merklich", "Ziemlich", "Stark", "Sehr stark", "Extrem stark"
-];
+const slider=document.getElementById('slider'), fill=document.getElementById('slider-fill'), thumb=document.getElementById('slider-thumb'), valDisp=document.getElementById('val-display'), nextBtn=document.getElementById('next-btn');
 
 slider.addEventListener('input', () => {
-  sliderVal = parseInt(slider.value);
-  sliderTouched = true;
-  const pct = sliderVal + '%';
-  fill.style.width = pct;
-  thumb.style.left = pct;
-  thumb.classList.add('active');
-  const labelIdx = Math.round(sliderVal / 10);
-  valDisp.textContent = valLabels[labelIdx];
-  valDisp.classList.add('touched');
-  updateTicks(sliderVal);
-  nextBtn.classList.add('enabled');
+  sliderVal=parseInt(slider.value);
+  const pct=sliderVal+'%'; fill.style.width=pct; thumb.style.left=pct; thumb.classList.add('active');
+  valDisp.textContent=valLabels[Math.round(sliderVal/10)]; valDisp.classList.add('touched');
+  updateTicks(sliderVal); nextBtn.classList.add('enabled');
 });
-slider.addEventListener('mouseup', () => thumb.classList.remove('active'));
-slider.addEventListener('touchend', () => thumb.classList.remove('active'));
+slider.addEventListener('mouseup', ()=>thumb.classList.remove('active'));
+slider.addEventListener('touchend', ()=>thumb.classList.remove('active'));
 
 function renderQuestion() {
-  sliderTouched = false;
-  sliderVal = 50;
-  slider.value = 50;
-  fill.style.width = '0%';
-  thumb.style.left = '0%';
-  valDisp.textContent = 'Bewege den Slider';
-  valDisp.classList.remove('touched');
-  updateTicks(0);
-  nextBtn.classList.remove('enabled');
-
-  const q = questions[qi];
-  document.getElementById('cat-tag').textContent = q.cat;
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('prog-num').textContent = (qi + 1) + ' / ' + questions.length;
-  document.getElementById('prog-fill').style.width = (qi / questions.length * 100) + '%';
+  sliderVal=50; slider.value=50; fill.style.width='0%'; thumb.style.left='0%';
+  valDisp.textContent='Bewege den Slider'; valDisp.classList.remove('touched');
+  updateTicks(0); nextBtn.classList.remove('enabled');
+  const q=questions[qi];
+  document.getElementById('cat-tag').textContent=q.cat;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('prog-num').textContent=(qi+1)+' / '+questions.length;
+  document.getElementById('prog-fill').style.width=(qi/questions.length*100)+'%';
 }
 
 nextBtn.addEventListener('click', () => {
   if (!nextBtn.classList.contains('enabled')) return;
-  const q = questions[qi];
-  const norm = sliderVal / 100; // 0..1
-
-  if (q.orient !== undefined) {
-    orientScore += norm * q.orient;
-    orientCount++;
-  }
-  if (q.scores) {
-    Object.entries(q.scores).forEach(([k, w]) => {
-      kinks[k].score += norm * w;
-    });
-  }
-
+  const q=questions[qi], norm=sliderVal/100;
+  // Store answer
+  allAnswers.push({ qi, cat:q.cat, text:q.q, val:sliderVal, label:valLabels[Math.round(sliderVal/10)] });
+  if(q.orient!==undefined) { orientScore+=norm*q.orient; orientCount++; }
+  if(q.scores) Object.entries(q.scores).forEach(([k,w])=>kinks[k].score+=norm*w);
   qi++;
-  if (qi >= questions.length) {
-    showResult();
-  } else {
-    const card = document.getElementById('question-card');
-    card.classList.add('fade-out');
-    setTimeout(() => {
-      renderQuestion();
-      card.classList.remove('fade-out');
-      card.classList.add('fade-in');
-      setTimeout(() => card.classList.remove('fade-in'), 400);
-    }, 300);
-  }
+  if(qi>=questions.length) { showResult(); return; }
+  const card=document.getElementById('question-card');
+  card.classList.add('fade-out');
+  setTimeout(()=>{ renderQuestion(); card.classList.remove('fade-out'); card.classList.add('fade-in'); setTimeout(()=>card.classList.remove('fade-in'),400); }, 300);
 });
 
-// ═══════════════════════════════════════════════════
-// RESULTS
-// ═══════════════════════════════════════════════════
-function showResult() {
-  document.getElementById('quiz-view').style.display = 'none';
-  const rv = document.getElementById('result-view');
-  rv.style.display = 'block';
+async function showResult() {
+  document.getElementById('quiz-view').style.display='none';
+  document.getElementById('result-view').style.display='block';
 
-  // Orientation
-  const avgOrient = orientCount > 0 ? orientScore / orientCount : 0;
-  // avgOrient: very negative = homo, near 0 = bi, very positive = hetero
-  // Map to 0..100%: 0=homo, 50=bi, 100=hetero
-  const orientPct = Math.max(0, Math.min(100, (avgOrient + 1) / 2 * 100));
-  setTimeout(() => {
-    document.getElementById('orient-marker').style.left = orientPct + '%';
-  }, 300);
+  const avgOrient=orientCount>0?orientScore/orientCount:0;
+  const orientPct=Math.max(0,Math.min(100,(avgOrient+1)/2*100));
+  setTimeout(()=>{ document.getElementById('orient-marker').style.left=orientPct+'%'; }, 300);
 
-  let orientText = '';
-  if (orientPct < 20) orientText = 'Überwiegend homosexuell';
-  else if (orientPct < 35) orientText = 'Eher homosexuell';
-  else if (orientPct < 45) orientText = 'Eher bisexuell (m→f Tendenz)';
-  else if (orientPct <= 55) orientText = 'Bisexuell / Pansexuell';
-  else if (orientPct < 65) orientText = 'Eher bisexuell (f→m Tendenz)';
-  else if (orientPct < 80) orientText = 'Eher heterosexuell';
-  else orientText = 'Überwiegend heterosexuell';
-  document.getElementById('orient-label').textContent = orientText;
+  let orientText='';
+  if(orientPct<20) orientText='Überwiegend homosexuell';
+  else if(orientPct<35) orientText='Eher homosexuell';
+  else if(orientPct<45) orientText='Eher bisexuell (m→f Tendenz)';
+  else if(orientPct<=55) orientText='Bisexuell / Pansexuell';
+  else if(orientPct<65) orientText='Eher bisexuell (f→m Tendenz)';
+  else if(orientPct<80) orientText='Eher heterosexuell';
+  else orientText='Überwiegend heterosexuell';
+  document.getElementById('orient-label').textContent=orientText;
 
-  // Kink ranking
-  const allKinks = Object.entries(kinks).sort((a,b) => b[1].score - a[1].score);
-  const maxScore = allKinks[0][1].score || 1;
-
-  const top = allKinks.filter((_, i) => i < 5 && allKinks[i][1].score / maxScore > 0.25);
-  const possible = allKinks.filter((_, i) => i >= 5 || (allKinks[i][1].score / maxScore <= 0.25 && allKinks[i][1].score / maxScore > 0.1));
-
-  const listEl = document.getElementById('kinks-list');
-  top.forEach(([key, data], idx) => {
-    const pct = Math.round(data.score / maxScore * 100);
-    const row = document.createElement('div');
-    row.className = 'kink-row';
-    row.style.animationDelay = (idx * 0.1) + 's';
-    row.innerHTML = `
-      <div class="kink-row-header">
-        <span class="kink-row-name">${data.name}</span>
-        <span class="kink-row-pct">${pct}%</span>
-      </div>
-      <div class="kink-bar-track">
-        <div class="kink-bar-fill" style="background:${data.color}" id="bar-${key}"></div>
-      </div>
-      <div class="kink-row-desc">${data.desc}</div>
-    `;
+  const allKinks=Object.entries(kinks).sort((a,b)=>b[1].score-a[1].score);
+  const maxScore=allKinks[0][1].score||1;
+  const top=allKinks.filter((_,i)=>i<5&&allKinks[i][1].score/maxScore>0.25);
+  const listEl=document.getElementById('kinks-list');
+  top.forEach(([key,data],idx)=>{
+    const pct=Math.round(data.score/maxScore*100);
+    const row=document.createElement('div'); row.className='kink-row'; row.style.animationDelay=(idx*0.1)+'s';
+    row.innerHTML=`<div class="kink-row-header"><span class="kink-row-name">${data.name}</span><span class="kink-row-pct">${pct}%</span></div><div class="kink-bar-track"><div class="kink-bar-fill" style="background:${data.color}" id="bar-${key}"></div></div><div class="kink-row-desc">${data.desc}</div>`;
     listEl.appendChild(row);
-    setTimeout(() => {
-      document.getElementById('bar-' + key).style.width = pct + '%';
-    }, 200 + idx * 100);
+    setTimeout(()=>{ document.getElementById('bar-'+key).style.width=pct+'%'; }, 200+idx*100);
+  });
+  const possEl=document.getElementById('possible-list'), seen=new Set(top.map(([k])=>k));
+  allKinks.forEach(([key,data])=>{
+    const pct=Math.round(data.score/maxScore*100);
+    if(!seen.has(key)&&pct>=8){ const chip=document.createElement('div'); chip.className='possible-chip'; chip.textContent=data.name+' ('+pct+'%)'; possEl.appendChild(chip); }
   });
 
-  const possEl = document.getElementById('possible-list');
-  const seen = new Set(top.map(([k]) => k));
-  allKinks.forEach(([key, data]) => {
-    const pct = Math.round(data.score / maxScore * 100);
-    if (!seen.has(key) && pct >= 8) {
-      const chip = document.createElement('div');
-      chip.className = 'possible-chip';
-      chip.textContent = data.name + ' (' + pct + '%)';
-      possEl.appendChild(chip);
-    }
-  });
+  // ─── SUPABASE TRACKING ───
+  let locationData={city:'Anonym',country:'Anonym'};
+  try {
+    const ctrl=new AbortController(); const tid=setTimeout(()=>ctrl.abort(),2500);
+    const geo=await fetch('https://ipapi.co/json/',{signal:ctrl.signal});
+    const gj=await geo.json(); clearTimeout(tid);
+    if(!gj.error) locationData={city:gj.city,country:gj.country_name};
+  } catch(e){}
+
+  // Build all_scores for dashboard charts
+  const allScores={};
+  Object.entries(kinks).forEach(([k,v])=>{ allScores[k]=Math.round(v.score/maxScore*100); });
+
+  const payload={
+    timestamp: new Date().toISOString(),
+    duration_s: Math.round((Date.now()-startTime)/1000),
+    device: navigator.userAgent,
+    screen: window.screen.width+'x'+window.screen.height,
+    location: locationData,
+    // Orientation
+    orientation: { label:orientText, pct:Math.round(orientPct) },
+    // Top kinks
+    top_kinks: top.map(([key,data])=>({ key, name:data.name, pct:Math.round(data.score/maxScore*100) })),
+    // Possible kinks
+    possible_kinks: allKinks.filter(([key])=>!seen.has(key)&&Math.round(allKinks.find(x=>x[0]===key)[1].score/maxScore*100)>=8).map(([key,data])=>data.name),
+    // Normalized scores for all kinks (for aggregate chart in dashboard)
+    all_scores: allScores,
+    // Full answers for per-user detail view
+    answers: allAnswers,
+    ver: '3.0-KinkFinder'
+  };
+
+  const {error}=await _sb.from('kink_results').insert([{data:payload}]);
+  if(error) console.error('Supabase error:',error);
 }
 
-// ─── Start ───
 renderQuestion();
 </script>
 </body>
