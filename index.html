@@ -300,38 +300,32 @@
 
         
     </div>
-   <div id="promo-carousel" class="next-test-promo" style="margin-top: 50px; padding: 32px; background: rgba(255, 45, 85, 0.08); border-radius: 24px; border: 1px solid rgba(255, 45, 85, 0.2);">
+  <div id="promo-carousel" class="next-test-promo" style="margin-top: 50px; padding: 32px; background: rgba(255, 45, 85, 0.08); border-radius: 24px; border: 1px solid rgba(255, 45, 85, 0.2); transition: all 0.5s ease;">
     
-    <div class="promo-content-wrapper">
-        <div id="slide-hardcore" class="promo-slide" style="opacity: 1; transform: translateX(0);">
+    <div class="promo-content-wrapper" style="position: relative; min-height: 160px;">
+        <div id="slide-hardcore" class="promo-slide" style="opacity: 1; transform: translateX(0); transition: all 0.5s ease;">
             <h3 style="color: #ff2d55; margin-top: 0; font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: -0.01em;">🔥 Hardcore Edition</h3>
             <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 26px; line-height: 1.5;">Bereit für das nächste Level? Entdecke 100 extreme Fragen, die wirklich keine Tabus kennen.</p>
-            <button class="promo-btn" style="background: #ff2d55; color: #0a0a0f;" onclick="window.location.href='hardcore.html'">
+            <button class="promo-btn" style="background: #ff2d55; color: #0a0a0f; border: none; border-radius: 12px; padding: 14px 28px; cursor: pointer; font-weight: 600;" onclick="window.location.href='hardcore.html'">
                 Jetzt starten →
             </button>
         </div>
 
-        <div id="slide-kink" class="promo-slide" style="opacity: 0; transform: translateX(30px); display: none; position: absolute; top: 0;">
+        <div id="slide-kink" class="promo-slide" style="opacity: 0; transform: translateX(30px); display: none; position: absolute; top: 0; left: 0; width: 100%; transition: all 0.5s ease;">
             <h3 style="color: #8b6fd8; margin-top: 0; font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: -0.01em;">🧬 Kink Finder</h3>
             <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 26px; line-height: 1.5;">Lerne deine verborgenen Wünsche kennen. Unser Algorithmus erstellt dein persönliches Kink-Profil.</p>
-            <button class="promo-btn" style="background: #8b6fd8; color: #0a0a0f;" onclick="window.location.href='finder.html'">
+            <button class="promo-btn" style="background: #8b6fd8; color: #0a0a0f; border: none; border-radius: 12px; padding: 14px 28px; cursor: pointer; font-weight: 600;" onclick="window.location.href='finder.html'">
                 Profil erstellen →
             </button>
         </div>
     </div>
 
     <div style="display: flex; justify-content: center; gap: 8px; margin-top: 28px;">
-        <div id="dot1" class="dot active" style="background: #ff2d55;" onclick="switchSlide(1)"></div>
-        <div id="dot2" class="dot" onclick="switchSlide(2)"></div>
+        <div id="dot1" style="width: 20px; height: 8px; border-radius: 4px; background: #ff2d55; cursor: pointer; transition: all 0.4s;" onclick="switchSlide(1)"></div>
+        <div id="dot2" style="width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.4s;" onclick="switchSlide(2)"></div>
     </div>
 </div>
 
-
-    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 25px;">
-        <div id="dot1" style="width: 6px; height: 6px; border-radius: 50%; background: #ff2d55; transition: all 0.4s;"></div>
-        <div id="dot2" style="width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.4s;"></div>
-    </div>
-</div>
 
 </div>
 
