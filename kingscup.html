@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kings Cup</title>
+<link rel="manifest" href="#" id="manifestLink">
+<meta name="theme-color" content="#f4f4f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#f4f4f4;
+  --surface:#ffffff;
+  --surface2:#ececec;
+  --border:#e0e0e0;
+  --text:#0a0a0a;
+  --text2:#555;
+  --text3:#999;
+  --accent:#0a0a0a;
+  --accent-text:#fff;
+  --red:#c0392b;
+  --shadow:0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg:0 10px 48px rgba(0,0,0,0.13);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0d0d0d;
+    --surface:#1a1a1a;
+    --surface2:#222;
+    --border:#2a2a2a;
+    --text:#f0f0f0;
+    --text2:#aaa;
+    --text3:#555;
+    --accent:#f0f0f0;
+    --accent-text:#0d0d0d;
+    --red:#e05555;
+    --shadow:0 2px 16px rgba(0,0,0,0.4);
+    --shadow-lg:0 10px 48px rgba(0,0,0,0.6);
+  }
+}
+
+html,body{
+  height:100%;min-height:100%;
+  font-family:'Sora',sans-serif;
+  background:var(--bg);color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+.screen{display:none;width:100%;height:100svh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ══ SETUP ══ */
+#setup{overflow-y:auto;-webkit-overflow-scrolling:touch;align-items:center;}
+.setup-inner{
+  display:flex;flex-direction:column;align-items:center;
+  padding:max(env(safe-area-inset-top),36px) 20px max(env(safe-area-inset-bottom),44px);
+  max-width:480px;width:100%;
+}
+.hero{text-align:center;padding:0 0 28px;}
+.hero h1{font-size:clamp(2.8rem,11vw,4.2rem);font-weight:700;letter-spacing:-0.035em;line-height:1;}
+.hero p{margin-top:7px;font-size:0.75rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text3);}
+
+.preload-wrap{width:100%;margin-bottom:28px;}
+.preload-track{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.preload-fill{height:100%;width:0%;background:var(--accent);border-radius:2px;transition:width 0.15s ease;}
+.preload-txt{font-size:0.67rem;color:var(--text3);text-align:center;margin-top:7px;letter-spacing:0.08em;}
+
+.sec-label{font-size:0.64rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text3);align-self:flex-start;margin-bottom:9px;}
+
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:12px;}
+.set-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
+  padding:14px;cursor:pointer;user-select:none;
+  transition:border-color 0.15s,background 0.15s,transform 0.12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.set-card:active{transform:scale(0.96);}
+.set-card.selected{border-color:var(--accent);background:var(--surface2);}
+.set-icon{font-size:1.4rem;margin-bottom:5px;}
+.set-name{font-size:0.88rem;font-weight:700;}
+.set-desc{font-size:0.69rem;color:var(--text3);margin-top:2px;line-height:1.4;}
+
+.btn-row{display:flex;gap:8px;width:100%;}
+.icon-btn{
+  flex:0 0 auto;padding:15px 14px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
+  font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;
+  color:var(--text2);cursor:pointer;white-space:nowrap;
+  transition:border-color 0.13s,color 0.13s,transform 0.1s;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;align-items:center;gap:5px;
+}
+.icon-btn:active{transform:scale(0.95);}
+.icon-btn:hover{border-color:var(--text2);color:var(--text);}
+.start-btn{
+  flex:1;padding:15px;
+  background:var(--accent);color:var(--accent-text);
+  border:none;border-radius:14px;
+  font-family:'Sora',sans-serif;font-size:0.88rem;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;transition:opacity 0.15s,transform 0.1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.start-btn:active{transform:scale(0.97);}
+.start-btn.loading{opacity:0.4;pointer-events:none;}
+
+/* ══ MODALS ══ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal-sheet{
+  width:100%;max-width:520px;
+  background:var(--surface);border-radius:22px 22px 0 0;
+  max-height:88svh;display:flex;flex-direction:column;
+  box-shadow:0 -4px 40px rgba(0,0,0,0.16);
+  animation:sheetUp 0.3s cubic-bezier(0.34,1.1,0.64,1) forwards;
+}
+@keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0;flex-shrink:0;}
+.modal-title-main{font-size:1rem;font-weight:700;}
+.modal-subtitle{font-size:0.7rem;color:var(--text3);letter-spacing:0.14em;text-transform:uppercase;}
+.modal-x{
+  background:var(--surface2);border:none;width:30px;height:30px;border-radius:50%;
+  font-size:0.9rem;cursor:pointer;color:var(--text2);
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.modal-hr{height:1px;background:var(--border);margin:14px 0 0;}
+.modal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom),20px);}
+
+.rule-row{border-bottom:1px solid var(--border);}
+.rule-row:last-child{border-bottom:none;}
+.rule-trigger{
+  display:flex;align-items:center;gap:12px;padding:13px 18px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.12s;
+}
+.rule-trigger:active{background:var(--surface2);}
+.rv{font-size:1rem;font-weight:700;min-width:26px;color:var(--accent);}
+.rn{font-size:0.83rem;font-weight:600;flex:1;}
+.rchev{font-size:0.7rem;color:var(--text3);transition:transform 0.22s;flex-shrink:0;}
+.rule-row.open .rchev{transform:rotate(180deg);}
+.rule-body{max-height:0;overflow:hidden;transition:max-height 0.27s ease;}
+.rule-body-inner{padding:0 18px 13px 56px;font-size:0.81rem;color:var(--text2);line-height:1.65;}
+
+#customModal .modal-body{padding:0 18px max(env(safe-area-inset-bottom),20px);}
+.custom-desc{font-size:0.76rem;color:var(--text3);padding:14px 0 10px;line-height:1.5;}
+.custom-grid{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.custom-row{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:12px;padding:12px 14px;
+}
+.cr-val{font-size:1rem;font-weight:700;color:var(--accent);min-width:28px;padding-top:2px;flex-shrink:0;}
+.cr-fields{flex:1;display:flex;flex-direction:column;gap:6px;}
+.cr-name-input,.cr-desc-input{
+  width:100%;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:8px;padding:8px 10px;
+  font-family:'Sora',sans-serif;color:var(--text);font-size:0.8rem;
+  outline:none;transition:border-color 0.15s;
+}
+.cr-name-input:focus,.cr-desc-input:focus{border-color:var(--accent);}
+.cr-name-input{font-weight:600;}
+.cr-desc-input{resize:none;min-height:56px;line-height:1.5;}
+::placeholder{color:var(--text3);}
+.custom-save-btn{
+  width:100%;padding:14px;margin-top:16px;margin-bottom:4px;
+  background:var(--accent);color:var(--accent-text);
+  border:none;border-radius:13px;
+  font-family:'Sora',sans-serif;font-size:0.86rem;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:opacity 0.15s,transform 0.1s;
+}
+.custom-save-btn:active{transform:scale(0.97);}
+
+/* ══ GAME SCREEN ══ */
+#game{
+  display:none;flex-direction:column;align-items:center;
+  padding:max(env(safe-area-inset-top),14px) 20px max(env(safe-area-inset-bottom),20px);
+  overflow:hidden;
+}
+#game.active{display:flex;}
+
+.game-nav{
+  width:100%;max-width:420px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;padding-bottom:12px;
+}
+.game-title{font-size:1rem;font-weight:700;}
+.nav-right{display:flex;gap:7px;align-items:center;}
+.count-pill{
+  font-size:0.68rem;color:var(--text3);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:3px 9px;
+}
+.nav-btn{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:9px;
+  padding:5px 10px;font-family:'Sora',sans-serif;
+  font-size:0.7rem;color:var(--text2);cursor:pointer;
+  transition:border-color 0.13s,color 0.13s;-webkit-tap-highlight-color:transparent;
+}
+.nav-btn:hover{border-color:var(--text2);color:var(--text);}
+
+/* game body: card takes up more space */
+.game-body{
+  flex:1;width:100%;max-width:420px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:16px;
+  overflow:hidden;min-height:0;
+}
+
+/* Card slot — bigger: 58vw max 260px */
+.card-slot{
+  flex-shrink:0;
+  width:min(260px,58vw);
+  aspect-ratio:5/7;
+  position:relative;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Ghost stack cards */
+.sg{
+  position:absolute;inset:0;border-radius:14px;
+  background:var(--surface);border:1.5px solid var(--border);
+  box-shadow:var(--shadow);pointer-events:none;
+}
+.sg1{transform:rotate(-5deg) translate(-1px,5px);}
+.sg2{transform:rotate(-2.5deg) translate(0px,2.5px);}
+.sg3{transform:rotate(0deg);}
+
+/*
+  next-back: shown UNDERNEATH the flip-wrap, z-index between ghosts and flip.
+  Starts opacity 0, becomes visible=1 when we trigger doSlide.
+  It shows the back of the NEXT card — so when the front slides away,
+  a fresh back card is already sitting there.
+*/
+.next-back{
+  position:absolute;inset:0;z-index:8;
+  border-radius:14px;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  opacity:0;
+  /* no transition here — appears instantly as slide starts */
+}
+.next-back.show{opacity:1;}
+.next-back img{width:100%;height:100%;object-fit:cover;border-radius:14px;}
+.next-back .bp{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  position:relative;background:var(--surface2);
+}
+.next-back .bp::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(45deg,transparent,transparent 9px,var(--border) 9px,var(--border) 10px),
+    repeating-linear-gradient(-45deg,transparent,transparent 9px,var(--border) 9px,var(--border) 10px);
+}
+.next-back .bp span{position:relative;font-size:2rem;opacity:0.15;}
+
+/* flip sits on top of next-back */
+.flip-wrap{position:absolute;inset:0;perspective:900px;z-index:10;}
+.flip-inner{
+  width:100%;height:100%;position:relative;
+  transform-style:preserve-3d;
+  transition:transform 0.46s cubic-bezier(0.4,0,0.2,1);
+}
+.flip-inner.flipped{transform:rotateY(180deg);}
+
+.ff{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:14px;overflow:hidden;box-shadow:var(--shadow-lg);
+}
+.ff.back{
+  background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+}
+.ff.back img{width:100%;height:100%;object-fit:cover;border-radius:14px;}
+.ff.front{
+  transform:rotateY(180deg);
+  background:#fff;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+}
+.ff.front img{width:96%;height:96%;object-fit:contain;display:block;}
+
+/* slide exit — just translate down, no rotateY change (card is already flipped=180deg) */
+@keyframes slideDown{
+  0%  {transform:rotateY(180deg) translateY(0)    scale(1);   opacity:1;}
+  100%{transform:rotateY(180deg) translateY(150%) scale(0.78);opacity:0;}
+}
+.flip-inner.exit{animation:slideDown 0.38s cubic-bezier(0.4,0,0.6,1) forwards;}
+
+.tap-hint{
+  position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);
+  font-size:0.65rem;color:var(--text3);white-space:nowrap;
+  pointer-events:none;letter-spacing:0.06em;
+}
+
+/* Rule card — smaller text, fills rest */
+.rule-card{
+  flex:1;min-height:0;width:100%;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:16px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.rule-card-inner{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 18px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.rule-card.empty .rule-card-inner{align-items:center;justify-content:center;}
+
+.rc-label{font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+.rc-title{font-size:1.15rem;font-weight:700;margin-bottom:4px;line-height:1.2;}
+/* ↓ smaller description */
+.rc-desc{font-size:0.75rem;color:var(--text2);line-height:1.6;}
+.rc-hint{font-size:0.72rem;color:var(--text3);font-style:italic;}
+.rc-special{margin-top:6px;font-size:0.72rem;font-weight:700;color:var(--red);}
+
+.empty-state{text-align:center;}
+.empty-state p{font-size:0.82rem;color:var(--text3);margin-bottom:12px;}
+.replay-btn{
+  padding:10px 24px;background:var(--accent);color:var(--accent-text);
+  border:none;border-radius:11px;font-family:'Sora',sans-serif;
+  font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+
+/* back-pattern fallback */
+.back-fallback{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  position:relative;background:var(--surface2);
+}
+.back-fallback::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(45deg,transparent,transparent 9px,var(--border) 9px,var(--border) 10px),
+    repeating-linear-gradient(-45deg,transparent,transparent 9px,var(--border) 9px,var(--border) 10px);
+}
+.back-fallback span{position:relative;font-size:2rem;opacity:0.15;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.24s ease forwards;}
+</style>
+</head>
+<body>
+
+<!-- ══ SETUP ══ -->
+<div class="screen active" id="setup">
+<div class="setup-inner">
+  <div class="hero">
+    <h1>Kings Cup</h1>
+    <p>Das Kartentrinkspiel</p>
+  </div>
+  <div class="preload-wrap">
+    <div class="preload-track"><div class="preload-fill" id="preloadFill"></div></div>
+    <div class="preload-txt" id="preloadTxt">Karten werden geladen…</div>
+  </div>
+  <div class="sec-label">Regelset</div>
+  <div class="set-grid" id="setGrid">
+    <div class="set-card selected" data-set="classic"><div class="set-icon">👑</div><div class="set-name">Classic</div><div class="set-desc">Die Original-Regeln</div></div>
+    <div class="set-card" data-set="hardcore"><div class="set-icon">🔥</div><div class="set-name">Hardcore</div><div class="set-desc">Mehr Shots, mehr Chaos</div></div>
+    <div class="set-card" data-set="chill"><div class="set-icon">🍃</div><div class="set-name">Chill</div><div class="set-desc">Entspannt & locker</div></div>
+    <div class="set-card" data-set="custom"><div class="set-icon">✏️</div><div class="set-name">Eigene</div><div class="set-desc">Deine eigenen Regeln</div></div>
+  </div>
+  <div class="btn-row">
+    <button class="icon-btn" onclick="openModal('rulesModal')">📋 Regeln</button>
+    <button class="icon-btn" onclick="openModal('customModal')">✏️ Eigene</button>
+    <button class="start-btn loading" id="startBtn" onclick="startGame()">Start →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ RULES MODAL ══ -->
+<div class="modal-overlay" id="rulesModal" onclick="overlayClose(event,'rulesModal')">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-head">
+      <div><div class="modal-title-main">Regelübersicht</div><div class="modal-subtitle" id="rulesModalSub">Classic</div></div>
+      <button class="modal-x" onclick="closeModal('rulesModal')">✕</button>
+    </div>
+    <div class="modal-hr"></div>
+    <div class="modal-body" id="rulesModalBody"></div>
+  </div>
+</div>
+
+<!-- ══ CUSTOM MODAL ══ -->
+<div class="modal-overlay" id="customModal" onclick="overlayClose(event,'customModal')">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-head">
+      <div><div class="modal-title-main">Eigene Regeln</div><div class="modal-subtitle">Passe jede Karte an</div></div>
+      <button class="modal-x" onclick="closeModal('customModal')">✕</button>
+    </div>
+    <div class="modal-hr"></div>
+    <div class="modal-body" id="customModalBody" style="padding:0 18px;">
+      <p class="custom-desc">Name und Beschreibung für jede Karte. Leer lassen = Classic-Regel.</p>
+      <div class="custom-grid" id="customGrid"></div>
+      <button class="custom-save-btn" onclick="saveCustomRules()">✓ Speichern & Eigenes Set wählen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div class="screen" id="game">
+  <div class="game-nav">
+    <div class="game-title" id="gameTitle">Classic</div>
+    <div class="nav-right">
+      <div class="count-pill" id="countPill">52</div>
+      <button class="nav-btn" onclick="openModal('rulesModal')">Regeln</button>
+      <button class="nav-btn" onclick="goBack()">← Zurück</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="card-slot" id="cardSlot" onclick="handleTap()">
+      <!-- ghost stack -->
+      <div class="sg sg1"></div>
+      <div class="sg sg2"></div>
+      <div class="sg sg3"></div>
+
+      <!--
+        next-back: z=8, sits above ghosts but below flip-wrap(z=10).
+        When doSlide fires we immediately set opacity:1 here.
+        This is the NEW card's back — visible as the front slides down.
+      -->
+      <div class="next-back" id="nextBack">
+        <!-- populated after preload -->
+      </div>
+
+      <!-- flip card: z=10 -->
+      <div class="flip-wrap">
+        <div class="flip-inner" id="flipInner">
+          <div class="ff back" id="backFace"><!-- populated after preload --></div>
+          <div class="ff front"><img id="cardImg" src="" alt="Karte"></div>
+        </div>
+      </div>
+
+      <div class="tap-hint" id="tapHint">antippen zum ziehen</div>
+    </div>
+
+    <div class="rule-card empty" id="ruleCard">
+      <div class="rule-card-inner"><div class="rc-hint">Tippe auf den Stapel</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CARD DATA ──
+const BASE       = 'https://awesomekrieger.github.io/Karten/';
+const SUITS_INT  = ['K','P','H','S'];
+const VALS_INT   = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const SUIT_LABEL = {K:'Karo',P:'Pik',H:'Herz',S:'Kreuz'};
+const SUIT_SYM   = {K:'♦',P:'♠',H:'♥',S:'♣'};
+const VAL_LABEL  = {A:'As','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10',J:'Bube',Q:'Dame',K:'König'};
+const RED_SUITS  = new Set(['K','H']);
+function cardUrl(v,s){return BASE+v+s+'.svg';}
+function backUrl(){return BASE+'back.svg';}
+
+// ── PRELOAD ──
+const imgCache = {};
+let backHTML = '';
+
+function preloadAll(){
+  const fill  = document.getElementById('preloadFill');
+  const txt   = document.getElementById('preloadTxt');
+  const btn   = document.getElementById('startBtn');
+  const total = VALS_INT.length * SUITS_INT.length;
+  let done = 0;
+
+  function tick(){
+    done++;
+    const pct = Math.round(done/total*100);
+    fill.style.width = pct+'%';
+    txt.textContent = `Karten werden geladen… ${pct}%`;
+    if(done >= total){
+      txt.textContent = '✓ Alle Karten bereit';
+      btn.classList.remove('loading');
+    }
+  }
+
+  for(const s of SUITS_INT){
+    for(const v of VALS_INT){
+      const key = v+s;
+      const img = new Image();
+      imgCache[key] = img;
+      img.onload = img.onerror = tick;
+      img.src = cardUrl(v,s);
+    }
+  }
+
+  // Back image
+  const bImg = new Image();
+  bImg.onload = () => {
+    backHTML = `<img src="${backUrl()}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" alt="">`;
+    applyBackHTML();
+  };
+  bImg.onerror = () => {
+    backHTML = `<div class="back-fallback"><span>♛</span></div>`;
+    applyBackHTML();
+  };
+  bImg.src = backUrl();
+}
+
+function applyBackHTML(){
+  document.getElementById('backFace').innerHTML  = backHTML;
+  document.getElementById('nextBack').innerHTML  = backHTML;
+  // nextBack stays opacity:0 until needed
+}
+
+// ── RULE SETS ──
+const DEFAULT_RULES = {
+  'A':{name:'Wasserfall',    desc:'Alle trinken gleichzeitig. Niemand darf aufhören, bis die Person links aufgehört hat. Der Ziehende fängt an und hört als letzter auf.'},
+  '2':{name:'Du',           desc:'Wähle eine Person – diese trinkt einen Schluck.'},
+  '3':{name:'Ich',          desc:'Du selbst trinkst einen Schluck.'},
+  '4':{name:'Boden',        desc:'Alle berühren schnell den Boden. Wer zuletzt ist, trinkt.'},
+  '5':{name:'Männer',       desc:'Alle Männer am Tisch trinken einen Schluck.'},
+  '6':{name:'Frauen',       desc:'Alle Frauen am Tisch trinken einen Schluck.'},
+  '7':{name:'Himmel',       desc:'Alle zeigen nach oben. Der Letzte trinkt.'},
+  '8':{name:'Kumpel',       desc:'Wähle einen Trinkpartner – er trinkt immer mit dir, bis zur nächsten 8.'},
+  '9':{name:'Reim',         desc:'Nenne ein Wort. Reihum muss jeder reimen. Wer sich irrt oder wiederholt, trinkt.'},
+  '10':{name:'Kategorie',   desc:'Nenne eine Kategorie (z.B. Automarken). Wer stockt, trinkt.'},
+  'J':{name:'Daumen-König', desc:'Du bist Daumen-König bis zur nächsten Bube. Daumen heimlich auf den Tisch – alle nachmachen. Letzter trinkt.'},
+  'Q':{name:'Fragerunde',   desc:'Stelle der Person links eine Frage. Sie muss eine Gegenfrage stellen ohne zu antworten. Wer eine Aussage macht, trinkt.'},
+  'K':{name:'Kings Cup',    desc:'Schütte etwas von deinem Getränk in den Becher. Wer den 4. König zieht, trinkt den ganzen Becher!'},
+};
+
+const RULE_SETS = {
+  classic:{name:'Classic', rules: JSON.parse(JSON.stringify(DEFAULT_RULES))},
+  hardcore:{name:'Hardcore',rules:{
+    'A':{name:'Shotgun',         desc:'Alle trinken auf einmal einen ganzen Shot – Wasserfall-Stil.'},
+    '2':{name:'Verteilen',       desc:'Verteile 3 Schlucke beliebig auf andere Spieler.'},
+    '3':{name:'Doppelt',         desc:'Du trinkst zwei Schlucke.'},
+    '4':{name:'Boden (x2)',      desc:'Letzter beim Boden berühren trinkt zwei Schlucke.'},
+    '5':{name:'Männer (x2)',     desc:'Alle Männer trinken zwei Schlucke.'},
+    '6':{name:'Frauen (x2)',     desc:'Alle Frauen trinken zwei Schlucke.'},
+    '7':{name:'Himmel + Shot',   desc:'Letzter beim Hochzeigen trinkt einen ganzen Shot.'},
+    '8':{name:'Buddy Shot',      desc:'Wähle einen Partner – beide trinken bei jeder Karte mit, bis zur nächsten 8.'},
+    '9':{name:'Reim (x2)',       desc:'Verlierer trinkt zwei Schlucke.'},
+    '10':{name:'Kategorie Shot', desc:'Verlierer trinkt einen ganzen Shot.'},
+    'J':{name:'Neue Regel',      desc:'Erfinde eine Regel für den Rest des Spiels. Wer sie bricht, trinkt.'},
+    'Q':{name:'Truth or Drink',  desc:'Stelle einer Person eine Frage. Ehrlich antworten oder zwei Schlucke trinken.'},
+    'K':{name:'Kings Cup XXL',   desc:'Schütte dein GANZES Getränk in den Becher. Der 4. König trinkt alles!'},
+  }},
+  chill:{name:'Chill',rules:{
+    'A':{name:'Nippen',          desc:'Alle nippen gleichzeitig bis du aufhörst. Ganz entspannt.'},
+    '2':{name:'Verteilen',       desc:'Verteile 2 kleine Schlucke an andere nach Wahl.'},
+    '3':{name:'Nippe',           desc:'Du nippst kurz an deinem Getränk.'},
+    '4':{name:'Prost',           desc:'Alle stoßen an und nippen gemeinsam. Zum Wohl!'},
+    '5':{name:'Wahrheit',        desc:'Wähle jemanden – diese Person beantwortet eine Frage oder gibt einen Schluck aus.'},
+    '6':{name:'Kompliment',      desc:'Gib der Person rechts ein aufrichtiges Kompliment. Niemand trinkt!'},
+    '7':{name:'Daumen',          desc:'Daumen-Spiel bis zur nächsten 7. Letzter nippt kurz.'},
+    '8':{name:'Noch nie',        desc:'„Ich hab noch nie…" – Wer es getan hat, nippt.'},
+    '9':{name:'Reim (leicht)',   desc:'Reim-Spiel. Verlierer nippt nur einmal.'},
+    '10':{name:'Kategorie',      desc:'Kategorie-Spiel. Verlierer nippt einmal.'},
+    'J':{name:'Wildcard',        desc:'Erfinde eine lustige, harmlose Aufgabe – z.B. eine Runde singen.'},
+    'Q':{name:'Prost König!',    desc:'Alle prosten dir zu und nippen gemeinsam.'},
+    'K':{name:'Kings Cup (mini)',desc:'Schütte einen kleinen Schluck in den Becher. Der 4. König trinkt ihn.'},
+  }},
+  custom:{name:'Eigene', rules: JSON.parse(JSON.stringify(DEFAULT_RULES))},
+};
+
+// ── MODAL HELPERS ──
+function openModal(id){
+  if(id==='rulesModal') buildRulesModal();
+  if(id==='customModal') buildCustomModal();
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function overlayClose(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+
+function buildRulesModal(){
+  const set = RULE_SETS[currentSet];
+  document.getElementById('rulesModalSub').textContent = set.name;
+  const keys = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  document.getElementById('rulesModalBody').innerHTML = keys.map(k=>{
+    const r = set.rules[k];
+    return `<div class="rule-row" id="rr_${k}">
+      <div class="rule-trigger" onclick="toggleRow('rr_${k}','rb_${k}')">
+        <span class="rv">${k}</span><span class="rn">${r.name}</span><span class="rchev">▼</span>
+      </div>
+      <div class="rule-body" id="rb_${k}"><div class="rule-body-inner">${r.desc}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRow(rowId, bodyId){
+  const row  = document.getElementById(rowId);
+  const body = document.getElementById(bodyId);
+  const open = row.classList.contains('open');
+  row.closest('.modal-body').querySelectorAll('.rule-row.open').forEach(r=>{
+    r.classList.remove('open');
+    r.querySelector('.rule-body').style.maxHeight='0';
+  });
+  if(!open){ row.classList.add('open'); body.style.maxHeight=body.scrollHeight+'px'; }
+}
+
+function buildCustomModal(){
+  const keys = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const cur = RULE_SETS.custom.rules;
+  document.getElementById('customGrid').innerHTML = keys.map(k=>{
+    const r = cur[k];
+    return `<div class="custom-row">
+      <div class="cr-val">${k}</div>
+      <div class="cr-fields">
+        <input class="cr-name-input" id="cn_${k}" type="text" value="${esc(r.name)}" placeholder="Name der Regel">
+        <textarea class="cr-desc-input" id="cd_${k}" placeholder="Beschreibung…">${esc(r.desc)}</textarea>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function saveCustomRules(){
+  const keys = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  keys.forEach(k=>{
+    const name = document.getElementById('cn_'+k).value.trim() || DEFAULT_RULES[k].name;
+    const desc = document.getElementById('cd_'+k).value.trim() || DEFAULT_RULES[k].desc;
+    RULE_SETS.custom.rules[k] = {name,desc};
+  });
+  currentSet = 'custom';
+  document.querySelectorAll('.set-card').forEach(c=>c.classList.toggle('selected',c.dataset.set==='custom'));
+  closeModal('customModal');
+  const btn = document.querySelector('.custom-save-btn');
+  btn.textContent='✓ Gespeichert!';
+  setTimeout(()=>btn.textContent='✓ Speichern & Eigenes Set wählen',1500);
+}
+
+// ── SET SELECTOR ──
+let currentSet = 'classic';
+document.getElementById('setGrid').addEventListener('click', e=>{
+  const card = e.target.closest('.set-card');
+  if(!card) return;
+  document.querySelectorAll('.set-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  currentSet = card.dataset.set;
+  if(currentSet==='custom') openModal('customModal');
+});
+
+// ── GAME STATE ──
+let deck=[], cardPhase='back', isAnimating=false, kingsDrawn=0, currentCard=null;
+
+function buildDeck(){
+  deck=[];
+  for(const s of SUITS_INT) for(const v of VALS_INT) deck.push({val:v,suit:s});
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+}
+function updateCount(){ document.getElementById('countPill').textContent = deck.length; }
+
+function startGame(){
+  if(document.getElementById('startBtn').classList.contains('loading')) return;
+  buildDeck();
+  kingsDrawn=0; isAnimating=false; currentCard=null; cardPhase='back';
+
+  const fi = document.getElementById('flipInner');
+  fi.classList.remove('flipped','exit'); fi.style.animation='';
+
+  document.querySelectorAll('.sg').forEach(g=>{g.style.opacity='';g.style.transform='';});
+
+  // Hide next-back
+  document.getElementById('nextBack').classList.remove('show');
+
+  const rc = document.getElementById('ruleCard');
+  rc.className='rule-card empty';
+  rc.innerHTML='<div class="rule-card-inner"><div class="rc-hint">Tippe auf den Stapel</div></div>';
+
+  document.getElementById('gameTitle').textContent = RULE_SETS[currentSet].name;
+  document.getElementById('tapHint').textContent = 'antippen zum ziehen';
+  document.getElementById('cardSlot').style.cursor = 'pointer';
+  updateCount();
+
+  document.getElementById('setup').classList.remove('active');
+  document.getElementById('game').classList.add('active');
+}
+
+function goBack(){
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('setup').classList.add('active');
+}
+
+function handleTap(){
+  if(isAnimating || cardPhase==='empty') return;
+  if(cardPhase==='back'){ if(!deck.length) return; doFlip(); }
+  else { doSlide(); }
+}
+
+function doFlip(){
+  isAnimating=true;
+  const card=deck.pop(); currentCard=card;
+  if(card.val==='K') kingsDrawn++;
+  updateCount();
+
+  const key=card.val+card.suit;
+  const img=document.getElementById('cardImg');
+  const cached=imgCache[key];
+  img.src=(cached&&cached.complete&&cached.naturalWidth>0)?cached.src:cardUrl(card.val,card.suit);
+  img.alt=VAL_LABEL[card.val]+' '+SUIT_LABEL[card.suit];
+
+  document.getElementById('flipInner').classList.add('flipped');
+  document.getElementById('tapHint').textContent='nochmal tippen → nächste';
+
+  setTimeout(()=>{ showRule(card); cardPhase='front'; isAnimating=false; }, 480);
+}
+
+function doSlide(){
+  isAnimating=true;
+  const fi  = document.getElementById('flipInner');
+  const rc  = document.getElementById('ruleCard');
+  const nb  = document.getElementById('nextBack');
+
+  // Immediately show the NEXT card's back behind the exiting front card
+  if(deck.length > 0){
+    nb.classList.add('show');
+  }
+
+  // Dim rule text
+  rc.style.transition='opacity 0.18s';
+  rc.style.opacity='0.18';
+
+  // Slide the flipped card down
+  fi.classList.add('exit');
+
+  setTimeout(()=>{
+    fi.classList.remove('flipped','exit'); fi.style.animation='';
+    rc.style.opacity=''; rc.style.transition='';
+    nb.classList.remove('show'); // hide again — flip-inner's back face takes over
+
+    if(deck.length===0){
+      cardPhase='empty';
+      document.getElementById('tapHint').textContent='';
+      document.getElementById('cardSlot').style.cursor='default';
+      document.querySelectorAll('.sg').forEach(g=>g.style.opacity='0');
+      rc.className='rule-card empty fade-up';
+      rc.innerHTML=`<div class="rule-card-inner"><div class="empty-state">
+        <p>Alle Karten wurden gezogen 🎉</p>
+        <button class="replay-btn" onclick="restartGame()">Nochmal spielen</button>
+      </div></div>`;
+      isAnimating=false; return;
+    }
+
+    cardPhase='back';
+    document.getElementById('tapHint').textContent='antippen zum ziehen';
+    rc.className='rule-card empty';
+    rc.innerHTML='<div class="rule-card-inner"><div class="rc-hint">Tippe auf den Stapel</div></div>';
+    isAnimating=false;
+  }, 400);
+}
+
+function showRule(card){
+  const rule=RULE_SETS[currentSet].rules[card.val];
+  const sym=SUIT_SYM[card.suit];
+  const isRed=RED_SUITS.has(card.suit);
+  let special='';
+  if(card.val==='K'){
+    if(kingsDrawn===4) special=`<div class="rc-special">🏆 4. König! Du trinkst den ganzen Becher!</div>`;
+    else special=`<div class="rc-special">${kingsDrawn}/4 Könige gezogen</div>`;
+  }
+  const rc=document.getElementById('ruleCard');
+  rc.className='rule-card fade-up';
+  rc.innerHTML=`<div class="rule-card-inner">
+    <div class="rc-label" style="color:${isRed?'var(--red)':'var(--text3)'}">
+      ${VAL_LABEL[card.val]} ${sym} · ${SUIT_LABEL[card.suit]}
+    </div>
+    <div class="rc-title">${rule.name}</div>
+    <div class="rc-desc">${rule.desc}</div>
+    ${special}
+  </div>`;
+}
+
+function restartGame(){
+  document.querySelectorAll('.sg').forEach(g=>{g.style.opacity='';g.style.transform='';});
+  startGame();
+}
+
+// ── SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  const SW_CODE = `
+const CACHE = 'kingscup-v1';
+const CARD_BASE = 'https://awesomekrieger.github.io/Karten/';
+const SUITS = ['K','P','H','S'];
+const VALS  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+const CARD_URLS = [];
+for(const s of SUITS) for(const v of VALS) CARD_URLS.push(CARD_BASE + v + s + '.svg');
+CARD_URLS.push(CARD_BASE + 'back.svg');
+
+const FONT_URLS = [
+  'https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap',
+];
+
+const ALL_ASSETS = [...CARD_URLS, ...FONT_URLS];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => {
+      return Promise.allSettled(ALL_ASSETS.map(url =>
+        cache.add(url).catch(()=>{}) // ignore individual failures
+      ));
+    }).then(()=> self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+    ).then(()=> self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if(cached) return cached;
+      return fetch(e.request).then(res => {
+        if(res && res.status === 200){
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(()=> cached);
+    })
+  );
+});
+`;
+
+  const blob = new Blob([SW_CODE], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl, {scope:'/'})
+    .then(()=>console.log('SW registered'))
+    .catch(e=>console.log('SW error',e));
+}
+
+// ── INIT ──
+preloadAll();
+</script>
+</body>
+</html>
