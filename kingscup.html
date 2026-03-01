@@ -216,6 +216,7 @@ html,body{
   display:flex;flex-direction:column;
   align-items:center;gap:16px;
   overflow:hidden;min-height:0;
+justify-content: space-between;
 }
 
 /* Card slot — bigger: 58vw max 260px */
@@ -306,7 +307,7 @@ html,body{
 
 /* Rule card — smaller text, fills rest */
 .rule-card{
-  flex:1;min-height:0;width:100%;
+  flex:0 0 auto;height:140px;width:100%;
   background:var(--surface);border:1.5px solid var(--border);
   border-radius:16px;box-shadow:var(--shadow);
   display:flex;flex-direction:column;overflow:hidden;
