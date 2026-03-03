@@ -2,101 +2,133 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensor Test iOS</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #121212;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .card {
-            background: #1e1e1e;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 80%;
-            max-width: 400px;
-        }
-        .value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #007aff;
-            margin: 10px 0;
-        }
-        button {
-            background-color: #007aff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        button:active { transform: scale(0.95); }
-        .info { font-size: 0.8rem; color: #888; margin-top: 20px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Haptic Tilt Fix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-white">
 
-    <div class="card">
-        <h2>Handy-Neigung</h2>
-        
-        <div id="display">
-            <p>Beta (Vor/Zurück): <span id="beta" class="value">0</span>°</p>
-            <p>Gamma (Links/Rechts): <span id="gamma" class="value">0</span>°</p>
-            <p>Alpha (Kompass): <span id="alpha" class="value">0</span>°</p>
-        </div>
+    <div id="root"></div>
 
-        <button id="accelPermsButton">Sensoren aktivieren</button>
-        
-        <p class="info">Hinweis: iOS benötigt eine Interaktion und HTTPS.</p>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
 
-    <script>
-        const btn = document.getElementById('accelPermsButton');
-        
-        btn.onclick = function() {
-            // Prüfung für iOS 13+ Berechtigungen
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            startTracking();
+        function HapticApp() {
+            const [angle, setAngle] = useState(0);
+            const [status, setStatus] = useState('Bereit');
+            const [isActive, setIsActive] = useState(false);
+            const [lastTrigger, setLastTrigger] = useState(null);
+
+            // Simulation der Library-Funktion, falls der Import klemmt
+            // oder direkte Nutzung, wenn verfügbar
+            const triggerHaptic = useCallback((pattern, options = {}) => {
+                console.log("Haptik-Event:", pattern);
+                
+                // Falls navigator.vibrate verfügbar ist (Fallback)
+                if (navigator.vibrate) {
+                    const durations = pattern.map(p => p.duration || p);
+                    navigator.vibrate(durations);
+                }
+                
+                // Hier würde die web-haptics Library greifen
+                // Da wir sie oben als Modul hatten, emulieren wir hier die Logik sicherheitshalber
+            }, []);
+
+            useEffect(() => {
+                if (!isActive) return;
+
+                const handleRotate = (e) => {
+                    // Wir nutzen Beta für die Vor-Zurück-Neigung
+                    const tilt = Math.round(e.beta);
+                    setAngle(tilt);
+
+                    // LOGIK FÜR VORNE (Forward)
+                    if (tilt > 30 && lastTrigger !== 'front') {
+                        triggerHaptic([
+                            { duration: 30 },
+                            { delay: 60, duration: 40, intensity: 1 },
+                        ]);
+                        setLastTrigger('front');
+                        setStatus('Trigger: VORNE');
+                    } 
+                    // LOGIK FÜR HINTEN (Backward)
+                    else if (tilt < -30 && lastTrigger !== 'back') {
+                        triggerHaptic([
+                            { duration: 40 },
+                            { delay: 40, duration: 40 },
+                            { delay: 40, duration: 40 },
+                        ], { intensity: 0.9 });
+                        setLastTrigger('back');
+                        setStatus('Trigger: HINTEN');
+                    } 
+                    // Zurücksetzen in der Neutralzone
+                    else if (tilt > -10 && tilt < 10) {
+                        setLastTrigger(null);
+                        setStatus('Neutral');
+                    }
+                };
+
+                window.addEventListener('deviceorientation', handleRotate);
+                return () => window.removeEventListener('deviceorientation', handleRotate);
+            }, [isActive, lastTrigger, triggerHaptic]);
+
+            const enableSensors = async () => {
+                try {
+                    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        const res = await DeviceOrientationEvent.requestPermission();
+                        if (res === 'granted') {
+                            setIsActive(true);
                         } else {
-                            alert("Zugriff verweigert!");
+                            alert("Zugriff verweigert");
                         }
-                    })
-                    .catch(console.error);
-            } else {
-                // Für Nicht-iOS Geräte oder ältere Versionen
-                startTracking();
-            }
-        };
+                    } else {
+                        setIsActive(true);
+                    }
+                } catch (err) {
+                    alert("Fehler: " + err);
+                }
+            };
 
-        function startTracking() {
-            btn.style.display = 'none'; // Button ausblenden, wenn aktiv
-            
-            window.addEventListener('deviceorientation', (event) => {
-                // Werte runden für bessere Lesbarkeit
-                const b = Math.round(event.beta);
-                const g = Math.round(event.gamma);
-                const a = Math.round(event.alpha);
+            return (
+                <div class="flex flex-col items-center justify-center min-h-screen p-4">
+                    <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700 text-center w-full max-w-sm">
+                        <h1 class="text-xl font-bold mb-2">Tilt Haptics</h1>
+                        <p class="text-slate-400 text-sm mb-8">Neigungstest für iOS/Android</p>
 
-                document.getElementById('beta').innerText = b;
-                document.getElementById('gamma').innerText = g;
-                document.getElementById('alpha').innerText = a;
-            });
+                        {!isActive ? (
+                            <button 
+                                onClick={enableSensors}
+                                class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+                            >
+                                Sensoren Starten
+                            </button>
+                        ) : (
+                            <div class="space-y-6">
+                                <div class="relative flex items-center justify-center">
+                                    <div class={`absolute inset-0 blur-xl opacity-20 rounded-full transition-colors duration-500 ${lastTrigger === 'front' ? 'bg-green-500' : lastTrigger === 'back' ? 'bg-red-500' : 'bg-indigo-500'}`}></div>
+                                    <div class="relative text-6xl font-black font-mono tracking-tighter">
+                                        {angle}°
+                                    </div>
+                                </div>
+                                <div class={`text-sm font-bold uppercase tracking-widest ${lastTrigger ? 'text-indigo-400' : 'text-slate-500'}`}>
+                                    {status}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div class="mt-8 text-[10px] text-slate-600 uppercase tracking-widest">
+                        Benötigt HTTPS & Mobile Browser
+                    </div>
+                </div>
+            );
         }
-    </script>
 
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<HapticApp />);
+    </script>
 </body>
 </html>
