@@ -3,132 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Haptic Tilt Fix</title>
+    <title>Landscape Haptics Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-slate-900 text-white">
+<body class="bg-black text-white overflow-hidden">
 
     <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom": "https://esm.sh/react-dom@18.2.0",
+            "web-haptics/react": "https://esm.sh/web-haptics@1.0.4/react"
+        }
+    }
+    </script>
 
-        function HapticApp() {
-            const [angle, setAngle] = useState(0);
-            const [status, setStatus] = useState('Bereit');
-            const [isActive, setIsActive] = useState(false);
-            const [lastTrigger, setLastTrigger] = useState(null);
+    <script type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom';
+        import { useWebHaptics } from 'web-haptics/react';
 
-            // Simulation der Library-Funktion, falls der Import klemmt
-            // oder direkte Nutzung, wenn verfügbar
-            const triggerHaptic = useCallback((pattern, options = {}) => {
-                console.log("Haptik-Event:", pattern);
-                
-                // Falls navigator.vibrate verfügbar ist (Fallback)
-                if (navigator.vibrate) {
-                    const durations = pattern.map(p => p.duration || p);
-                    navigator.vibrate(durations);
-                }
-                
-                // Hier würde die web-haptics Library greifen
-                // Da wir sie oben als Modul hatten, emulieren wir hier die Logik sicherheitshalber
-            }, []);
+        function App() {
+            const { trigger } = useWebHaptics();
+            const [active, setActive] = useState(false);
+            const [tilt, setTilt] = useState(0);
+            const [lastAction, setLastAction] = useState(null);
 
             useEffect(() => {
-                if (!isActive) return;
+                if (!active) return;
 
-                const handleRotate = (e) => {
-                    // Wir nutzen Beta für die Vor-Zurück-Neigung
-                    const tilt = Math.round(e.beta);
-                    setAngle(tilt);
+                const handleOrientation = (e) => {
+                    // Im Querformat (Handy seitlich) nutzen wir GAMMA für vorne/hinten
+                    // Je nachdem wie du es drehst (links/rechts rum), musst du evtl. e.gamma prüfen
+                    const angle = Math.round(e.gamma); 
+                    setTilt(angle);
 
-                    // LOGIK FÜR VORNE (Forward)
-                    if (tilt > 30 && lastTrigger !== 'front') {
-                        triggerHaptic([
+                    // TRIGGER VORNE (Kippen weg von dir)
+                    if (angle < -35 && lastAction !== 'forward') {
+                        trigger([
                             { duration: 30 },
                             { delay: 60, duration: 40, intensity: 1 },
                         ]);
-                        setLastTrigger('front');
-                        setStatus('Trigger: VORNE');
+                        setLastAction('forward');
                     } 
-                    // LOGIK FÜR HINTEN (Backward)
-                    else if (tilt < -30 && lastTrigger !== 'back') {
-                        triggerHaptic([
+                    // TRIGGER HINTEN (Kippen zu dir hin)
+                    else if (angle > 35 && lastAction !== 'backward') {
+                        trigger([
                             { duration: 40 },
                             { delay: 40, duration: 40 },
                             { delay: 40, duration: 40 },
                         ], { intensity: 0.9 });
-                        setLastTrigger('back');
-                        setStatus('Trigger: HINTEN');
+                        setLastAction('backward');
                     } 
-                    // Zurücksetzen in der Neutralzone
-                    else if (tilt > -10 && tilt < 10) {
-                        setLastTrigger(null);
-                        setStatus('Neutral');
+                    // RESET (Neutraler Bereich)
+                    else if (angle > -15 && angle < 15) {
+                        setLastAction(null);
                     }
                 };
 
-                window.addEventListener('deviceorientation', handleRotate);
-                return () => window.removeEventListener('deviceorientation', handleRotate);
-            }, [isActive, lastTrigger, triggerHaptic]);
-
-            const enableSensors = async () => {
-                try {
-                    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                        const res = await DeviceOrientationEvent.requestPermission();
-                        if (res === 'granted') {
-                            setIsActive(true);
-                        } else {
-                            alert("Zugriff verweigert");
-                        }
-                    } else {
-                        setIsActive(true);
-                    }
-                } catch (err) {
-                    alert("Fehler: " + err);
-                }
-            };
+                window.addEventListener('deviceorientation', handleOrientation);
+                return () => window.removeEventListener('deviceorientation', handleOrientation);
+            }, [active, lastAction, trigger]);
 
             return (
-                <div class="flex flex-col items-center justify-center min-h-screen p-4">
-                    <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700 text-center w-full max-w-sm">
-                        <h1 class="text-xl font-bold mb-2">Tilt Haptics</h1>
-                        <p class="text-slate-400 text-sm mb-8">Neigungstest für iOS/Android</p>
-
-                        {!isActive ? (
-                            <button 
-                                onClick={enableSensors}
-                                class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
-                            >
-                                Sensoren Starten
-                            </button>
-                        ) : (
-                            <div class="space-y-6">
-                                <div class="relative flex items-center justify-center">
-                                    <div class={`absolute inset-0 blur-xl opacity-20 rounded-full transition-colors duration-500 ${lastTrigger === 'front' ? 'bg-green-500' : lastTrigger === 'back' ? 'bg-red-500' : 'bg-indigo-500'}`}></div>
-                                    <div class="relative text-6xl font-black font-mono tracking-tighter">
-                                        {angle}°
-                                    </div>
-                                </div>
-                                <div class={`text-sm font-bold uppercase tracking-widest ${lastTrigger ? 'text-indigo-400' : 'text-slate-500'}`}>
-                                    {status}
-                                </div>
+                <div class="h-screen w-screen flex flex-col items-center justify-center p-6">
+                    {!active ? (
+                        <button 
+                            onClick={() => setActive(true)}
+                            class="bg-white text-black font-black px-12 py-6 rounded-full text-xl active:scale-90 transition-transform"
+                        >
+                            START LANDSCAPE MODE
+                        </button>
+                    ) : (
+                        <div class="text-center">
+                            <div class={`text-8xl font-black mb-4 transition-colors ${lastAction ? 'text-yellow-400' : 'text-white'}`}>
+                                {tilt}°
                             </div>
-                        )}
-                    </div>
-                    
-                    <div class="mt-8 text-[10px] text-slate-600 uppercase tracking-widest">
-                        Benötigt HTTPS & Mobile Browser
-                    </div>
+                            <div class="text-sm tracking-[0.3em] opacity-50 uppercase">
+                                {lastAction || 'Handy im Querformat kippen'}
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<HapticApp />);
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
