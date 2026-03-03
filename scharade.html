@@ -4,94 +4,162 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#000000"/>
-<title>HeadBanz – Liquid Glass</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#ffffff"/>
+<title>HeadBanz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --gb:rgba(255,255,255,0.14);--gbs:rgba(255,255,255,0.22);--gbd:rgba(255,255,255,0.32);
-  --gs:rgba(0,0,0,0.3);--blur:blur(36px) saturate(180%);--blurs:blur(18px) saturate(160%);
-  --ag:#30d158;--ay:#ffd60a;--ar:#ff453a;--ab:#0a84ff;--ap:#bf5af2;
-  --tp:rgba(255,255,255,0.94);--ts:rgba(255,255,255,0.58);--tt:rgba(255,255,255,0.32);
+  --white:#ffffff;
+  --off:#f7f8fa;
+  --border:#e8eaed;
+  --border2:#d1d5db;
+  --text:#111318;
+  --text2:#6b7280;
+  --text3:#9ca3af;
+  --blue:#2563eb;
+  --blue-l:#eff6ff;
+  --blue-b:#bfdbfe;
+  --green:#16a34a;
+  --green-l:#f0fdf4;
+  --green-b:#bbf7d0;
+  --red:#dc2626;
+  --red-l:#fef2f2;
+  --red-b:#fecaca;
+  --yellow:#d97706;
+  --yellow-l:#fffbeb;
+  --yellow-b:#fde68a;
+  --purple:#7c3aed;
+  --orange:#ea580c;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.08),0 4px 6px rgba(0,0,0,.05);
 }
-@media(prefers-color-scheme:light){
-  :root{--gb:rgba(255,255,255,0.6);--gbs:rgba(255,255,255,0.78);--gbd:rgba(255,255,255,0.88);
-  --gs:rgba(0,0,0,0.12);--tp:rgba(0,0,0,0.9);--ts:rgba(0,0,0,0.52);--tt:rgba(0,0,0,0.28);}
-}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Nunito',sans-serif;
-  -webkit-font-smoothing:antialiased;touch-action:none;user-select:none;-webkit-user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--white);
+  font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
 #root{width:100%;height:100%;position:relative;}
-.bg{position:fixed;inset:0;z-index:0;
-  background:radial-gradient(ellipse at 15% 60%,#0d1f3c 0%,#000 55%),
-    radial-gradient(ellipse at 85% 20%,#1a0d30 0%,transparent 60%),
-    radial-gradient(ellipse at 50% 90%,#0a2018 0%,transparent 50%);}
-@media(prefers-color-scheme:light){.bg{background:radial-gradient(ellipse at 15% 60%,#daeeff 0%,#f4f4f8 55%),
-  radial-gradient(ellipse at 85% 20%,#eddeff 0%,transparent 60%),
-  radial-gradient(ellipse at 50% 90%,#d4f4e4 0%,transparent 50%);}}
-.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:drift 14s ease-in-out infinite;}
-.o1{width:55vw;height:55vw;background:#1b3d70;top:-10%;left:-10%;animation-delay:0s;}
-.o2{width:45vw;height:45vw;background:#2c1468;top:25%;right:-8%;animation-delay:-5s;}
-.o3{width:40vw;height:40vw;background:#0c3a28;bottom:-10%;left:30%;animation-delay:-9s;}
-@media(prefers-color-scheme:light){.o1{background:#aacfe8;}.o2{background:#cbb8e8;}.o3{background:#a8e0c4;}}
-@keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(2vw,-2vh) scale(1.06);}66%{transform:translate(-2vw,2vh) scale(.94);}}
-.glass{background:var(--gb);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--gbd);box-shadow:0 8px 32px var(--gs),inset 0 1px 0 rgba(255,255,255,.38);}
-.glassS{background:var(--gbs);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--gbd);box-shadow:0 12px 48px var(--gs),inset 0 1px 0 rgba(255,255,255,.48),inset 0 -1px 0 rgba(0,0,0,.08);}
-.btn{cursor:pointer;border:none;outline:none;font-family:'Nunito',sans-serif;
-  transition:all .22s cubic-bezier(.34,1.56,.64,1);-webkit-tap-highlight-color:transparent;}
-.btn:active{transform:scale(.93);}
-.bm{background:var(--gbs);backdrop-filter:var(--blurs);-webkit-backdrop-filter:var(--blurs);
-  border:1px solid var(--gbd);color:var(--tp);font-weight:800;
-  box-shadow:0 4px 20px var(--gs),inset 0 1px 0 rgba(255,255,255,.4);}
-.bm:hover{background:rgba(255,255,255,.28);transform:translateY(-1px);}
-.bg2{background:rgba(10,132,255,.22)!important;border-color:rgba(10,132,255,.5)!important;color:#0a84ff!important;}
-.bgg{background:rgba(48,209,88,.22)!important;border-color:rgba(48,209,88,.5)!important;color:#30d158!important;}
-.bgy{background:rgba(255,214,10,.2)!important;border-color:rgba(255,214,10,.45)!important;color:#ffd60a!important;}
-.wc{transition:all .4s cubic-bezier(.34,1.2,.64,1);}
-.wc.solved{background:rgba(48,209,88,.22)!important;border-color:rgba(48,209,88,.55)!important;
-  box-shadow:0 0 70px rgba(48,209,88,.38),0 12px 48px rgba(0,0,0,.25),inset 0 1px 0 rgba(48,209,88,.5)!important;}
-.wc.skipped{background:rgba(255,214,10,.18)!important;border-color:rgba(255,214,10,.5)!important;
-  box-shadow:0 0 60px rgba(255,214,10,.32),0 12px 48px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,214,10,.4)!important;}
-.tt{width:48px;height:28px;border-radius:14px;cursor:pointer;border:none;outline:none;
-  position:relative;transition:background .25s ease;flex-shrink:0;}
-.th{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:white;
-  box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.34,1.4,.64,1);}
-.th.on{transform:translateX(20px);}
-.tr{transform:rotate(-90deg);}
-.tr circle{transition:stroke-dashoffset 1s linear;}
+
+/* ── SCROLLABLE ── */
 .sc{overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .sc::-webkit-scrollbar{width:3px;}
-.sc::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:2px;}
-.pg{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);
-  flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  color:white;text-align:center;padding:2rem;}
-@media(orientation:portrait){.pg{display:flex;}}
+.sc::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── CARD ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card-flat{background:var(--off);border:1px solid var(--border);border-radius:var(--radius);}
+
+/* ── BUTTON BASE ── */
+.btn{cursor:pointer;border:none;outline:none;font-family:'Nunito',sans-serif;
+  transition:all .18s cubic-bezier(.34,1.4,.64,1);display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:active{transform:scale(.95);}
+
+.btn-primary{background:var(--blue);color:#fff;font-weight:800;border-radius:var(--radius);box-shadow:var(--shadow-md);}
+.btn-primary:hover{background:#1d4ed8;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);}
+.btn-ghost:hover{background:var(--off);border-color:var(--border2);}
+.btn-danger{background:var(--red-l);color:var(--red);border:1px solid var(--red-b);border-radius:var(--radius-sm);}
+.btn-success{background:var(--green-l);color:var(--green);border:1px solid var(--green-b);border-radius:var(--radius);}
+.btn-icon{background:transparent;color:var(--text3);border:none;padding:4px 6px;border-radius:6px;font-size:.85rem;}
+.btn-icon:hover{background:var(--off);color:var(--text2);}
+
+/* ── TOGGLE ── */
+.tog-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tog-track{width:44px;height:26px;border-radius:13px;border:none;outline:none;
+  position:relative;flex-shrink:0;transition:background .2s;}
+.tog-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .22s cubic-bezier(.34,1.4,.64,1);}
+.tog-thumb.on{transform:translateX(18px);}
+
+/* ── TAB BAR ── */
+.tab-bar{display:flex;background:var(--off);border-radius:var(--radius);padding:3px;gap:2px;}
+.tab-item{flex:1;padding:.45rem .5rem;border-radius:var(--radius-sm);border:none;outline:none;
+  background:transparent;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;
+  color:var(--text3);cursor:pointer;transition:all .18s ease;white-space:nowrap;}
+.tab-item.active{background:var(--white);color:var(--text);box-shadow:var(--shadow);}
+
+/* ── INPUT ── */
+.inp{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.55rem .75rem;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:600;
+  color:var(--text);outline:none;transition:border-color .15s;}
+.inp:focus{border-color:var(--blue);}
+.inp::placeholder{color:var(--text3);}
+
+/* ── PLAYER CHIP ── */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 6px 4px 10px;
+  background:var(--off);border:1px solid var(--border);border-radius:20px;
+  font-size:.82rem;font-weight:700;color:var(--text);}
+
+/* ── SECTION HEADER ── */
+.sec-hd{font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:.5rem;}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
+  font-size:.72rem;font-weight:800;}
+
+/* ── GAME BG (dark landscape only) ── */
+.game-bg{position:fixed;inset:0;background:#0a0a0f;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 12s ease-in-out infinite;}
+.o1{width:50vw;height:50vw;background:#1b3d70;top:-10%;left:-5%;animation-delay:0s;opacity:.6;}
+.o2{width:40vw;height:40vw;background:#2c1468;top:20%;right:-5%;animation-delay:-4s;opacity:.5;}
+.o3{width:35vw;height:35vw;background:#0c3a28;bottom:-8%;left:35%;animation-delay:-8s;opacity:.5;}
+@keyframes drift{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(2vw,-2vh)scale(1.05);}66%{transform:translate(-2vw,2vh)scale(.96);}}
+
+/* ── GLASS (game only) ── */
+.glass{background:rgba(255,255,255,.13);backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.35);}
+.glass-s{background:rgba(255,255,255,.2);backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:0 12px 48px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.45);}
+
+/* ── WORD CARD ── */
+.word-card{transition:all .38s cubic-bezier(.34,1.1,.64,1);}
+.word-card.solved{background:rgba(22,163,74,.22)!important;border-color:rgba(22,163,74,.5)!important;
+  box-shadow:0 0 60px rgba(22,163,74,.4),0 12px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(22,163,74,.4)!important;}
+.word-card.skipped{background:rgba(217,119,6,.2)!important;border-color:rgba(217,119,6,.45)!important;
+  box-shadow:0 0 60px rgba(217,119,6,.35),0 12px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(217,119,6,.35)!important;}
+
+/* ── TIMER RING ── */
+.t-ring{transform:rotate(-90deg);}
+.t-ring circle{transition:stroke-dashoffset 1s linear;}
+
+/* ── LANDSCAPE GATE (game screens only) ── */
+.landscape-gate{display:none;position:fixed;inset:0;z-index:9998;background:var(--white);
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:2rem;}
+
+/* ── DEBUG OVERLAY ── */
+.debug{position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(0,0,0,.88);
+  color:#0f0;font-family:monospace;font-size:.72rem;padding:.4rem .7rem;
+  display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
+.debug-bar{height:8px;border-radius:4px;background:#0f0;transition:width .1s linear;min-width:2px;}
+
+/* ── PERM PULSE ── */
 .pp{animation:ppulse 2s ease-in-out infinite;}
-@keyframes ppulse{0%,100%{box-shadow:0 0 0 0 rgba(10,132,255,.5),0 4px 20px rgba(0,0,0,.2);}
-  50%{box-shadow:0 0 0 14px rgba(10,132,255,0),0 4px 20px rgba(0,0,0,.2);}}
-.bw{font-size:clamp(2.2rem,7vw,4.8rem);font-weight:900;letter-spacing:-.025em;
-  line-height:1.05;text-shadow:0 2px 24px rgba(0,0,0,.25);color:var(--tp);}
+@keyframes ppulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4),var(--shadow-md);}50%{box-shadow:0 0 0 12px rgba(37,99,235,0),var(--shadow-md);}}
+
+/* ── BIG WORD ── */
+.big-word{font-size:clamp(2rem,7vw,4.5rem);font-weight:900;letter-spacing:-.025em;
+  line-height:1.05;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.3);}
 </style>
 </head>
 <body>
-<div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
-<div class="pg">
-  <div style="font-size:3.5rem">📱↻</div>
-  <div style="font-weight:900;font-size:1.4rem">Bitte Gerät drehen</div>
-  <div style="opacity:.55;font-size:.9rem;line-height:1.6">HeadBanz läuft im Querformat.</div>
-</div>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useEffect,useRef,useMemo}=React;
+const {useState,useEffect,useRef,useMemo,useCallback}=React;
 
+/* ─── BUILT-IN CATEGORIES ─── */
 const BUILTIN={
   "Tiere":["Elefant","Delfin","Pinguin","Krokodil","Flamingo","Nashorn","Gepard","Koala","Otter","Faultier","Axolotl","Schnabeltier","Quokka","Tapir","Leguan","Orang-Utan","Erdmännchen","Tukan","Wombat","Mantarochen"],
   "Filme":["Titanic","Matrix","Avatar","Inception","Interstellar","Gladiator","Der Pate","Joker","Parasite","Avengers","Forrest Gump","Pulp Fiction","Fight Club","The Dark Knight","Jurassic Park","E.T.","Star Wars","Memento","Amelie","Braveheart"],
@@ -103,242 +171,544 @@ const BUILTIN={
   "Technologie":["Smartphone","Quantencomputer","3D-Drucker","Drohne","Roboter","Elektroauto","Satellit","Laser","Solarpanel","Bluetooth","KI","VR-Brille","Hologramm","Mikrochip","Magnetschwebebahn","Kernfusion","Supraleiter","Exoskelett","Bioreaktor","Nanobot"]
 };
 
+const TC=['#2563eb','#7c3aed','#ea580c','#16a34a','#dc2626','#0891b2'];
 const vib=p=>navigator.vibrate&&navigator.vibrate(p);
-const hapS=()=>vib([35]);const hapK=()=>vib([15,55,15]);const hapT=()=>vib([10]);const hapE=()=>vib([50,30,50]);
+const hapS=()=>vib([35]);const hapK=()=>vib([15,55,15]);const hapT=()=>vib([8]);const hapE=()=>vib([50,30,50]);
 const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
-const TC=['#0a84ff','#bf5af2','#ff9f0a','#30d158','#ff453a','#64d2ff'];
 
-const GC=({ch,cl='',st={},s=false})=>(
-  <div className={`${s?'glassS':'glass'} ${cl}`} style={{borderRadius:24,padding:'1rem',...st}}>{ch}</div>
-);
-const GB=({ch,oc,cl='',st={},dis=false})=>(
-  <button className={`btn bm ${cl}`}
-    style={{borderRadius:16,padding:'.7rem 1.2rem',fontSize:'.9rem',fontWeight:800,opacity:dis?.38:1,pointerEvents:dis?'none':'auto',...st}}
-    onClick={()=>{if(!dis){hapT();oc&&oc();}}}>
-    {ch}
-  </button>
-);
-const Tgl=({on,oc,lb})=>(
-  <div style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}} onClick={()=>{hapT();oc(!on);}}>
-    <button className="tt" style={{background:on?'var(--ag)':'rgba(255,255,255,.18)'}}>
-      <div className={`th ${on?'on':''}`}/>
+/* ─── TOGGLE ─── */
+const Tog=({on,oc,label})=>(
+  <div className="tog-wrap" onClick={()=>{hapT();oc(!on);}}>
+    <button className="tog-track" style={{background:on?'var(--blue)':'#d1d5db'}}>
+      <div className={`tog-thumb${on?' on':''}`}/>
     </button>
-    {lb&&<span style={{color:'var(--ts)',fontSize:'.82rem',fontWeight:700}}>{lb}</span>}
+    {label&&<span style={{fontSize:'.84rem',fontWeight:700,color:'var(--text2)'}}>{label}</span>}
   </div>
 );
-const TR=({sec,mx,sz=72})=>{
+
+/* ─── TIMER RING ─── */
+const TRing=({sec,mx,sz=68})=>{
   const r=(sz-8)/2,ci=2*Math.PI*r,pct=mx>0?sec/mx:1,off=ci*(1-pct);
-  const col=sec<=10?'#ff453a':sec<=30?'#ffd60a':'#30d158';
+  const col=sec<=10?'#ef4444':sec<=30?'#f59e0b':'#22c55e';
   return(
-    <svg width={sz} height={sz} className="tr" style={{flexShrink:0}}>
-      <circle cx={sz/2} cy={sz/2} r={r} fill="none" stroke="rgba(255,255,255,.1)" strokeWidth="6"/>
+    <svg width={sz} height={sz} className="t-ring" style={{flexShrink:0}}>
+      <circle cx={sz/2} cy={sz/2} r={r} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="6"/>
       <circle cx={sz/2} cy={sz/2} r={r} fill="none" stroke={col} strokeWidth="6"
         strokeDasharray={ci} strokeDashoffset={off} strokeLinecap="round"/>
       <text x={sz/2} y={sz/2+1} textAnchor="middle" dominantBaseline="middle"
-        style={{fill:col,fontSize:'1rem',fontWeight:900,fontFamily:'Nunito'}}
+        style={{fill:col,fontSize:'.95rem',fontWeight:900,fontFamily:'Nunito'}}
         transform={`rotate(90,${sz/2},${sz/2})`}>{sec}</text>
     </svg>
   );
 };
 
-/* PERM */
-function Perm({done}){
-  const[st,set]=useState('idle');
-  async function req(){hapT();
-    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-      try{const r=await DeviceOrientationEvent.requestPermission();
-        if(r==='granted'){set('ok');setTimeout(done,700);}else{set('denied');hapE();}}
-      catch{set('denied');hapE();}}
-    else{set('ok');setTimeout(done,400);}}
+/* ══════════════════════════════════════════
+   DEBUG OVERLAY
+══════════════════════════════════════════ */
+function DebugOverlay({beta,gamma,alpha,threshold,onClose}){
+  const pct=v=>Math.min(100,Math.max(0,(v+90)/180*100));
+  const fwdPct=Math.min(100,Math.max(0,(-beta+90)/180*100));
+  const bkPct=Math.min(100,Math.max(0,(beta+90)/180*100));
+  const bIsFwd=beta!==null&&beta<-threshold;
+  const bIsBk=beta!==null&&beta>threshold+20;
   return(
-    <div style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem'}}>
-      <GC s ch={
-        <div style={{textAlign:'center',padding:'1.5rem'}}>
-          <div style={{fontSize:'3.8rem',marginBottom:'.8rem'}}>{st==='ok'?'✅':st==='denied'?'🚫':'📡'}</div>
-          <div style={{color:'var(--tp)',fontSize:'1.6rem',fontWeight:900,marginBottom:'.4rem'}}>
-            {st==='ok'?'Bereit!':st==='denied'?'Zugriff verweigert':'Sensor-Zugriff'}
-          </div>
-          <div style={{color:'var(--ts)',fontSize:'.88rem',lineHeight:1.7,marginBottom:'2rem'}}>
-            {st==='denied'?'Bitte erlaube den Sensor-Zugriff in den iOS-Einstellungen und lade die Seite neu.':
-              <><strong style={{color:'var(--tp)'}}>Gerät nach vorne kippen</strong> → Wort gelöst ✓<br/>
-              <strong style={{color:'var(--tp)'}}>Gerät nach hinten kippen</strong> → Überspringen ↩<br/>
-              Wir brauchen dafür den Gyrosensor.</>}
-          </div>
-          {st!=='denied'&&<GB oc={req} cl={`pp ${st==='ok'?'bgg':''}`}
-            st={{width:'100%',padding:'1rem',fontSize:'1.05rem'}}
-            ch={st==='ok'?'✓ Gewährt – weiter…':'🔓 Sensoren aktivieren'}/>}
-        </div>}
-        st={{maxWidth:440,width:'100%'}}/>
+    <div className="debug">
+      <button className="btn" onClick={onClose}
+        style={{background:'#ef4444',color:'#fff',padding:'2px 8px',borderRadius:6,fontSize:'.7rem',fontWeight:800}}>✕ DEBUG</button>
+      <span style={{color:'#ff0'}}>β={beta!==null?beta.toFixed(1):'–'}</span>
+      <span style={{color:'#0ff'}}>γ={gamma!==null?gamma.toFixed(1):'–'}</span>
+      <span style={{color:'#f0f'}}>α={alpha!==null?alpha.toFixed(1):'–'}</span>
+      <div style={{display:'flex',alignItems:'center',gap:4}}>
+        <span style={{color:'#888',fontSize:'.65rem'}}>VOR</span>
+        <div style={{width:60,height:8,background:'rgba(255,255,255,.15)',borderRadius:4,overflow:'hidden'}}>
+          <div className="debug-bar" style={{width:`${fwdPct}%`,background:bIsFwd?'#0f0':'#555'}}/>
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:4}}>
+        <span style={{color:'#888',fontSize:'.65rem'}}>ZURÜCK</span>
+        <div style={{width:60,height:8,background:'rgba(255,255,255,.15)',borderRadius:4,overflow:'hidden'}}>
+          <div className="debug-bar" style={{width:`${bkPct}%`,background:bIsBk?'#ff0':'#555'}}/>
+        </div>
+      </div>
+      <span style={{color:bIsFwd?'#0f0':bIsBk?'#ff0':'#555',fontWeight:900,fontSize:'.75rem'}}>
+        {bIsFwd?'▲ GELÖST':bIsBk?'▼ SKIP':'○ NEUTRAL'}
+      </span>
+      <span style={{color:'#555',fontSize:'.65rem'}}>Schwelle: ±{threshold}°</span>
     </div>
   );
 }
 
-/* SETUP */
-function Setup({players,onStart}){
+/* ══════════════════════════════════════════
+   SCREEN: PERMISSION
+══════════════════════════════════════════ */
+function PermScreen({onDone}){
+  const[st,setSt]=useState('idle');
+  async function req(){hapT();
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+      try{const r=await DeviceOrientationEvent.requestPermission();
+        if(r==='granted'){setSt('ok');setTimeout(onDone,600);}else{setSt('denied');hapE();}}
+      catch{setSt('denied');hapE();}}
+    else{setSt('ok');setTimeout(onDone,400);}
+  }
+  return(
+    <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',
+      background:'var(--white)',padding:'2rem',zIndex:50}}>
+      <div className="card" style={{maxWidth:380,width:'100%',padding:'2rem',textAlign:'center'}}>
+        <div style={{fontSize:'3rem',marginBottom:'.75rem'}}>{st==='ok'?'✅':st==='denied'?'🚫':'📡'}</div>
+        <div style={{fontSize:'1.35rem',fontWeight:900,color:'var(--text)',marginBottom:'.35rem'}}>
+          {st==='ok'?'Bereit!':st==='denied'?'Kein Zugriff':'Sensor-Zugriff'}
+        </div>
+        <div style={{fontSize:'.87rem',color:'var(--text2)',lineHeight:1.7,marginBottom:'1.75rem'}}>
+          {st==='denied'
+            ?'Bitte erlaube den Bewegungssensor in den iOS-Einstellungen → Safari → Bewegung & Ausrichtung.'
+            :<>Das Spiel nutzt den <strong style={{color:'var(--text)'}}>Neigungssensor</strong> deines Geräts.<br/>
+            Gerät <strong style={{color:'var(--blue)'}}>nach vorne kippen</strong> = Wort gelöst ✓<br/>
+            Gerät <strong style={{color:'var(--yellow)'}}>nach hinten kippen</strong> = Überspringen ↩</>}
+        </div>
+        {st!=='denied'&&(
+          <button className={`btn btn-primary pp`} onClick={req}
+            style={{width:'100%',padding:'1rem',fontSize:'1rem',fontWeight:800}}>
+            {st==='ok'?'✓ Zugriff gewährt — weiter…':'🔓 Sensoren aktivieren'}
+          </button>
+        )}
+        {st==='denied'&&(
+          <button className="btn btn-ghost" onClick={()=>{setSt('idle');}}
+            style={{width:'100%',padding:'.75rem',fontSize:'.9rem'}}>← Zurück</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   SCREEN: SETUP (portrait & landscape)
+══════════════════════════════════════════ */
+const TABS=['Spieler','Teams','Modus','Kategorien'];
+
+function SetupScreen({onStart,initialPlayers}){
+  const[tab,setTab]=useState(0);
+  /* ── players ── */
+  const[players,setPlayers]=useState(()=>{
+    if(initialPlayers&&initialPlayers.length>0)return initialPlayers;
+    return['Spieler 1','Spieler 2','Spieler 3','Spieler 4'];
+  });
+  const[newName,setNewName]=useState('');
+  const[editIdx,setEditIdx]=useState(null);
+  const[editVal,setEditVal]=useState('');
+
+  /* ── teams ── */
   const half=Math.ceil(players.length/2);
-  const[teams,setTeams]=useState([
+  const[teams,setTeams]=useState(()=>[
     {name:'Team 1',players:players.slice(0,half),color:TC[0]},
     {name:'Team 2',players:players.slice(half),color:TC[1]}
   ]);
+
+  /* Sync teams when players change */
+  useEffect(()=>{
+    setTeams(prev=>{
+      // Remove players that don't exist anymore, keep team structure
+      const all=players;
+      const assigned=prev.flatMap(t=>t.players);
+      const unassigned=all.filter(p=>!assigned.includes(p));
+      let next=prev.map(t=>({...t,players:t.players.filter(p=>all.includes(p))}));
+      // assign unassigned to team with fewest players
+      unassigned.forEach(p=>{
+        const mi=next.reduce((mi,t,i)=>t.players.length<next[mi].players.length?i:mi,0);
+        next=next.map((t,i)=>i===mi?{...t,players:[...t.players,p]}:t);
+      });
+      return next;
+    });
+  },[players]);
+
+  /* ── mode ── */
   const[mode,setMode]=useState('rounds');
   const[rds,setRds]=useState(3);
   const[tgt,setTgt]=useState(20);
   const[tsec,setTsec]=useState(60);
+
+  /* ── categories ── */
   const[cats,setCats]=useState(BUILTIN);
   const[sel,setSel]=useState(Object.keys(BUILTIN));
-
   useEffect(()=>{
     fetch('categories.json').then(r=>r.json())
       .then(d=>{setCats(d);setSel(Object.keys(d));}).catch(()=>{});
   },[]);
 
-  const move=(p,fi,ti)=>{if(fi===ti)return;
-    setTeams(prev=>prev.map((t,i)=>({...t,players:i===ti?[...t.players,p]:t.players.filter(x=>x!==p)})));};
-  const valid=teams.every(t=>t.players.length>=2)&&sel.length>0;
+  /* ── debug ── */
+  const[debug,setDebug]=useState(false);
+
+  const addPlayer=()=>{
+    const n=newName.trim()||`Spieler ${players.length+1}`;
+    setPlayers(p=>[...p,n]);setNewName('');
+  };
+  const removePlayer=idx=>setPlayers(p=>p.filter((_,i)=>i!==idx));
+  const saveEdit=()=>{
+    if(editIdx===null)return;
+    const n=editVal.trim()||players[editIdx];
+    setPlayers(p=>p.map((x,i)=>i===editIdx?n:x));
+    setEditIdx(null);setEditVal('');
+  };
+  const movePlayer=(p,fromTi,toTi)=>{
+    if(fromTi===toTi)return;
+    setTeams(prev=>prev.map((t,i)=>({...t,players:i===toTi?[...t.players,p]:t.players.filter(x=>x!==p)})));
+  };
+
+  const totalWords=sel.reduce((a,c)=>a+(cats[c]?.length||0),0);
+  const teamValid=teams.every(t=>t.players.length>=2);
+  const valid=teamValid&&sel.length>0;
+
   const TO=[{l:'1 Min',v:60},{l:'2 Min',v:120},{l:'3 Min',v:180},{l:'5 Min',v:300},{l:'10 Min',v:600},{l:'∞',v:0}];
 
-  return(
-    <div style={{position:'fixed',inset:0,zIndex:10,display:'flex',flexDirection:'column',padding:'1rem 1.25rem',gap:'.75rem',overflowY:'auto'}} className="sc">
-      <div style={{textAlign:'center',flexShrink:0}}>
-        <div style={{color:'var(--tp)',fontSize:'1.7rem',fontWeight:900,letterSpacing:'-.03em'}}>HeadBanz</div>
-        <div style={{color:'var(--tt)',fontSize:'.78rem',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase'}}>Liquid Glass Edition</div>
+  const tabContent=[
+    /* ── TAB 0: SPIELER ── */
+    <div key="p" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
+      <div>
+        <div className="sec-hd">Namen hinzufügen</div>
+        <div style={{display:'flex',gap:'.5rem'}}>
+          <input className="inp" placeholder="Name eingeben…" value={newName}
+            onChange={e=>setNewName(e.target.value)}
+            onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addPlayer();}}}
+            style={{flex:1}}/>
+          <button className="btn btn-primary" onClick={addPlayer}
+            style={{padding:'.55rem 1rem',fontWeight:800,fontSize:'.9rem',borderRadius:var(--radius)}}>
+            + Hinzufügen
+          </button>
+        </div>
       </div>
-      <div style={{display:'flex',gap:'.75rem',flex:1,minHeight:0}}>
-        {/* Teams */}
-        <div style={{flex:1.3,display:'flex',flexDirection:'column',gap:'.6rem',minWidth:0}}>
-          <div style={{color:'var(--tt)',fontSize:'.7rem',fontWeight:900,letterSpacing:'.1em',textTransform:'uppercase'}}>Teams</div>
-          {teams.map((team,ti)=>(
-            <GC key={ti} st={{borderColor:`${team.color}35`,padding:'.75rem'}} ch={
-              <>
-                <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginBottom:'.6rem'}}>
-                  <div style={{width:9,height:9,borderRadius:'50%',background:team.color,boxShadow:`0 0 8px ${team.color}`,flexShrink:0}}/>
-                  <input value={team.name} onChange={e=>setTeams(p=>p.map((t,i)=>i===ti?{...t,name:e.target.value}:t))}
-                    style={{background:'transparent',border:'none',outline:'none',color:'var(--tp)',fontWeight:800,fontSize:'.95rem',fontFamily:'Nunito',width:'100%'}}/>
-                </div>
-                <div style={{display:'flex',flexWrap:'wrap',gap:'.35rem',minHeight:32}}>
-                  {team.players.map(p=>(
-                    <div key={p} style={{background:`${team.color}20`,border:`1px solid ${team.color}45`,borderRadius:10,padding:'2px 8px 2px 9px',display:'flex',alignItems:'center',gap:4}}>
-                      <span style={{color:'var(--tp)',fontSize:'.78rem',fontWeight:700}}>{p}</span>
-                      {teams.map((t2,ti2)=>ti2!==ti&&(
-                        <button key={ti2} className="btn" onClick={()=>move(p,ti,ti2)}
-                          style={{background:'none',border:'none',cursor:'pointer',color:t2.color,fontSize:'.7rem',fontWeight:900,padding:'0 2px'}}>›{ti2+1}</button>
-                      ))}
-                    </div>
-                  ))}
-                  {team.players.length<2&&<div style={{color:'#ff453a',fontSize:'.72rem',fontWeight:700,alignSelf:'center'}}>⚠ min. 2 Spieler</div>}
-                </div>
-              </>}/>
-          ))}
-          {teams.length<4&&<GB oc={()=>setTeams(p=>[...p,{name:`Team ${p.length+1}`,players:[],color:TC[p.length%TC.length]}])}
-            st={{fontSize:'.78rem',padding:'.45rem'}} ch="+ Team hinzufügen"/>}
-        </div>
-        {/* Mode */}
-        <div style={{flex:1.1,display:'flex',flexDirection:'column',gap:'.6rem',minWidth:0}}>
-          <div style={{color:'var(--tt)',fontSize:'.7rem',fontWeight:900,letterSpacing:'.1em',textTransform:'uppercase'}}>Spielmodus</div>
-          <GC st={{padding:'.6rem'}} ch={
-            [{id:'rounds',ic:'🏆',lb:'Runden-Duell'},{id:'highscore',ic:'🎯',lb:'Highscore-Race'},{id:'1v1',ic:'⚔️',lb:'1v1 Modus'}].map(m=>(
-              <button key={m.id} className="btn" onClick={()=>{hapT();setMode(m.id);}}
-                style={{display:'flex',alignItems:'center',gap:'.55rem',width:'100%',padding:'.55rem .65rem',borderRadius:12,marginBottom:'.3rem',
-                  background:mode===m.id?'rgba(10,132,255,.22)':'transparent',
-                  border:`1px solid ${mode===m.id?'rgba(10,132,255,.45)':'transparent'}`,
-                  color:'var(--tp)',fontWeight:800,fontSize:'.85rem',textAlign:'left'}}>
-                <span style={{fontSize:'1rem'}}>{m.ic}</span>{m.lb}
-                {mode===m.id&&<span style={{marginLeft:'auto',color:'#0a84ff',fontSize:'.9rem'}}>✓</span>}
-              </button>))
-          }/>
-          {mode==='rounds'&&<GC st={{padding:'.65rem'}} ch={<>
-            <div style={{color:'var(--ts)',fontSize:'.72rem',fontWeight:700,marginBottom:'.45rem'}}>Runden pro Team</div>
-            <div style={{display:'flex',gap:'.35rem'}}>
-              {[1,2,3,5,7,10].map(n=>(
-                <button key={n} className="btn" onClick={()=>{hapT();setRds(n);}}
-                  style={{flex:1,padding:'.35rem 0',borderRadius:9,
-                    background:rds===n?'rgba(10,132,255,.28)':'rgba(255,255,255,.07)',
-                    border:`1px solid ${rds===n?'rgba(10,132,255,.5)':'rgba(255,255,255,.1)'}`,
-                    color:'var(--tp)',fontWeight:900,fontSize:'.82rem'}}>{n}</button>
-              ))}
-            </div></>}/>}
-          {mode==='highscore'&&<GC st={{padding:'.65rem'}} ch={<>
-            <div style={{color:'var(--ts)',fontSize:'.72rem',fontWeight:700,marginBottom:'.45rem'}}>Zeitlimit</div>
-            <div style={{display:'flex',flexWrap:'wrap',gap:'.3rem',marginBottom:'.65rem'}}>
-              {TO.map(o=>(
-                <button key={o.v} className="btn" onClick={()=>{hapT();setTsec(o.v);}}
-                  style={{padding:'.3rem .55rem',borderRadius:8,
-                    background:tsec===o.v?'rgba(48,209,88,.25)':'rgba(255,255,255,.07)',
-                    border:`1px solid ${tsec===o.v?'rgba(48,209,88,.5)':'rgba(255,255,255,.1)'}`,
-                    color:'var(--tp)',fontWeight:800,fontSize:'.8rem'}}>{o.l}</button>
-              ))}
+      <div>
+        <div className="sec-hd">{players.length} Spieler</div>
+        <div style={{display:'flex',flexDirection:'column',gap:'.4rem'}}>
+          {players.map((p,i)=>(
+            <div key={i} className="card-flat" style={{display:'flex',alignItems:'center',gap:'.5rem',padding:'.5rem .65rem'}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:'var(--blue-l)',
+                display:'flex',alignItems:'center',justifyContent:'center',
+                fontSize:'.75rem',fontWeight:900,color:'var(--blue)',flexShrink:0}}>{i+1}</div>
+              {editIdx===i?(
+                <input className="inp" value={editVal} autoFocus
+                  onChange={e=>setEditVal(e.target.value)}
+                  onKeyDown={e=>{if(e.key==='Enter')saveEdit();if(e.key==='Escape'){setEditIdx(null);}}}
+                  style={{flex:1,padding:'.3rem .5rem',fontSize:'.88rem'}}/>
+              ):(
+                <span style={{flex:1,fontWeight:700,fontSize:'.9rem',color:'var(--text)'}}>{p}</span>
+              )}
+              {editIdx===i?(
+                <button className="btn btn-ghost" onClick={saveEdit}
+                  style={{padding:'3px 8px',fontSize:'.78rem',fontWeight:800,color:'var(--blue)',borderColor:'var(--blue-b)'}}>✓</button>
+              ):(
+                <button className="btn btn-icon" onClick={()=>{setEditIdx(i);setEditVal(p);}}>✏️</button>
+              )}
+              <button className="btn btn-icon" onClick={()=>removePlayer(i)}
+                style={{color:'var(--red)'}}>✕</button>
             </div>
-            <div style={{color:'var(--ts)',fontSize:'.72rem',fontWeight:700,marginBottom:'.45rem'}}>Zielpunktzahl</div>
-            <div style={{display:'flex',gap:'.3rem'}}>
-              {[10,15,20,30,50].map(n=>(
-                <button key={n} className="btn" onClick={()=>{hapT();setTgt(n);}}
-                  style={{flex:1,padding:'.3rem 0',borderRadius:8,
-                    background:tgt===n?'rgba(255,214,10,.25)':'rgba(255,255,255,.07)',
-                    border:`1px solid ${tgt===n?'rgba(255,214,10,.5)':'rgba(255,255,255,.1)'}`,
-                    color:'var(--tp)',fontWeight:900,fontSize:'.8rem'}}>{n}</button>
-              ))}
-            </div></>}/>}
-          {mode==='1v1'&&<GC st={{padding:'.65rem'}} ch={
-            <div style={{color:'var(--ts)',fontSize:'.82rem',lineHeight:1.6}}>
-              Zwei Spieler wechseln zwischen Erklärer und Rater.<br/>
-              <span style={{color:'var(--tt)',fontSize:'.75rem'}}>Nutzt die ersten 2 Teams.</span>
-            </div>}/>}
+          ))}
+          {players.length===0&&(
+            <div style={{textAlign:'center',padding:'1.5rem',color:'var(--text3)',fontSize:'.85rem'}}>
+              Noch keine Spieler. Füge oben Namen hinzu!
+            </div>
+          )}
         </div>
-        {/* Cats */}
-        <div style={{flex:.9,display:'flex',flexDirection:'column',gap:'.6rem',minWidth:0}}>
-          <div style={{color:'var(--tt)',fontSize:'.7rem',fontWeight:900,letterSpacing:'.1em',textTransform:'uppercase'}}>Kategorien</div>
-          <GC st={{flex:1,padding:'.65rem',overflowY:'auto',minHeight:0}} cl="sc" ch={
-            Object.keys(cats).map(c=>(
-              <div key={c} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'.55rem',gap:'.5rem'}}>
-                <div>
-                  <div style={{color:'var(--tp)',fontSize:'.82rem',fontWeight:800}}>{c}</div>
-                  <div style={{color:'var(--tt)',fontSize:'.68rem'}}>{cats[c].length} Begriffe</div>
-                </div>
-                <Tgl on={sel.includes(c)} oc={v=>setSel(v?[...sel,c]:sel.filter(x=>x!==c))}/>
-              </div>))
-          }/>
-          <div style={{color:'var(--tt)',fontSize:'.7rem',textAlign:'center'}}>
-            {sel.reduce((a,c)=>a+(cats[c]?.length||0),0)} Begriffe
+      </div>
+    </div>,
+
+    /* ── TAB 1: TEAMS ── */
+    <div key="t" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'.75rem'}}>
+      {!teamValid&&(
+        <div style={{background:'var(--red-l)',border:'1px solid var(--red-b)',borderRadius:var(--radius-sm),
+          padding:'.6rem .75rem',fontSize:'.82rem',color:'var(--red)',fontWeight:700}}>
+          ⚠ Jedes Team braucht min. 2 Spieler
+        </div>
+      )}
+      {teams.map((team,ti)=>(
+        <div key={ti} className="card" style={{padding:'.75rem',borderLeft:`3px solid ${team.color}`}}>
+          {/* Team name edit */}
+          <div style={{display:'flex',alignItems:'center',gap:'.5rem',marginBottom:'.6rem'}}>
+            <div style={{width:10,height:10,borderRadius:'50%',background:team.color,flexShrink:0}}/>
+            <input
+              value={team.name}
+              onChange={e=>setTeams(prev=>prev.map((t,i)=>i===ti?{...t,name:e.target.value}:t))}
+              style={{background:'transparent',border:'none',outline:'none',
+                color:'var(--text)',fontWeight:900,fontSize:'1rem',fontFamily:'Nunito',flex:1,
+                borderBottom:'1px solid transparent'}}
+              onFocus={e=>e.target.style.borderBottomColor='var(--blue)'}
+              onBlur={e=>e.target.style.borderBottomColor='transparent'}/>
+            <span className="badge" style={{background:`${team.color}18`,color:team.color,border:`1px solid ${team.color}30`}}>
+              {team.players.length} Sp.
+            </span>
+          </div>
+          {/* Players in team */}
+          <div style={{display:'flex',flexWrap:'wrap',gap:'.35rem',minHeight:30}}>
+            {team.players.map(p=>(
+              <div key={p} className="chip" style={{background:`${team.color}10`,borderColor:`${team.color}30`}}>
+                <span>{p}</span>
+                {teams.map((t2,ti2)=>ti2!==ti&&(
+                  <button key={ti2} className="btn" onClick={()=>movePlayer(p,ti,ti2)}
+                    style={{background:'none',border:'none',cursor:'pointer',
+                      color:t2.color,fontSize:'.72rem',fontWeight:900,padding:'0 2px',
+                      lineHeight:1}}>›T{ti2+1}</button>
+                ))}
+              </div>
+            ))}
+            {team.players.length<2&&(
+              <span style={{color:'var(--red)',fontSize:'.75rem',fontWeight:700,alignSelf:'center'}}>
+                min. 2 Spieler nötig
+              </span>
+            )}
           </div>
         </div>
+      ))}
+      {teams.length<4&&(
+        <button className="btn btn-ghost" onClick={()=>{
+          hapT();
+          setTeams(p=>[...p,{name:`Team ${p.length+1}`,players:[],color:TC[p.length%TC.length]}]);
+        }} style={{padding:'.55rem',fontSize:'.85rem',fontWeight:800}}>
+          + Team hinzufügen
+        </button>
+      )}
+    </div>,
+
+    /* ── TAB 2: MODUS ── */
+    <div key="m" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
+      {/* Mode select */}
+      <div>
+        <div className="sec-hd">Spielmodus</div>
+        <div style={{display:'flex',flexDirection:'column',gap:'.4rem'}}>
+          {[{id:'rounds',ic:'🏆',lb:'Runden-Duell',desc:'Wer hat nach X Runden die meisten Punkte?'},
+            {id:'highscore',ic:'🎯',lb:'Highscore-Race',desc:'Wer erreicht zuerst die Zielpunktzahl?'},
+            {id:'1v1',ic:'⚔️',lb:'1v1 Modus',desc:'Zwei Spieler wechseln sich als Erklärer ab.'}
+          ].map(m=>(
+            <button key={m.id} className="btn" onClick={()=>{hapT();setMode(m.id);}}
+              style={{
+                display:'flex',alignItems:'flex-start',gap:'.65rem',padding:'.75rem',
+                borderRadius:var(--radius),textAlign:'left',
+                background:mode===m.id?'var(--blue-l)':'var(--off)',
+                border:`1.5px solid ${mode===m.id?'var(--blue-b)':'var(--border)'}`,
+              }}>
+              <span style={{fontSize:'1.3rem',lineHeight:1}}>{m.ic}</span>
+              <div>
+                <div style={{fontWeight:800,fontSize:'.9rem',color:mode===m.id?'var(--blue)':'var(--text)'}}>{m.lb}</div>
+                <div style={{fontSize:'.78rem',color:'var(--text2)',marginTop:'2px',fontWeight:600}}>{m.desc}</div>
+              </div>
+              {mode===m.id&&<span style={{marginLeft:'auto',color:'var(--blue)',fontSize:'.9rem',fontWeight:900,flexShrink:0}}>✓</span>}
+            </button>
+          ))}
+        </div>
       </div>
-      <div style={{flexShrink:0}}>
-        <GB oc={()=>valid&&onStart({teams,mode,rds,tgt,tsec,sel,cats})} dis={!valid}
-          cl={valid?'bgg':''} st={{width:'100%',padding:'.9rem',fontSize:'1rem'}}
-          ch={valid?'🚀 Spiel starten':'⚠ Min. 2 Spieler pro Team + Kategorie wählen'}/>
+
+      {/* Mode settings */}
+      {mode==='rounds'&&(
+        <div>
+          <div className="sec-hd">Runden pro Team</div>
+          <div style={{display:'flex',gap:'.4rem'}}>
+            {[1,2,3,5,7,10].map(n=>(
+              <button key={n} className="btn" onClick={()=>{hapT();setRds(n);}}
+                style={{flex:1,padding:'.45rem 0',borderRadius:var(--radius-sm),
+                  background:rds===n?'var(--blue)':'var(--off)',
+                  border:`1.5px solid ${rds===n?'var(--blue)':'var(--border)'}`,
+                  color:rds===n?'#fff':'var(--text)',fontWeight:900,fontSize:'.85rem'}}>{n}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      {mode==='highscore'&&(<>
+        <div>
+          <div className="sec-hd">Zeitlimit pro Runde</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:'.35rem'}}>
+            {TO.map(o=>(
+              <button key={o.v} className="btn" onClick={()=>{hapT();setTsec(o.v);}}
+                style={{padding:'.4rem .75rem',borderRadius:var(--radius-sm),
+                  background:tsec===o.v?'var(--green)':'var(--off)',
+                  border:`1.5px solid ${tsec===o.v?'var(--green)':'var(--border)'}`,
+                  color:tsec===o.v?'#fff':'var(--text)',fontWeight:800,fontSize:'.82rem'}}>{o.l}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="sec-hd">Zielpunktzahl</div>
+          <div style={{display:'flex',gap:'.35rem'}}>
+            {[10,15,20,30,50].map(n=>(
+              <button key={n} className="btn" onClick={()=>{hapT();setTgt(n);}}
+                style={{flex:1,padding:'.4rem 0',borderRadius:var(--radius-sm),
+                  background:tgt===n?'var(--yellow)':'var(--off)',
+                  border:`1.5px solid ${tgt===n?'var(--yellow)':'var(--border)'}`,
+                  color:tgt===n?'#fff':'var(--text)',fontWeight:900,fontSize:'.85rem'}}>{n}</button>
+            ))}
+          </div>
+        </div>
+      </>)}
+      {mode==='1v1'&&(
+        <div className="card-flat" style={{padding:'.75rem'}}>
+          <div style={{fontSize:'.85rem',color:'var(--text2)',lineHeight:1.7}}>
+            Spieler beider Teams wechseln sich ab.<br/>
+            Erklärer → Rater → Erklärer…<br/>
+            <span style={{color:'var(--text3)',fontSize:'.78rem'}}>
+              Jeder bekommt gleich viele Runden als Erklärer.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Debug toggle */}
+      <div style={{marginTop:'.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',
+        padding:'.6rem .75rem',background:'var(--off)',borderRadius:var(--radius-sm),border:'1px solid var(--border)'}}>
+        <div>
+          <div style={{fontSize:'.84rem',fontWeight:800,color:'var(--text)'}}>🛠 Debug-Modus</div>
+          <div style={{fontSize:'.72rem',color:'var(--text3)'}}>Zeigt Beta/Gamma-Werte live an</div>
+        </div>
+        <Tog on={debug} oc={setDebug}/>
+      </div>
+    </div>,
+
+    /* ── TAB 3: KATEGORIEN ── */
+    <div key="c" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'.75rem'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div className="sec-hd" style={{margin:0}}>{totalWords} Begriffe gewählt</div>
+        <div style={{display:'flex',gap:'.4rem'}}>
+          <button className="btn btn-ghost" onClick={()=>{hapT();setSel(Object.keys(cats));}}
+            style={{padding:'3px 8px',fontSize:'.74rem',fontWeight:800}}>Alle</button>
+          <button className="btn btn-ghost" onClick={()=>{hapT();setSel([]);}}
+            style={{padding:'3px 8px',fontSize:'.74rem',fontWeight:800}}>Keine</button>
+        </div>
+      </div>
+      {Object.entries(cats).map(([cat,words])=>(
+        <div key={cat} style={{display:'flex',alignItems:'center',justifyContent:'space-between',
+          padding:'.6rem .75rem',background:sel.includes(cat)?'var(--blue-l)':'var(--off)',
+          border:`1.5px solid ${sel.includes(cat)?'var(--blue-b)':'var(--border)'}`,
+          borderRadius:var(--radius-sm),cursor:'pointer',transition:'all .15s'}}
+          onClick={()=>{hapT();setSel(s=>s.includes(cat)?s.filter(c=>c!==cat):[...s,cat]);}}>
+          <div>
+            <div style={{fontWeight:800,fontSize:'.88rem',color:sel.includes(cat)?'var(--blue)':'var(--text)'}}>{cat}</div>
+            <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:1}}>{words.length} Begriffe</div>
+          </div>
+          <div style={{width:22,height:22,borderRadius:6,
+            background:sel.includes(cat)?'var(--blue)':'var(--white)',
+            border:`2px solid ${sel.includes(cat)?'var(--blue)':'var(--border2)'}`,
+            display:'flex',alignItems:'center',justifyContent:'center',
+            color:'#fff',fontWeight:900,fontSize:'.8rem',flexShrink:0,transition:'all .15s'}}>
+            {sel.includes(cat)?'✓':''}
+          </div>
+        </div>
+      ))}
+    </div>
+  ];
+
+  return(
+    <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',flexDirection:'column',zIndex:10}}>
+
+      {/* ── HEADER ── */}
+      <div style={{padding:'1rem 1rem .5rem',flexShrink:0,borderBottom:'1px solid var(--border)'}}>
+        <div style={{textAlign:'center',marginBottom:'.65rem'}}>
+          <div style={{fontSize:'1.5rem',fontWeight:900,color:'var(--text)',letterSpacing:'-.03em'}}>HeadBanz</div>
+        </div>
+        {/* Tab bar */}
+        <div className="tab-bar">
+          {TABS.map((t,i)=>(
+            <button key={i} className={`tab-item${tab===i?' active':''}`}
+              onClick={()=>{hapT();setTab(i);}}>
+              {i===0&&players.length>0&&<span style={{
+                background:'var(--blue)',color:'#fff',borderRadius:'50%',
+                width:15,height:15,fontSize:'.6rem',fontWeight:900,
+                display:'inline-flex',alignItems:'center',justifyContent:'center',marginRight:3
+              }}>{players.length}</span>}
+              {t}
+              {i===3&&sel.length>0&&<span style={{
+                background:sel.length===Object.keys(cats).length?'var(--green)':'var(--yellow)',
+                color:'#fff',borderRadius:'50%',
+                width:15,height:15,fontSize:'.6rem',fontWeight:900,
+                display:'inline-flex',alignItems:'center',justifyContent:'center',marginLeft:3
+              }}>{sel.length}</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── TAB CONTENT ── */}
+      <div className="sc" style={{flex:1,overflowY:'auto',paddingBottom:'5rem'}}>
+        {tabContent[tab]}
+      </div>
+
+      {/* ── FIXED START BUTTON ── */}
+      <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'.75rem 1rem',
+        background:'var(--white)',borderTop:'1px solid var(--border)',
+        boxShadow:'0 -4px 12px rgba(0,0,0,.06)'}}>
+        {!valid&&(
+          <div style={{fontSize:'.75rem',color:'var(--text3)',textAlign:'center',marginBottom:'.4rem',fontWeight:700}}>
+            {!teamValid?'⚠ Teams brauchen je min. 2 Spieler':sel.length===0?'⚠ Bitte mind. 1 Kategorie wählen':''}
+          </div>
+        )}
+        <button className="btn btn-primary"
+          onClick={()=>{if(valid){hapT();onStart({teams,mode,rds,tgt,tsec,sel,cats,debug});}}}
+          style={{width:'100%',padding:'1rem',fontSize:'1.05rem',fontWeight:900,
+            opacity:valid?1:.4,pointerEvents:valid?'auto':'none',borderRadius:var(--radius)}}>
+          🚀 Spiel starten
+        </button>
       </div>
     </div>
   );
 }
 
-/* GAME */
-function Game({cfg,onEnd}){
-  const{teams,mode,rds,tgt,tsec,sel,cats}=cfg;
-  const pool=useMemo(()=>{const w=[];sel.forEach(c=>{if(cats[c])w.push(...cats[c]);});return shuffle(w);},[]);
-  const used=useRef(new Set());
-  const pull=()=>{const av=pool.filter(w=>!used.current.has(w));if(!av.length){used.current.clear();return pool[0]||'???';}const w=av[Math.floor(Math.random()*av.length)];used.current.add(w);return w;};
+/* ══════════════════════════════════════════
+   SCREEN: GAME (landscape)
+══════════════════════════════════════════ */
+function GameScreen({cfg,onEnd}){
+  const{teams,mode,rds,tgt,tsec,sel,cats,debug:dbgEnabled}=cfg;
 
-  const[ti,setTi]=useState(0);const[rno,setRno]=useState(0);
+  /* ── word pool ── */
+  const pool=useMemo(()=>{
+    const w=[];sel.forEach(c=>{if(cats[c])w.push(...cats[c]);});return shuffle(w);
+  },[]);
+  const used=useRef(new Set());
+  const pull=()=>{
+    const av=pool.filter(w=>!used.current.has(w));
+    if(!av.length){used.current.clear();return pool[Math.floor(Math.random()*pool.length)]||'???';}
+    const w=av[Math.floor(Math.random()*av.length)];used.current.add(w);return w;
+  };
+
+  /* ── state ── */
+  const[ti,setTi]=useState(0);
+  const[rno,setRno]=useState(0);
   const[sc,setSc]=useState(teams.map(()=>0));
   const[ph,setPh]=useState('ready');
-  const[word,setWord]=useState('');const[fl,setFl]=useState(null);
-  const[log,setLog]=useState([]);const[cor,setCor]=useState([]);
-  const[tmr,setTmr]=useState(tsec>0?tsec:0);const[el,setEl]=useState(0);
+  const[word,setWord]=useState('');
+  const[fl,setFl]=useState(null);
+  const[log,setLog]=useState([]);
+  const[cor,setCor]=useState([]);
+  const[tmr,setTmr]=useState(tsec>0?tsec:0);
+  const[el,setEl]=useState(0);
   const tRef=useRef(null);const fRef=useRef(null);const dRef=useRef(false);const lRef=useRef([]);
+
+  /* ── sensor ── */
+  const[beta,setBeta]=useState(null);
+  const[gamma,setGamma]=useState(null);
+  const[alpha,setAlpha]=useState(null);
+  const[showDbg,setShowDbg]=useState(dbgEnabled);
+  const THRESH=22;const THRESH_BK=45;
 
   useEffect(()=>{lRef.current=log;},[log]);
 
   useEffect(()=>{
-    const h=e=>{if(ph!=='playing'||dRef.current)return;const b=e.beta;if(b===null||b===undefined)return;
-      if(b<-22)deb(doSolve);else if(b>58)deb(doSkip);};
+    const h=e=>{
+      setBeta(e.beta);setGamma(e.gamma);setAlpha(e.alpha);
+      if(ph!=='playing'||dRef.current)return;
+      const b=e.beta;if(b===null||b===undefined)return;
+      // Forward tilt: beta goes negative (screen faces down)
+      if(b<-THRESH)deb(doSolve);
+      // Backward tilt: beta goes positive past threshold
+      else if(b>THRESH_BK)deb(doSkip);
+    };
     window.addEventListener('deviceorientation',h,true);
     return()=>window.removeEventListener('deviceorientation',h,true);
   },[ph,word]);
 
   const deb=fn=>{if(dRef.current)return;dRef.current=true;fn();setTimeout(()=>{dRef.current=false;},900);};
 
-  const startT=()=>{clearInterval(tRef.current);const tl=tsec;if(tl>0)setTmr(tl);setEl(0);
-    tRef.current=setInterval(()=>{setEl(e=>e+1);if(tl>0)setTmr(t=>{if(t<=1){clearInterval(tRef.current);endR();return 0;}return t-1;});},1000);};
+  const startT=()=>{
+    clearInterval(tRef.current);const tl=tsec;
+    if(tl>0)setTmr(tl);setEl(0);
+    tRef.current=setInterval(()=>{
+      setEl(e=>e+1);
+      if(tl>0)setTmr(t=>{if(t<=1){clearInterval(tRef.current);endR();return 0;}return t-1;});
+    },1000);
+  };
   const stopT=()=>clearInterval(tRef.current);
 
   const startR=()=>{const w=pull();setWord(w);setFl(null);setLog([]);lRef.current=[];setPh('playing');startT();};
@@ -352,157 +722,254 @@ function Game({cfg,onEnd}){
     const ns=sc.map((s,i)=>i===ti?s+pts:s);
     if(mode==='highscore'&&ns[ti]>=tgt){setSc(ns);setPh('over');return;}
     let nti=(ti+1)%teams.length,nrno=rno;if(nti===0)nrno++;
-    if(mode==='rds'&&nrno>=rds){setSc(ns);setPh('over');return;}
     if(mode==='rounds'&&nrno>=rds){setSc(ns);setPh('over');return;}
     setSc(ns);setTi(nti);setRno(nrno);setPh('ready');
   };
 
   const team=teams[ti];
 
-  if(ph==='ready')return(
-    <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:'1rem',padding:'2rem'}}>
-      <GC s st={{maxWidth:480,width:'100%',textAlign:'center',padding:'2rem'}} ch={<>
-        <div style={{fontSize:'.7rem',fontWeight:900,color:'var(--tt)',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'.6rem'}}>
-          {mode==='rounds'?`Runde ${rno+1} von ${rds}`:mode==='highscore'?`Ziel: ${tgt} Punkte`:'1v1 · Abwechselnde Runden'}
-        </div>
-        <div style={{fontSize:'2rem',fontWeight:900,color:team.color,marginBottom:'.2rem',letterSpacing:'-.02em'}}>{team.name}</div>
-        <div style={{color:'var(--ts)',fontSize:'.9rem',marginBottom:'1.2rem'}}>{team.players.join(' · ')}</div>
-        <div style={{display:'flex',gap:'.6rem',justifyContent:'center',marginBottom:'1.5rem',flexWrap:'wrap'}}>
-          {teams.map((t,i)=>(
-            <div key={i} style={{padding:'.4rem 1rem',borderRadius:14,
-              background:i===ti?`${t.color}25`:'rgba(255,255,255,.06)',
-              border:`1px solid ${i===ti?t.color+'55':'rgba(255,255,255,.1)'}`,textAlign:'center'}}>
-              <div style={{color:t.color,fontWeight:900,fontSize:'1.4rem'}}>{sc[i]}</div>
-              <div style={{color:'var(--tt)',fontSize:'.68rem',fontWeight:700}}>{t.name}</div>
-            </div>))}
-        </div>
-        <div style={{color:'var(--tt)',fontSize:'.8rem',marginBottom:'1.25rem',lineHeight:1.6}}>
-          Erklärer hält Gerät flach über den Kopf des Raters.<br/>
-          Kippe <strong style={{color:'var(--tp)'}}>vor</strong> = gelöst &nbsp;·&nbsp; Kippe <strong style={{color:'var(--tp)'}}>zurück</strong> = skip
-        </div>
-        <GB oc={startR} cl="bg2" st={{width:'100%',padding:'.9rem',fontSize:'1rem'}} ch="▶ Runde starten!"/>
-      </>}/>
+  /* Landscape gate for playing/correction/over screens */
+  const LandscapeGate=()=>(
+    <div className="landscape-gate" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+      position:'fixed',inset:0,zIndex:9998,background:'var(--white)',
+      '@media (orientation:landscape)':{display:'none'}}}>
+      <div style={{fontSize:'3rem'}}>📱↻</div>
+      <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)',marginTop:'.5rem'}}>Querformat nötig</div>
+      <div style={{color:'var(--text2)',fontSize:'.88rem',marginTop:'.3rem'}}>Drehe dein Gerät für das Spiel.</div>
     </div>
   );
 
+  /* ── READY ── */
+  if(ph==='ready')return(
+    <>
+      <style>{`@media(orientation:portrait){.game-ls-gate{display:flex!important;}}`}</style>
+      <div className="game-ls-gate" style={{display:'none',position:'fixed',inset:0,zIndex:9998,
+        background:'var(--white)',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,textAlign:'center',padding:'2rem'}}>
+        <div style={{fontSize:'3rem'}}>📱↻</div>
+        <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)'}}>Querformat für das Spiel</div>
+        <div style={{color:'var(--text2)',fontSize:'.88rem'}}>Drehe dein Gerät für das Spiel.</div>
+      </div>
+      <div className="game-bg">
+        <div className="orb o1"/><div className="orb o2"/><div className="orb o3"/>
+      </div>
+      <div style={{position:'fixed',inset:0,zIndex:10,display:'flex',alignItems:'center',
+        justifyContent:'center',flexDirection:'column',gap:'1rem',padding:'2rem'}}>
+        <div className="glass-s" style={{borderRadius:24,padding:'2rem',maxWidth:500,width:'100%',textAlign:'center'}}>
+          <div style={{fontSize:'.68rem',fontWeight:900,color:'rgba(255,255,255,.45)',
+            letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'.5rem'}}>
+            {mode==='rounds'?`Runde ${rno+1} / ${rds}`:mode==='highscore'?`Ziel: ${tgt} Punkte`:'1v1 · Abwechselnde Runden'}
+          </div>
+          <div style={{fontSize:'2rem',fontWeight:900,color:team.color,marginBottom:'.2rem'}}>{team.name}</div>
+          <div style={{color:'rgba(255,255,255,.6)',fontSize:'.88rem',marginBottom:'1.25rem'}}>{team.players.join(' · ')}</div>
+          <div style={{display:'flex',gap:'.6rem',justifyContent:'center',flexWrap:'wrap',marginBottom:'1.5rem'}}>
+            {teams.map((t,i)=>(
+              <div key={i} style={{padding:'.4rem .9rem',borderRadius:12,
+                background:i===ti?`${t.color}25`:'rgba(255,255,255,.07)',
+                border:`1px solid ${i===ti?t.color+'55':'rgba(255,255,255,.12)'}`,textAlign:'center'}}>
+                <div style={{color:t.color,fontWeight:900,fontSize:'1.4rem'}}>{sc[i]}</div>
+                <div style={{color:'rgba(255,255,255,.45)',fontSize:'.68rem',fontWeight:700}}>{t.name}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{color:'rgba(255,255,255,.45)',fontSize:'.78rem',marginBottom:'1.25rem',lineHeight:1.7}}>
+            Erklärer hält Gerät flach über Kopf des Raters.<br/>
+            <strong style={{color:'rgba(255,255,255,.75)'}}>Vor kippen</strong> = gelöst &nbsp;·&nbsp; <strong style={{color:'rgba(255,255,255,.75)'}}>Zurück kippen</strong> = skip
+          </div>
+          <button className="btn" onClick={()=>{hapT();startR();}}
+            style={{background:'rgba(37,99,235,.35)',border:'1px solid rgba(37,99,235,.6)',
+              color:'#93c5fd',fontWeight:900,fontSize:'1rem',padding:'.9rem 2rem',
+              borderRadius:16,width:'100%',
+              backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>
+            ▶ Runde starten!
+          </button>
+        </div>
+      </div>
+      {showDbg&&<DebugOverlay beta={beta} gamma={gamma} alpha={alpha} threshold={THRESH} onClose={()=>setShowDbg(false)}/>}
+    </>
+  );
+
+  /* ── PLAYING ── */
   if(ph==='playing'){
     const slv=log.filter(w=>w.solved).length,skp=log.filter(w=>!w.solved).length;
     return(
-      <div style={{position:'fixed',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'.85rem',padding:'1rem 1.5rem'}}>
-        <div style={{position:'absolute',top:'.8rem',left:'1rem',right:'1rem',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <div style={{display:'flex',gap:'.55rem',flexWrap:'wrap'}}>
-            {teams.map((t,i)=>(
-              <div key={i} style={{padding:'.28rem .7rem',borderRadius:9,
-                background:i===ti?`${t.color}28`:'rgba(255,255,255,.05)',
-                border:`1px solid ${i===ti?t.color+'50':'rgba(255,255,255,.08)'}`,
-                display:'flex',alignItems:'center',gap:5}}>
-                <div style={{width:6,height:6,borderRadius:'50%',background:t.color}}/>
-                <span style={{color:t.color,fontWeight:900,fontSize:'.88rem'}}>{sc[i]}</span>
-                <span style={{color:'var(--tt)',fontSize:'.68rem'}}>{t.name}</span>
-              </div>))}
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:'.75rem'}}>
-            <div style={{display:'flex',gap:'.5rem'}}>
-              <span style={{color:'var(--ag)',fontWeight:900,fontSize:'1rem'}}>✓{slv}</span>
-              <span style={{color:'var(--ay)',fontWeight:900,fontSize:'1rem'}}>↩{skp}</span>
+      <>
+        <style>{`@media(orientation:portrait){.game-ls-gate{display:flex!important;}}`}</style>
+        <div className="game-ls-gate" style={{display:'none',position:'fixed',inset:0,zIndex:9998,
+          background:'var(--white)',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,textAlign:'center',padding:'2rem'}}>
+          <div style={{fontSize:'3rem'}}>📱↻</div>
+          <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)'}}>Querformat nötig</div>
+          <div style={{color:'var(--text2)',fontSize:'.88rem'}}>Das Spiel läuft im Querformat.</div>
+        </div>
+        <div className="game-bg"><div className="orb o1"/><div className="orb o2"/><div className="orb o3"/></div>
+        <div style={{position:'fixed',inset:0,zIndex:10,display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',gap:'.75rem',padding:'1rem 1.5rem'}}>
+          {/* Top bar */}
+          <div style={{position:'absolute',top:'.75rem',left:'1rem',right:'1rem',
+            display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <div style={{display:'flex',gap:'.45rem',flexWrap:'wrap'}}>
+              {teams.map((t,i)=>(
+                <div key={i} style={{padding:'.25rem .65rem',borderRadius:8,
+                  background:i===ti?`${t.color}28`:'rgba(255,255,255,.06)',
+                  border:`1px solid ${i===ti?t.color+'50':'rgba(255,255,255,.1)'}`,
+                  display:'flex',alignItems:'center',gap:4}}>
+                  <div style={{width:6,height:6,borderRadius:'50%',background:t.color}}/>
+                  <span style={{color:t.color,fontWeight:900,fontSize:'.85rem'}}>{sc[i]}</span>
+                  <span style={{color:'rgba(255,255,255,.4)',fontSize:'.65rem'}}>{t.name}</span>
+                </div>
+              ))}
             </div>
-            {tsec>0?<TR sec={tmr} mx={tsec} sz={68}/>:
-              <div style={{color:'var(--ts)',fontWeight:700,fontSize:'.85rem',minWidth:40,textAlign:'right'}}>{el}s</div>}
+            <div style={{display:'flex',alignItems:'center',gap:'.6rem'}}>
+              <span style={{color:'#4ade80',fontWeight:900,fontSize:'.95rem'}}>✓{slv}</span>
+              <span style={{color:'#fbbf24',fontWeight:900,fontSize:'.95rem'}}>↩{skp}</span>
+              {tsec>0?<TRing sec={tmr} mx={tsec} sz={66}/>:
+                <div style={{color:'rgba(255,255,255,.5)',fontWeight:700,fontSize:'.82rem'}}>{el}s</div>}
+            </div>
           </div>
+          {/* Word card */}
+          <div className={`word-card glass-s ${fl||''}`}
+            style={{borderRadius:26,padding:'1.75rem 2.5rem',width:'100%',maxWidth:600,
+              minHeight:140,display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center'}}>
+            {fl==='solved'?<div style={{fontSize:'3.5rem'}}>✓</div>:
+             fl==='skipped'?<div style={{fontSize:'3.5rem'}}>↩</div>:
+             <div className="big-word">{word}</div>}
+          </div>
+          {/* Touch fallback */}
+          <div style={{display:'flex',gap:'.75rem',width:'100%',maxWidth:520}}>
+            <button className="btn" onClick={doSkip}
+              style={{flex:1,padding:'.65rem',borderRadius:14,fontWeight:900,fontSize:'.9rem',
+                background:'rgba(217,119,6,.25)',border:'1px solid rgba(217,119,6,.45)',color:'#fbbf24',
+                backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>↩ Überspringen</button>
+            <button className="btn" onClick={doSolve}
+              style={{flex:1,padding:'.65rem',borderRadius:14,fontWeight:900,fontSize:'.9rem',
+                background:'rgba(22,163,74,.25)',border:'1px solid rgba(22,163,74,.45)',color:'#4ade80',
+                backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>✓ Gelöst</button>
+          </div>
+          <button className="btn" onClick={endR}
+            style={{fontSize:'.72rem',padding:'.3rem .8rem',borderRadius:8,
+              background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.12)',
+              color:'rgba(255,255,255,.4)',fontWeight:700}}>Runde beenden</button>
         </div>
-        <div className={`wc glassS ${fl||''}`}
-          style={{borderRadius:28,padding:'2rem 2.5rem',width:'100%',maxWidth:580,minHeight:148,display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center'}}>
-          {fl==='solved'?<div style={{fontSize:'3.5rem'}}>✓</div>:
-           fl==='skipped'?<div style={{fontSize:'3.5rem'}}>↩</div>:
-           <div className="bw">{word}</div>}
-        </div>
-        <div style={{display:'flex',gap:'.85rem',width:'100%',maxWidth:500}}>
-          <GB oc={doSkip} cl="bgy" st={{flex:1,padding:'.7rem',fontSize:'.92rem'}} ch="↩ Überspringen"/>
-          <GB oc={doSolve} cl="bgg" st={{flex:1,padding:'.7rem',fontSize:'.92rem'}} ch="✓ Gelöst"/>
-        </div>
-        <GB oc={endR} st={{fontSize:'.75rem',padding:'.35rem .9rem',opacity:.5}} ch="Runde beenden"/>
-      </div>
+        {showDbg&&<DebugOverlay beta={beta} gamma={gamma} alpha={alpha} threshold={THRESH} onClose={()=>setShowDbg(false)}/>}
+      </>
     );
   }
 
+  /* ── CORRECTION ── */
   if(ph==='correction'){
     const pts=cor.filter(w=>w.solved).length;
     return(
-      <div style={{position:'fixed',inset:0,display:'flex',flexDirection:'column',padding:'1rem 1.25rem',gap:'.75rem',overflowY:'auto'}} className="sc">
-        <div style={{textAlign:'center',flexShrink:0}}>
-          <div style={{color:'var(--tp)',fontSize:'1.4rem',fontWeight:900}}>Rundenkorrektur</div>
-          <div style={{color:'var(--ts)',fontSize:'.82rem'}}>
-            {team.name} · Runde {rno+1} &nbsp;·&nbsp; <span style={{color:'var(--ag)',fontWeight:800}}>{pts} Punkte</span>
+      <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',
+        flexDirection:'column',zIndex:10}}>
+        {/* Header */}
+        <div style={{padding:'1rem',borderBottom:'1px solid var(--border)',flexShrink:0,textAlign:'center'}}>
+          <div style={{fontSize:'1.25rem',fontWeight:900,color:'var(--text)'}}>Rundenkorrektur</div>
+          <div style={{fontSize:'.82rem',color:'var(--text2)',marginTop:2}}>
+            {team.name} · Runde {rno+1}
+            &nbsp;·&nbsp;<span style={{color:'var(--green)',fontWeight:800}}>{pts} Punkte</span>
           </div>
         </div>
-        <GC st={{flex:1,padding:'.6rem',overflowY:'auto',minHeight:0}} cl="sc" ch={
-          cor.length===0
-            ?<div style={{color:'var(--tt)',textAlign:'center',padding:'2rem',fontSize:'.88rem'}}>Keine Begriffe gespielt.</div>
-            :cor.map((item,idx)=>(
-              <div key={idx} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'.55rem .4rem',borderBottom:'1px solid rgba(255,255,255,.055)',gap:'.5rem'}}>
-                <span style={{color:'var(--tp)',fontWeight:700,fontSize:'.9rem'}}>{item.word}</span>
-                <button className="btn"
-                  onClick={()=>{hapT();setCor(p=>p.map((w,i)=>i===idx?{...w,solved:!w.solved}:w));}}
-                  style={{padding:'.28rem .75rem',borderRadius:9,fontSize:'.78rem',fontWeight:800,whiteSpace:'nowrap',
-                    background:item.solved?'rgba(48,209,88,.22)':'rgba(255,69,58,.18)',
-                    border:`1px solid ${item.solved?'rgba(48,209,88,.5)':'rgba(255,69,58,.4)'}`,
-                    color:item.solved?'#30d158':'#ff453a'}}>
-                  {item.solved?'✓ Gelöst':'✗ Falsch'}
-                </button>
-              </div>))
-        }/>
-        <GB oc={confirm} cl="bg2" st={{width:'100%',padding:'.9rem',fontSize:'1rem'}}
-          ch={`✓ ${pts} Punkte für ${team.name} bestätigen`}/>
+        {/* List */}
+        <div className="sc" style={{flex:1,padding:'.75rem',overflowY:'auto'}}>
+          {cor.length===0&&(
+            <div style={{textAlign:'center',padding:'2rem',color:'var(--text3)',fontSize:'.88rem'}}>
+              Keine Begriffe gespielt.
+            </div>
+          )}
+          {cor.map((item,idx)=>(
+            <div key={idx} style={{display:'flex',alignItems:'center',justifyContent:'space-between',
+              padding:'.55rem .4rem',borderBottom:'1px solid var(--border)',gap:'.5rem'}}>
+              <span style={{fontWeight:700,fontSize:'.9rem',color:'var(--text)'}}>{item.word}</span>
+              <button className="btn" onClick={()=>{hapT();setCor(p=>p.map((w,i)=>i===idx?{...w,solved:!w.solved}:w));}}
+                style={{padding:'.28rem .75rem',borderRadius:8,fontSize:'.78rem',fontWeight:800,whiteSpace:'nowrap',
+                  background:item.solved?'var(--green-l)':'var(--red-l)',
+                  border:`1px solid ${item.solved?'var(--green-b)':'var(--red-b)'}`,
+                  color:item.solved?'var(--green)':'var(--red)'}}>
+                {item.solved?'✓ Gelöst':'✗ Falsch'}
+              </button>
+            </div>
+          ))}
+        </div>
+        {/* Confirm */}
+        <div style={{padding:'.75rem',borderTop:'1px solid var(--border)',
+          boxShadow:'0 -4px 12px rgba(0,0,0,.05)'}}>
+          <button className="btn btn-primary" onClick={confirm}
+            style={{width:'100%',padding:'1rem',fontSize:'1rem',fontWeight:900,borderRadius:var(--radius)}}>
+            ✓ {pts} Punkte für {team.name} bestätigen
+          </button>
+        </div>
       </div>
     );
   }
 
+  /* ── GAME OVER ── */
   if(ph==='over'){
     const mx=Math.max(...sc),wi=sc.indexOf(mx),tie=sc.filter(s=>s===mx).length>1,win=teams[wi];
     return(
-      <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem'}}>
-        <GC s st={{maxWidth:520,width:'100%',textAlign:'center',padding:'2.5rem'}} ch={<>
-          <div style={{fontSize:'4.5rem',marginBottom:'.6rem'}}>{tie?'🤝':'🏆'}</div>
-          <div style={{color:tie?'var(--tp)':win.color,fontSize:'2.2rem',fontWeight:900,letterSpacing:'-.025em',marginBottom:'.3rem'}}>
+      <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',
+        alignItems:'center',justifyContent:'center',padding:'2rem',zIndex:10}}>
+        <div className="card" style={{maxWidth:480,width:'100%',padding:'2rem',textAlign:'center'}}>
+          <div style={{fontSize:'4rem',marginBottom:'.6rem'}}>{tie?'🤝':'🏆'}</div>
+          <div style={{fontSize:'2rem',fontWeight:900,color:tie?'var(--text)':win.color,
+            letterSpacing:'-.025em',marginBottom:'.25rem'}}>
             {tie?'Unentschieden!':`${win.name} gewinnt!`}
           </div>
-          {!tie&&<div style={{color:'var(--ts)',fontWeight:700,fontSize:'.88rem',marginBottom:'1.5rem'}}>{win.players.join(', ')}</div>}
-          <div style={{display:'flex',gap:'.75rem',justifyContent:'center',margin:'1.5rem 0',flexWrap:'wrap'}}>
+          {!tie&&<div style={{color:'var(--text2)',fontWeight:700,fontSize:'.88rem',marginBottom:'1.25rem'}}>
+            {win.players.join(', ')}
+          </div>}
+          <div style={{display:'flex',gap:'.6rem',justifyContent:'center',margin:'1.25rem 0',flexWrap:'wrap'}}>
             {teams.map((t,i)=>(
-              <div key={i} style={{padding:'.8rem 1.3rem',borderRadius:18,background:`${t.color}18`,border:`1px solid ${t.color}45`,textAlign:'center',minWidth:90}}>
-                <div style={{color:t.color,fontWeight:900,fontSize:'2.2rem',lineHeight:1}}>{sc[i]}</div>
-                <div style={{color:'var(--ts)',fontSize:'.72rem',fontWeight:700,marginTop:'.2rem'}}>{t.name}</div>
-              </div>))}
+              <div key={i} style={{padding:'.65rem 1.1rem',borderRadius:14,
+                background:i===wi&&!tie?`${t.color}10`:'var(--off)',
+                border:`1.5px solid ${i===wi&&!tie?t.color+'40':'var(--border)'}`,textAlign:'center',minWidth:80}}>
+                <div style={{color:t.color,fontWeight:900,fontSize:'2rem',lineHeight:1}}>{sc[i]}</div>
+                <div style={{color:'var(--text2)',fontSize:'.7rem',fontWeight:700,marginTop:2}}>{t.name}</div>
+              </div>
+            ))}
           </div>
-          <div style={{display:'flex',gap:'.75rem'}}>
-            <GB oc={onEnd} cl="bgg" st={{flex:1,padding:'.9rem',fontSize:'.95rem'}} ch="🔄 Neues Spiel"/>
-            <GB oc={()=>{hapT();location.reload();}} st={{flex:1,padding:'.9rem',fontSize:'.95rem'}} ch="↩ Hauptmenü"/>
+          <div style={{display:'flex',gap:'.6rem'}}>
+            <button className="btn btn-primary" onClick={()=>{hapT();onEnd();}}
+              style={{flex:1,padding:'.9rem',fontSize:'.95rem',fontWeight:900,borderRadius:var(--radius)}}>
+              🔄 Neues Spiel
+            </button>
+            <button className="btn btn-ghost" onClick={()=>{hapT();location.reload();}}
+              style={{flex:1,padding:'.9rem',fontSize:'.95rem',fontWeight:800}}>
+              ↩ Hauptmenü
+            </button>
           </div>
-        </>}/>
+        </div>
       </div>
     );
   }
   return null;
 }
 
+/* ══════════════════════════════════════════
+   ROOT APP
+══════════════════════════════════════════ */
 function App(){
   const[screen,setScreen]=useState('perm');
   const[players,setPlayers]=useState([]);
   const[cfg,setCfg]=useState(null);
+
   useEffect(()=>{
     const raw=new URLSearchParams(location.search).get('players');
-    if(raw){const p=raw.split(',').map(s=>s.trim()).filter(Boolean);
-      setPlayers(p.length>=4?p:[...p,...['Alex','Sam','Jordan','Morgan'].slice(p.length,4)]);}
-    else setPlayers(['Anna','Ben','Clara','David','Emma','Felix']);
+    if(raw){
+      const p=raw.split(',').map(s=>s.trim()).filter(Boolean);
+      setPlayers(p.length>0?p:['Spieler 1','Spieler 2','Spieler 3','Spieler 4']);
+    }else{
+      setPlayers(['Spieler 1','Spieler 2','Spieler 3','Spieler 4']);
+    }
   },[]);
+
   return(
     <>
-      {screen==='perm'&&<Perm done={()=>setScreen('setup')}/>}
-      {screen==='setup'&&players.length>0&&<Setup players={players} onStart={c=>{setCfg(c);setScreen('game');}}/>}
-      {screen==='game'&&cfg&&<Game cfg={cfg} onEnd={()=>setScreen('setup')}/>}
+      {screen==='perm'&&<PermScreen onDone={()=>setScreen('setup')}/>}
+      {screen==='setup'&&<SetupScreen initialPlayers={players} onStart={c=>{setCfg(c);setScreen('game');}}/>}
+      {screen==='game'&&cfg&&<GameScreen cfg={cfg} onEnd={()=>setScreen('setup')}/>}
     </>
   );
 }
+
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
