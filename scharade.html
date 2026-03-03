@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Test iOS</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 80%;
+            max-width: 400px;
+        }
+        .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007aff;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+        .info { font-size: 0.8rem; color: #888; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Handy-Neigung</h2>
+        
+        <div id="display">
+            <p>Beta (Vor/Zurück): <span id="beta" class="value">0</span>°</p>
+            <p>Gamma (Links/Rechts): <span id="gamma" class="value">0</span>°</p>
+            <p>Alpha (Kompass): <span id="alpha" class="value">0</span>°</p>
+        </div>
+
+        <button id="accelPermsButton">Sensoren aktivieren</button>
+        
+        <p class="info">Hinweis: iOS benötigt eine Interaktion und HTTPS.</p>
+    </div>
+
+    <script>
+        const btn = document.getElementById('accelPermsButton');
+        
+        btn.onclick = function() {
+            // Prüfung für iOS 13+ Berechtigungen
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startTracking();
+                        } else {
+                            alert("Zugriff verweigert!");
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Für Nicht-iOS Geräte oder ältere Versionen
+                startTracking();
+            }
+        };
+
+        function startTracking() {
+            btn.style.display = 'none'; // Button ausblenden, wenn aktiv
+            
+            window.addEventListener('deviceorientation', (event) => {
+                // Werte runden für bessere Lesbarkeit
+                const b = Math.round(event.beta);
+                const g = Math.round(event.gamma);
+                const a = Math.round(event.alpha);
+
+                document.getElementById('beta').innerText = b;
+                document.getElementById('gamma').innerText = g;
+                document.getElementById('alpha').innerText = a;
+            });
+        }
+    </script>
+
+</body>
+</html>
