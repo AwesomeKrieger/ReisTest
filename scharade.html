@@ -2,899 +2,1281 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="theme-color" content="#ffffff"/>
-<title>HeadBanz</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="HeadBanz"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>HeadBanz 🎭</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
+/* ─── RESET ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{width:100%;height:100%;overflow:hidden;}
+body{font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  background:#fff;transition:background .25s;}
+body.dark{background:#0d0f1a;}
+
+/* ─── THEME ─── */
 :root{
-  --white:#ffffff;
-  --off:#f7f8fa;
-  --border:#e8eaed;
-  --border2:#d1d5db;
-  --text:#111318;
-  --text2:#6b7280;
-  --text3:#9ca3af;
-  --blue:#2563eb;
-  --blue-l:#eff6ff;
-  --blue-b:#bfdbfe;
-  --green:#16a34a;
-  --green-l:#f0fdf4;
-  --green-b:#bbf7d0;
-  --red:#dc2626;
-  --red-l:#fef2f2;
-  --red-b:#fecaca;
-  --yellow:#d97706;
-  --yellow-l:#fffbeb;
-  --yellow-b:#fde68a;
-  --purple:#7c3aed;
-  --orange:#ea580c;
-  --radius:14px;
-  --radius-sm:10px;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
-  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
-  --shadow-lg:0 10px 15px rgba(0,0,0,.08),0 4px 6px rgba(0,0,0,.05);
+  --bg:#fff;--bg2:#f5f5f5;--card:#fff;
+  --sep:#e8e8e8;--txt:#111;--txt2:#555;--txt3:#999;
+  --hdr:rgba(255,255,255,.95);--page:#f5f5f5;
+  --row:#f0f0f0;--acc:#2563eb;--inp:#111;
 }
-html,body{width:100%;height:100%;overflow:hidden;background:var(--white);
-  font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;
-  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
-#root{width:100%;height:100%;position:relative;}
+body.dark{
+  --bg:#0d0f1a;--bg2:#141620;--card:#1e2030;
+  --sep:rgba(255,255,255,.09);--txt:#f0f0f0;--txt2:#9090a8;--txt3:#505060;
+  --hdr:rgba(14,16,26,.96);--page:#13151f;
+  --row:#252738;--acc:#60a5fa;--inp:#f0f0f0;
+}
 
-/* ── SCROLLABLE ── */
-.sc{overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.sc::-webkit-scrollbar{width:3px;}
-.sc::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+/* ─── SINGLE SCREEN CONTAINER ─── */
+/* Only ONE .screen is visible at a time */
+#root{position:relative;}
+.screen{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  overflow:hidden;
+  transition:transform .36s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+.screen.show{transform:translateX(0);}
+.screen.hide-left{transform:translateX(-100%);}
+.screen.hide-right{transform:translateX(100%);}
 
-/* ── CARD ── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
-.card-flat{background:var(--off);border:1px solid var(--border);border-radius:var(--radius);}
+/* ─── SCROLLABLE ─── */
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0;}
+.scroll::-webkit-scrollbar{display:none;}
 
-/* ── BUTTON BASE ── */
+/* ─── iOS HEADER ─── */
+.ios-hdr{
+  height:52px;display:flex;align-items:center;padding:0 6px;flex-shrink:0;
+  background:var(--hdr);border-bottom:1px solid var(--sep);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  position:sticky;top:0;z-index:10;
+}
+.ios-hdr-title{flex:1;text-align:center;font-size:17px;font-weight:800;
+  color:var(--txt);letter-spacing:-.01em;}
+.back-btn{display:flex;align-items:center;gap:3px;background:none;border:none;
+  color:var(--acc);font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
+  padding:8px 10px;min-width:80px;cursor:pointer;outline:none;}
+.right-btn{background:none;border:none;color:var(--acc);
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
+  padding:8px 10px;min-width:80px;text-align:right;cursor:pointer;outline:none;}
+
+/* ─── LIST ─── */
+.sec{margin:22px 16px 0;}
+.sec-label{font-size:12px;font-weight:700;color:var(--txt3);
+  letter-spacing:.04em;text-transform:uppercase;padding:0 5px;margin-bottom:6px;}
+.group{background:var(--card);border-radius:14px;overflow:hidden;}
+.row{display:flex;align-items:center;min-height:52px;padding:0 16px;gap:10px;
+  border-bottom:1px solid var(--sep);cursor:pointer;transition:background .1s;}
+.row:last-child{border-bottom:none;}
+.row:active{background:var(--row);}
+.row.static{cursor:default;}.row.static:active{background:transparent;}
+.row-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:17px;flex-shrink:0;}
+.row-body{flex:1;min-width:0;padding:12px 0;display:flex;flex-direction:column;}
+.row-label{font-size:15px;font-weight:700;color:var(--txt);line-height:1.3;}
+.row-sub{font-size:12px;font-weight:600;color:var(--txt3);margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.row-value{font-size:14px;font-weight:600;color:var(--txt3);white-space:nowrap;flex-shrink:0;}
+.row-arrow{color:var(--txt3);font-size:20px;opacity:.4;flex-shrink:0;line-height:1;}
+.row-check{color:var(--acc);font-size:18px;font-weight:900;width:26px;flex-shrink:0;}
+
+/* ─── INPUT ─── */
+.inp{background:transparent;border:none;outline:none;
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
+  color:var(--inp);flex:1;min-width:0;width:100%;}
+
+/* ─── TOGGLE ─── */
+.tog{width:51px;height:31px;border-radius:16px;border:none;outline:none;
+  position:relative;flex-shrink:0;transition:background .2s;cursor:pointer;}
+.tog-knob{position:absolute;top:3px;left:3px;width:25px;height:25px;
+  border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.28);
+  transition:transform .22s cubic-bezier(.34,1.4,.64,1);}
+.tog-knob.on{transform:translateX(20px);}
+
+/* ─── BUTTONS ─── */
 .btn{cursor:pointer;border:none;outline:none;font-family:'Nunito',sans-serif;
-  transition:all .18s cubic-bezier(.34,1.4,.64,1);display:inline-flex;align-items:center;justify-content:center;gap:6px;}
-.btn:active{transform:scale(.95);}
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  transition:transform .13s cubic-bezier(.34,1.4,.64,1);}
+.btn:active{transform:scale(.93);}
+.btn-primary{background:var(--acc);color:#fff;font-weight:900;border-radius:14px;
+  box-shadow:0 4px 16px rgba(37,99,235,.35);}
+.btn-sm{background:var(--acc);color:#fff;border-radius:9px;
+  font-weight:800;font-size:14px;padding:7px 13px;}
 
-.btn-primary{background:var(--blue);color:#fff;font-weight:800;border-radius:var(--radius);box-shadow:var(--shadow-md);}
-.btn-primary:hover{background:#1d4ed8;}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);}
-.btn-ghost:hover{background:var(--off);border-color:var(--border2);}
-.btn-danger{background:var(--red-l);color:var(--red);border:1px solid var(--red-b);border-radius:var(--radius-sm);}
-.btn-success{background:var(--green-l);color:var(--green);border:1px solid var(--green-b);border-radius:var(--radius);}
-.btn-icon{background:transparent;color:var(--text3);border:none;padding:4px 6px;border-radius:6px;font-size:.85rem;}
-.btn-icon:hover{background:var(--off);color:var(--text2);}
+/* ─── MENU / HOME ─── */
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.38;
+  animation:bdrift 15s ease-in-out infinite;}
+@keyframes bdrift{0%,100%{transform:translate(0,0);}
+  40%{transform:translate(4vw,-5vh);}70%{transform:translate(-3vw,4vh);}}
+.card{border-radius:22px;cursor:pointer;overflow:hidden;position:relative;
+  transition:transform .17s cubic-bezier(.34,1.4,.64,1);}
+.card:active{transform:scale(.92);}
 
-/* ── TOGGLE ── */
-.tog-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;}
-.tog-track{width:44px;height:26px;border-radius:13px;border:none;outline:none;
-  position:relative;flex-shrink:0;transition:background .2s;}
-.tog-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
-  background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .22s cubic-bezier(.34,1.4,.64,1);}
-.tog-thumb.on{transform:translateX(18px);}
-
-/* ── TAB BAR ── */
-.tab-bar{display:flex;background:var(--off);border-radius:var(--radius);padding:3px;gap:2px;}
-.tab-item{flex:1;padding:.45rem .5rem;border-radius:var(--radius-sm);border:none;outline:none;
-  background:transparent;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;
-  color:var(--text3);cursor:pointer;transition:all .18s ease;white-space:nowrap;}
-.tab-item.active{background:var(--white);color:var(--text);box-shadow:var(--shadow);}
-
-/* ── INPUT ── */
-.inp{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:.55rem .75rem;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:600;
-  color:var(--text);outline:none;transition:border-color .15s;}
-.inp:focus{border-color:var(--blue);}
-.inp::placeholder{color:var(--text3);}
-
-/* ── PLAYER CHIP ── */
-.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 6px 4px 10px;
-  background:var(--off);border:1px solid var(--border);border-radius:20px;
-  font-size:.82rem;font-weight:700;color:var(--text);}
-
-/* ── SECTION HEADER ── */
-.sec-hd{font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:.5rem;}
-
-/* ── BADGE ── */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
-  font-size:.72rem;font-weight:800;}
-
-/* ── GAME BG (dark landscape only) ── */
-.game-bg{position:fixed;inset:0;background:#0a0a0f;z-index:0;}
+/* ─── GAME ─── */
+.gbg{position:absolute;inset:0;}
 .orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 12s ease-in-out infinite;}
-.o1{width:50vw;height:50vw;background:#1b3d70;top:-10%;left:-5%;animation-delay:0s;opacity:.6;}
-.o2{width:40vw;height:40vw;background:#2c1468;top:20%;right:-5%;animation-delay:-4s;opacity:.5;}
-.o3{width:35vw;height:35vw;background:#0c3a28;bottom:-8%;left:35%;animation-delay:-8s;opacity:.5;}
-@keyframes drift{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(2vw,-2vh)scale(1.05);}66%{transform:translate(-2vw,2vh)scale(.96);}}
+@keyframes drift{0%,100%{transform:translate(0,0);}
+  33%{transform:translate(2vw,-2vh);}66%{transform:translate(-2vw,2vh);}}
+.glass-dk{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 12px 48px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);}
+.glass-lt{background:rgba(255,255,255,.88);border:1px solid rgba(0,0,0,.09);
+  box-shadow:0 12px 48px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.9);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);}
+.word-card{transition:all .35s cubic-bezier(.34,1.1,.64,1);}
+.word-card.solved{background:rgba(22,163,74,.28)!important;
+  border-color:rgba(22,163,74,.6)!important;
+  box-shadow:0 0 80px rgba(22,163,74,.5)!important;}
+.word-card.skipped{background:rgba(217,119,6,.24)!important;
+  border-color:rgba(217,119,6,.55)!important;
+  box-shadow:0 0 80px rgba(217,119,6,.4)!important;}
+.bigword{font-size:clamp(2rem,7vw,4.5rem);font-weight:900;
+  letter-spacing:-.03em;line-height:1.05;}
+.tring{transform:rotate(-90deg);}
+.tring circle{transition:stroke-dashoffset 1s linear;}
+.pulse{animation:pp 2s ease-in-out infinite;}
+@keyframes pp{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4);}
+  50%{box-shadow:0 0 0 14px rgba(37,99,235,0);}}
 
-/* ── GLASS (game only) ── */
-.glass{background:rgba(255,255,255,.13);backdrop-filter:blur(32px) saturate(180%);
-  -webkit-backdrop-filter:blur(32px) saturate(180%);
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.35);}
-.glass-s{background:rgba(255,255,255,.2);backdrop-filter:blur(32px) saturate(180%);
-  -webkit-backdrop-filter:blur(32px) saturate(180%);
-  border:1px solid rgba(255,255,255,.35);
-  box-shadow:0 12px 48px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.45);}
+/* ─── PAUSE ─── */
+.pause-overlay{position:absolute;inset:0;z-index:50;background:rgba(8,9,15,.93);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;text-align:center;padding:2rem;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
 
-/* ── WORD CARD ── */
-.word-card{transition:all .38s cubic-bezier(.34,1.1,.64,1);}
-.word-card.solved{background:rgba(22,163,74,.22)!important;border-color:rgba(22,163,74,.5)!important;
-  box-shadow:0 0 60px rgba(22,163,74,.4),0 12px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(22,163,74,.4)!important;}
-.word-card.skipped{background:rgba(217,119,6,.2)!important;border-color:rgba(217,119,6,.45)!important;
-  box-shadow:0 0 60px rgba(217,119,6,.35),0 12px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(217,119,6,.35)!important;}
-
-/* ── TIMER RING ── */
-.t-ring{transform:rotate(-90deg);}
-.t-ring circle{transition:stroke-dashoffset 1s linear;}
-
-/* ── LANDSCAPE GATE (game screens only) ── */
-.landscape-gate{display:none;position:fixed;inset:0;z-index:9998;background:var(--white);
-  flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:2rem;}
-
-/* ── DEBUG OVERLAY ── */
-.debug{position:fixed;bottom:0;left:0;right:0;z-index:9990;background:rgba(0,0,0,.88);
-  color:#0f0;font-family:monospace;font-size:.72rem;padding:.4rem .7rem;
-  display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
-.debug-bar{height:8px;border-radius:4px;background:#0f0;transition:width .1s linear;min-width:2px;}
-
-/* ── PERM PULSE ── */
-.pp{animation:ppulse 2s ease-in-out infinite;}
-@keyframes ppulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4),var(--shadow-md);}50%{box-shadow:0 0 0 12px rgba(37,99,235,0),var(--shadow-md);}}
-
-/* ── BIG WORD ── */
-.big-word{font-size:clamp(2rem,7vw,4.5rem);font-weight:900;letter-spacing:-.025em;
-  line-height:1.05;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.3);}
+/* ─── DEBUG ─── */
+.dbg{position:absolute;bottom:0;left:0;right:0;z-index:99;
+  background:rgba(4,4,8,.97);font-family:'Courier New',monospace;
+  padding:8px 10px 10px;
+  padding-bottom:max(10px,calc(env(safe-area-inset-bottom)+6px));
+  display:flex;flex-direction:column;gap:5px;}
+.dbg-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.dbg-track{flex:1;min-width:120px;height:14px;background:rgba(255,255,255,.07);
+  border-radius:7px;position:relative;overflow:hidden;}
+.dbg-fill{position:absolute;top:0;bottom:0;left:0;border-radius:7px;transition:width .08s;}
+.dbg-needle{position:absolute;top:0;bottom:0;width:2px;border-radius:1px;transition:left .08s;}
+.dbg-mark{position:absolute;top:2px;bottom:2px;width:1.5px;border-radius:1px;}
+.dbg-close{background:#ef4444;color:#fff;border:none;border-radius:6px;
+  font-size:10px;font-weight:800;padding:2px 7px;cursor:pointer;flex-shrink:0;}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useEffect,useRef,useMemo,useCallback}=React;
+const{useState,useEffect,useRef,useMemo}=React;
 
-/* ─── BUILT-IN CATEGORIES ─── */
-const BUILTIN={
-  "Tiere":["Elefant","Delfin","Pinguin","Krokodil","Flamingo","Nashorn","Gepard","Koala","Otter","Faultier","Axolotl","Schnabeltier","Quokka","Tapir","Leguan","Orang-Utan","Erdmännchen","Tukan","Wombat","Mantarochen"],
-  "Filme":["Titanic","Matrix","Avatar","Inception","Interstellar","Gladiator","Der Pate","Joker","Parasite","Avengers","Forrest Gump","Pulp Fiction","Fight Club","The Dark Knight","Jurassic Park","E.T.","Star Wars","Memento","Amelie","Braveheart"],
-  "Berufe":["Feuerwehrmann","Astronaut","Dirigent","Uhrmacher","Sommelier","Bestatter","Hebamme","Förster","Logopäde","Gerichtsmediziner","Imker","Kürschner","Notar","Taucher","Vulkanologe","Schornsteinfeger","Goldschmied","Glasmacher","Buchdrucker","Falknerin"],
-  "Essen":["Sushi","Guacamole","Fondue","Tiramisu","Baklava","Hummus","Ceviche","Paella","Kimchi","Pho","Ratatouille","Shakshuka","Tagine","Wiener Schnitzel","Bibimbap","Crêpe","Borschtsch","Falafel","Rendang","Khinkali"],
-  "Sport":["Curling","Bogenschießen","Sumo","Synchronschwimmen","Breakdance","Klettern","Fechten","Bobfahren","Polo","Snooker","Trampolinturnen","Skeleton","Wasserball","Floorball","Biathlon","Beachvolleyball","Taekwondo","Kanupolo","Hornussen","Sepaktakraw"],
-  "Orte":["Machu Picchu","Stonehenge","Angkor Wat","Petra","Alhambra","Pompeji","Chichen Itza","Taj Mahal","Kolosseum","Akropolis","Timbuktu","Ephesos","Persepolis","Versailles","Neuschwanstein","Galapagos","Kappadokien","Fjorde","Okavango","Rapa Nui"],
-  "Geschichte":["Napoleon","Kleopatra","Einstein","Shakespeare","Da Vinci","Mozart","Galileo","Marie Curie","Aristoteles","Kolumbus","Tesla","Newton","Darwin","Gandhi","Julius Cäsar","Marco Polo","Kopernikus","Archimedes","Sokrates","Konfuzius"],
-  "Technologie":["Smartphone","Quantencomputer","3D-Drucker","Drohne","Roboter","Elektroauto","Satellit","Laser","Solarpanel","Bluetooth","KI","VR-Brille","Hologramm","Mikrochip","Magnetschwebebahn","Kernfusion","Supraleiter","Exoskelett","Bioreaktor","Nanobot"]
+/* ═══════════════════════════════════════
+   TILT CONFIG  ←  edit these values
+   
+   Phone held flat in LANDSCAPE over head.
+   gamma axis: 0° = flat, negative = left side tips down,
+                             positive = right side tips down
+   Range in use: -90° to +90°
+
+   SOLVE zone:  0° to -45°  (slight left tilt)  → ✓ Gelöst
+   SKIP  zone:  0° to +45°  (slight right tilt)  → ↩ Skip
+   Dead zones:  -45° to -90°  and  +45° to +90°  (too far, no action)
+   Neutral:     exactly around 0° (flat)
+
+   Change TILT_SOLVE_MAX and TILT_SKIP_MAX to tune.
+═══════════════════════════════════════ */
+const TILT_SOLVE_MAX = -45;  // gamma below this = solve  (e.g. -30 = easier)
+const TILT_SKIP_MAX  =  45;  // gamma above this = skip   (e.g.  30 = easier)
+const TILT_DEBOUNCE  = 850;  // ms between triggers
+
+/* ─── WORD DATA ─── */
+const CATS={
+  "Tiere":["Elefant","Delfin","Pinguin","Krokodil","Flamingo","Nashorn","Gepard","Koala","Otter","Faultier","Axolotl","Schnabeltier","Quokka","Tapir","Leguan","Erdmännchen","Tukan","Wombat","Gorilla","Kamel"],
+  "Filme":["Titanic","Matrix","Avatar","Inception","Interstellar","Gladiator","Der Pate","Joker","Parasite","Avengers","Forrest Gump","Pulp Fiction","Fight Club","The Dark Knight","Jurassic Park","Star Wars","Memento","Amelie","Braveheart","Der Schuh des Manitu"],
+  "Berufe":["Feuerwehrmann","Astronaut","Dirigent","Uhrmacher","Sommelier","Bestatter","Hebamme","Förster","Logopäde","Imker","Notar","Taucher","Vulkanologe","Schornsteinfeger","Goldschmied","Glasmacher","Buchdrucker","Falknerin","Floristin","Seiler"],
+  "Essen":["Sushi","Guacamole","Fondue","Tiramisu","Baklava","Hummus","Ceviche","Paella","Kimchi","Pho","Ratatouille","Shakshuka","Wiener Schnitzel","Bibimbap","Falafel","Rendang","Crêpe","Borschtsch","Khinkali","Käsespätzle"],
+  "Sport":["Curling","Bogenschießen","Sumo","Synchronschwimmen","Klettern","Fechten","Bobfahren","Polo","Snooker","Trampolinturnen","Skeleton","Wasserball","Biathlon","Beachvolleyball","Taekwondo","Kanupolo","Sepaktakraw","Hornussen","Floorball","Breakdance"],
+  "Orte":["Machu Picchu","Stonehenge","Angkor Wat","Petra","Alhambra","Pompeji","Taj Mahal","Kolosseum","Akropolis","Timbuktu","Persepolis","Versailles","Neuschwanstein","Galapagos","Kappadokien","Fjorde","Okavango","Rapa Nui","Ephesos","Chichen Itza"],
+  "Geschichte":["Napoleon","Kleopatra","Einstein","Shakespeare","Mozart","Galileo","Marie Curie","Kolumbus","Tesla","Newton","Darwin","Gandhi","Julius Cäsar","Marco Polo","Archimedes","Kopernikus","Sokrates","Konfuzius","Aristoteles","Che Guevara"],
+  "Technologie":["Smartphone","3D-Drucker","Drohne","Roboter","Elektroauto","Satellit","Laser","Solarpanel","KI","VR-Brille","Hologramm","Mikrochip","Magnetschwebebahn","Kernfusion","Exoskelett","Quantencomputer","Supraleiter","Bioreaktor","Nanobot","Bluetooth"]
 };
-
-const TC=['#2563eb','#7c3aed','#ea580c','#16a34a','#dc2626','#0891b2'];
+const TEAM_COLORS=['#2563eb','#7c3aed','#ea580c','#16a34a','#dc2626','#0891b2'];
 const vib=p=>navigator.vibrate&&navigator.vibrate(p);
-const hapS=()=>vib([35]);const hapK=()=>vib([15,55,15]);const hapT=()=>vib([8]);const hapE=()=>vib([50,30,50]);
-const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const hapT=()=>vib([8]);
+const hapS=()=>vib([35]);
+const hapK=()=>vib([15,55,15]);
+const hapE=()=>vib([50,30,50]);
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
 
-/* ─── TOGGLE ─── */
-const Tog=({on,oc,label})=>(
-  <div className="tog-wrap" onClick={()=>{hapT();oc(!on);}}>
-    <button className="tog-track" style={{background:on?'var(--blue)':'#d1d5db'}}>
-      <div className={`tog-thumb${on?' on':''}`}/>
-    </button>
-    {label&&<span style={{fontSize:'.84rem',fontWeight:700,color:'var(--text2)'}}>{label}</span>}
-  </div>
+/* ─── BACK ARROW ─── */
+const BackArrow=()=>(
+  <svg width="9" height="16" viewBox="0 0 9 16" fill="none">
+    <path d="M7.5 1L1 8L7.5 15" stroke="var(--acc)" strokeWidth="2.2"
+      strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
 );
 
+/* ─── TOGGLE ─── */
+function Toggle({on,onChange}){
+  return(
+    <button className="tog" style={{background:on?'#34c759':'#d1d1d6'}}
+      onClick={()=>{hapT();onChange(!on);}}>
+      <div className={"tog-knob"+(on?' on':'')}/>
+    </button>
+  );
+}
+
 /* ─── TIMER RING ─── */
-const TRing=({sec,mx,sz=68})=>{
-  const r=(sz-8)/2,ci=2*Math.PI*r,pct=mx>0?sec/mx:1,off=ci*(1-pct);
+function Ring({sec,max,size=60}){
+  const r=(size-8)/2,ci=2*Math.PI*r;
+  const off=ci*(1-(max>0?sec/max:1));
   const col=sec<=10?'#ef4444':sec<=30?'#f59e0b':'#22c55e';
   return(
-    <svg width={sz} height={sz} className="t-ring" style={{flexShrink:0}}>
-      <circle cx={sz/2} cy={sz/2} r={r} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="6"/>
-      <circle cx={sz/2} cy={sz/2} r={r} fill="none" stroke={col} strokeWidth="6"
-        strokeDasharray={ci} strokeDashoffset={off} strokeLinecap="round"/>
-      <text x={sz/2} y={sz/2+1} textAnchor="middle" dominantBaseline="middle"
-        style={{fill:col,fontSize:'.95rem',fontWeight:900,fontFamily:'Nunito'}}
-        transform={`rotate(90,${sz/2},${sz/2})`}>{sec}</text>
+    <svg width={size} height={size} className="tring">
+      <circle cx={size/2} cy={size/2} r={r} fill="none"
+        stroke="rgba(255,255,255,.15)" strokeWidth="6"/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none"
+        stroke={col} strokeWidth="6" strokeDasharray={ci}
+        strokeDashoffset={off} strokeLinecap="round"/>
+      <text x={size/2} y={size/2+1} textAnchor="middle"
+        dominantBaseline="middle"
+        style={{fill:col,fontSize:14,fontWeight:900,fontFamily:'Nunito'}}
+        transform={`rotate(90,${size/2},${size/2})`}>{sec}</text>
     </svg>
   );
-};
+}
 
-/* ══════════════════════════════════════════
-   DEBUG OVERLAY
-══════════════════════════════════════════ */
-function DebugOverlay({beta,gamma,alpha,threshold,onClose}){
-  const pct=v=>Math.min(100,Math.max(0,(v+90)/180*100));
-  const fwdPct=Math.min(100,Math.max(0,(-beta+90)/180*100));
-  const bkPct=Math.min(100,Math.max(0,(beta+90)/180*100));
-  const bIsFwd=beta!==null&&beta<-threshold;
-  const bIsBk=beta!==null&&beta>threshold+20;
+/* ─── SENSOR DEBUG BAR ─── */
+function DebugBar({sensors,onClose}){
+  const{alpha,beta,gamma}=sensors;
+  const g=gamma??0;
+  // trigger zones
+  const isSolve=gamma!=null&&gamma>TILT_SOLVE_MAX&&gamma<0;
+  const isSkip=gamma!=null&&gamma<TILT_SKIP_MAX&&gamma>0;
+  const isDeadL=gamma!=null&&gamma<=TILT_SOLVE_MAX;
+  const isDeadR=gamma!=null&&gamma>=TILT_SKIP_MAX;
+  const state=isDeadL?'DEAD-':isSolve?'GELÖST ✓':isSkip?'SKIP ↩':isDeadR?'DEAD+':'NEUTRAL';
+  const stateColor=isDeadL||isDeadR?'#555':isSolve?'#4ade80':isSkip?'#fbbf24':'#aaa';
+
+  // Convert value to 0-100% for display
+  function pct(val,min,max){return Math.min(100,Math.max(0,(val-min)/(max-min)*100));}
+
+  function Track({val,min,max,zones,label}){
+    if(val==null)return(
+      <div className="dbg-row">
+        <span style={{color:'#555',fontSize:10,minWidth:90}}>{label} –</span>
+      </div>
+    );
+    const p=pct(val,min,max);
+    return(
+      <div className="dbg-row">
+        <span style={{color:'#666',fontSize:10,minWidth:90,flexShrink:0}}>
+          {label} <span style={{color:'#0f0'}}>{val.toFixed(1)}°</span>
+        </span>
+        <div className="dbg-track">
+          {/* zone overlays */}
+          {zones&&zones.map((z,i)=>(
+            <div key={i} style={{position:'absolute',
+              left:pct(z.from,min,max)+'%',
+              width:(pct(z.to,min,max)-pct(z.from,min,max))+'%',
+              top:0,bottom:0,background:z.color,opacity:.18}}/>
+          ))}
+          {/* threshold marks */}
+          {zones&&zones.map((z,i)=>(
+            <React.Fragment key={'m'+i}>
+              <div className="dbg-mark" style={{left:pct(z.from,min,max)+'%',background:z.color}}/>
+              <div className="dbg-mark" style={{left:pct(z.to,min,max)+'%',background:z.color}}/>
+            </React.Fragment>
+          ))}
+          {/* needle */}
+          <div className="dbg-needle" style={{left:p+'%',background:'#fff'}}/>
+        </div>
+      </div>
+    );
+  }
+
+  const gammaZones=[
+    {from:TILT_SOLVE_MAX,to:0,color:'#4ade80'},   // solve zone
+    {from:0,to:TILT_SKIP_MAX,color:'#fbbf24'},    // skip zone
+  ];
+
   return(
-    <div className="debug">
-      <button className="btn" onClick={onClose}
-        style={{background:'#ef4444',color:'#fff',padding:'2px 8px',borderRadius:6,fontSize:'.7rem',fontWeight:800}}>✕ DEBUG</button>
-      <span style={{color:'#ff0'}}>β={beta!==null?beta.toFixed(1):'–'}</span>
-      <span style={{color:'#0ff'}}>γ={gamma!==null?gamma.toFixed(1):'–'}</span>
-      <span style={{color:'#f0f'}}>α={alpha!==null?alpha.toFixed(1):'–'}</span>
-      <div style={{display:'flex',alignItems:'center',gap:4}}>
-        <span style={{color:'#888',fontSize:'.65rem'}}>VOR</span>
-        <div style={{width:60,height:8,background:'rgba(255,255,255,.15)',borderRadius:4,overflow:'hidden'}}>
-          <div className="debug-bar" style={{width:`${fwdPct}%`,background:bIsFwd?'#0f0':'#555'}}/>
-        </div>
+    <div className="dbg">
+      <div className="dbg-row">
+        <button className="dbg-close" onClick={onClose}>✕</button>
+        <span style={{color:stateColor,fontSize:12,fontWeight:900}}>{state}</span>
+        <span style={{color:'#444',fontSize:10}}>
+          solve {TILT_SOLVE_MAX}°…0° · skip 0°…{TILT_SKIP_MAX}°
+        </span>
       </div>
-      <div style={{display:'flex',alignItems:'center',gap:4}}>
-        <span style={{color:'#888',fontSize:'.65rem'}}>ZURÜCK</span>
-        <div style={{width:60,height:8,background:'rgba(255,255,255,.15)',borderRadius:4,overflow:'hidden'}}>
-          <div className="debug-bar" style={{width:`${bkPct}%`,background:bIsBk?'#ff0':'#555'}}/>
-        </div>
-      </div>
-      <span style={{color:bIsFwd?'#0f0':bIsBk?'#ff0':'#555',fontWeight:900,fontSize:'.75rem'}}>
-        {bIsFwd?'▲ GELÖST':bIsBk?'▼ SKIP':'○ NEUTRAL'}
-      </span>
-      <span style={{color:'#555',fontSize:'.65rem'}}>Schwelle: ±{threshold}°</span>
+      <Track val={alpha} min={0} max={360} label="α alpha"/>
+      <Track val={beta}  min={-180} max={180} label="β beta"/>
+      <Track val={gamma} min={-90}  max={90}  label="γ gamma" zones={gammaZones}/>
     </div>
   );
 }
 
-/* ══════════════════════════════════════════
-   SCREEN: PERMISSION
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   PERMISSION SCREEN
+══════════════════════════════════════════════════ */
 function PermScreen({onDone}){
   const[st,setSt]=useState('idle');
-  async function req(){hapT();
-    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-      try{const r=await DeviceOrientationEvent.requestPermission();
-        if(r==='granted'){setSt('ok');setTimeout(onDone,600);}else{setSt('denied');hapE();}}
-      catch{setSt('denied');hapE();}}
-    else{setSt('ok');setTimeout(onDone,400);}
+  async function req(){
+    hapT();
+    if(typeof DeviceOrientationEvent!=='undefined'&&
+       typeof DeviceOrientationEvent.requestPermission==='function'){
+      try{
+        const r=await DeviceOrientationEvent.requestPermission();
+        if(r==='granted'){setSt('ok');setTimeout(onDone,400);}
+        else setSt('denied');
+      }catch{setSt('denied');}
+    }else{setSt('ok');setTimeout(onDone,300);}
   }
   return(
-    <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',
-      background:'var(--white)',padding:'2rem',zIndex:50}}>
-      <div className="card" style={{maxWidth:380,width:'100%',padding:'2rem',textAlign:'center'}}>
-        <div style={{fontSize:'3rem',marginBottom:'.75rem'}}>{st==='ok'?'✅':st==='denied'?'🚫':'📡'}</div>
-        <div style={{fontSize:'1.35rem',fontWeight:900,color:'var(--text)',marginBottom:'.35rem'}}>
+    <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',
+      justifyContent:'center',background:'var(--bg)',padding:'2rem'}}>
+      <div style={{background:'var(--card)',border:'1px solid var(--sep)',borderRadius:24,
+        maxWidth:340,width:'100%',padding:'2rem',textAlign:'center',
+        boxShadow:'0 4px 32px rgba(0,0,0,.07)'}}>
+        <div style={{fontSize:'3rem',marginBottom:12}}>
+          {st==='ok'?'✅':st==='denied'?'🚫':'📡'}
+        </div>
+        <div style={{fontSize:20,fontWeight:900,color:'var(--txt)',marginBottom:6}}>
           {st==='ok'?'Bereit!':st==='denied'?'Kein Zugriff':'Sensor-Zugriff'}
         </div>
-        <div style={{fontSize:'.87rem',color:'var(--text2)',lineHeight:1.7,marginBottom:'1.75rem'}}>
+        <div style={{fontSize:14,color:'var(--txt2)',lineHeight:1.7,marginBottom:24}}>
           {st==='denied'
-            ?'Bitte erlaube den Bewegungssensor in den iOS-Einstellungen → Safari → Bewegung & Ausrichtung.'
-            :<>Das Spiel nutzt den <strong style={{color:'var(--text)'}}>Neigungssensor</strong> deines Geräts.<br/>
-            Gerät <strong style={{color:'var(--blue)'}}>nach vorne kippen</strong> = Wort gelöst ✓<br/>
-            Gerät <strong style={{color:'var(--yellow)'}}>nach hinten kippen</strong> = Überspringen ↩</>}
+            ?'Einstellungen → Safari → Bewegung & Ausrichtung aktivieren.'
+            :<>Neigungssensor wird benötigt.<br/>
+              <strong style={{color:'#16a34a'}}>Links kippen</strong> = ✓ Gelöst<br/>
+              <strong style={{color:'#d97706'}}>Rechts kippen</strong> = ↩ Skip</>}
         </div>
         {st!=='denied'&&(
-          <button className={`btn btn-primary pp`} onClick={req}
-            style={{width:'100%',padding:'1rem',fontSize:'1rem',fontWeight:800}}>
-            {st==='ok'?'✓ Zugriff gewährt — weiter…':'🔓 Sensoren aktivieren'}
+          <button className="btn btn-primary pulse" onClick={req}
+            style={{width:'100%',padding:14,fontSize:16,borderRadius:13}}>
+            {st==='ok'?'✓ Weiter':'🔓 Aktivieren'}
           </button>
         )}
         {st==='denied'&&(
-          <button className="btn btn-ghost" onClick={()=>{setSt('idle');}}
-            style={{width:'100%',padding:'.75rem',fontSize:'.9rem'}}>← Zurück</button>
+          <button className="btn" onClick={()=>setSt('idle')}
+            style={{width:'100%',padding:12,fontSize:15,fontWeight:700,
+              background:'var(--bg2)',borderRadius:12,color:'var(--txt)'}}>
+            ← Zurück
+          </button>
         )}
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════════
-   SCREEN: SETUP (portrait & landscape)
-══════════════════════════════════════════ */
-const TABS=['Spieler','Teams','Modus','Kategorien'];
+/* ══════════════════════════════════════════════════
+   SETTINGS — iOS nav stack (portrait)
+══════════════════════════════════════════════════ */
 
-function SetupScreen({onStart,initialPlayers}){
-  const[tab,setTab]=useState(0);
-  /* ── players ── */
-  const[players,setPlayers]=useState(()=>{
-    if(initialPlayers&&initialPlayers.length>0)return initialPlayers;
-    return['Spieler 1','Spieler 2','Spieler 3','Spieler 4'];
-  });
+/* Inner page navigation — slides within the Settings screen */
+function NavStack({pages,current,onNav}){
+  /* pages is an object of {id: ReactElement} */
+  return(
+    <div style={{position:'relative',width:'100%',height:'100%',overflow:'hidden'}}>
+      {Object.entries(pages).map(([id,el])=>{
+        const isActive=id===current;
+        return(
+          <div key={id} style={{
+            position:'absolute',inset:0,
+            transform:isActive?'translateX(0)':'translateX(100%)',
+            transition:'transform .32s cubic-bezier(.4,0,.2,1)',
+            display:'flex',flexDirection:'column',
+            background:'var(--page)',
+            overflowY:'auto',WebkitOverflowScrolling:'touch',
+          }}>
+            {el}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Settings({S,upd,onStart}){
+  const[view,setView]=useState('home');
+  const[editIdx,setEditIdx]=useState(0);
+  const[editName,setEditName]=useState('');
   const[newName,setNewName]=useState('');
-  const[editIdx,setEditIdx]=useState(null);
-  const[editVal,setEditVal]=useState('');
 
-  /* ── teams ── */
-  const half=Math.ceil(players.length/2);
-  const[teams,setTeams]=useState(()=>[
-    {name:'Team 1',players:players.slice(0,half),color:TC[0]},
-    {name:'Team 2',players:players.slice(half),color:TC[1]}
-  ]);
+  const TIME_OPTS=[{l:'1 Min',v:60},{l:'2 Min',v:120},{l:'3 Min',v:180},
+    {l:'5 Min',v:300},{l:'10 Min',v:600},{l:'∞',v:0}];
+  const totalW=S.selCats.reduce((a,c)=>a+(S.cats[c]?.length||0),0);
+  const teamValid=S.teams.every(t=>t.players.length>=2);
+  const catValid=S.selCats.length>0;
+  const valid=teamValid&&catValid;
+  const modeLabel={rounds:'Runden-Duell',highscore:'Highscore-Race','1v1':'1v1 Modus'}[S.mode];
 
-  /* Sync teams when players change */
   useEffect(()=>{
-    setTeams(prev=>{
-      // Remove players that don't exist anymore, keep team structure
-      const all=players;
-      const assigned=prev.flatMap(t=>t.players);
-      const unassigned=all.filter(p=>!assigned.includes(p));
-      let next=prev.map(t=>({...t,players:t.players.filter(p=>all.includes(p))}));
-      // assign unassigned to team with fewest players
+    // auto-distribute players to teams
+    upd('teams',prev=>{
+      const assigned=new Set(prev.flatMap(t=>t.players));
+      const unassigned=S.players.filter(p=>!assigned.has(p));
+      let next=prev.map(t=>({...t,players:t.players.filter(p=>S.players.includes(p))}));
       unassigned.forEach(p=>{
-        const mi=next.reduce((mi,t,i)=>t.players.length<next[mi].players.length?i:mi,0);
+        const mi=next.reduce((a,t,i)=>t.players.length<next[a].players.length?i:a,0);
         next=next.map((t,i)=>i===mi?{...t,players:[...t.players,p]}:t);
       });
       return next;
     });
-  },[players]);
+  },[S.players]);
 
-  /* ── mode ── */
-  const[mode,setMode]=useState('rounds');
-  const[rds,setRds]=useState(3);
-  const[tgt,setTgt]=useState(20);
-  const[tsec,setTsec]=useState(60);
+  function assignTeam(pName,ti){
+    hapT();
+    upd('teams',prev=>prev.map((t,i)=>({
+      ...t,
+      players:i===ti?[...t.players.filter(x=>x!==pName),pName]:t.players.filter(x=>x!==pName)
+    })));
+  }
 
-  /* ── categories ── */
-  const[cats,setCats]=useState(BUILTIN);
-  const[sel,setSel]=useState(Object.keys(BUILTIN));
-  useEffect(()=>{
-    fetch('categories.json').then(r=>r.json())
-      .then(d=>{setCats(d);setSel(Object.keys(d));}).catch(()=>{});
-  },[]);
+  /* ── HOME ── */
+  const homeCards=[
+    {id:'modus',icon:'🎮',label:'Spielmodus',sub:modeLabel,
+     grad:'linear-gradient(140deg,#9a3412,#f97316)',glow:'rgba(249,115,22,.4)'},
+    {id:'spieler',icon:'👥',label:'Spieler & Teams',
+     sub:teamValid?S.teams.map(t=>t.name).join(' · '):'⚠ Teams unvollständig',
+     grad:'linear-gradient(140deg,#1e3a8a,#3b82f6)',glow:'rgba(59,130,246,.4)',warn:!teamValid},
+    {id:'themen',icon:'📚',label:'Themen',
+     sub:S.selCats.length+' · '+totalW+' Begriffe',
+     grad:'linear-gradient(140deg,#14532d,#22c55e)',glow:'rgba(34,197,94,.4)',warn:!catValid},
+    {id:'einstellungen',icon:'🛠',label:'Einstellungen',
+     sub:'Debug · Dark Mode · Schwellenwerte',
+     grad:'linear-gradient(140deg,#4c1d95,#8b5cf6)',glow:'rgba(139,92,246,.4)'},
+  ];
 
-  /* ── debug ── */
-  const[debug,setDebug]=useState(false);
-
-  const addPlayer=()=>{
-    const n=newName.trim()||`Spieler ${players.length+1}`;
-    setPlayers(p=>[...p,n]);setNewName('');
-  };
-  const removePlayer=idx=>setPlayers(p=>p.filter((_,i)=>i!==idx));
-  const saveEdit=()=>{
-    if(editIdx===null)return;
-    const n=editVal.trim()||players[editIdx];
-    setPlayers(p=>p.map((x,i)=>i===editIdx?n:x));
-    setEditIdx(null);setEditVal('');
-  };
-  const movePlayer=(p,fromTi,toTi)=>{
-    if(fromTi===toTi)return;
-    setTeams(prev=>prev.map((t,i)=>({...t,players:i===toTi?[...t.players,p]:t.players.filter(x=>x!==p)})));
-  };
-
-  const totalWords=sel.reduce((a,c)=>a+(cats[c]?.length||0),0);
-  const teamValid=teams.every(t=>t.players.length>=2);
-  const valid=teamValid&&sel.length>0;
-
-  const TO=[{l:'1 Min',v:60},{l:'2 Min',v:120},{l:'3 Min',v:180},{l:'5 Min',v:300},{l:'10 Min',v:600},{l:'∞',v:0}];
-
-  const tabContent=[
-    /* ── TAB 0: SPIELER ── */
-    <div key="p" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
-      <div>
-        <div className="sec-hd">Namen hinzufügen</div>
-        <div style={{display:'flex',gap:'.5rem'}}>
-          <input className="inp" placeholder="Name eingeben…" value={newName}
-            onChange={e=>setNewName(e.target.value)}
-            onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addPlayer();}}}
-            style={{flex:1}}/>
-          <button className="btn btn-primary" onClick={addPlayer}
-            style={{padding:'.55rem 1rem',fontWeight:800,fontSize:'.9rem',borderRadius:var(--radius)}}>
-            + Hinzufügen
+  const HomeView=(
+    <div style={{width:'100%',height:'100%',background:'var(--bg)',
+      display:'flex',flexDirection:'column',overflow:'hidden',position:'relative'}}>
+      {/* bg blobs */}
+      <div style={{position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}}>
+        <div className="blob" style={{width:'65vw',height:'65vw',
+          background:S.darkMode?'#1a3360':'#dbeafe',top:'-18%',left:'-12%'}}/>
+        <div className="blob" style={{width:'55vw',height:'55vw',
+          background:S.darkMode?'#2a1860':'#ede9fe',top:'30%',right:'-18%',animationDelay:'-5s'}}/>
+        <div className="blob" style={{width:'45vw',height:'45vw',
+          background:S.darkMode?'#0a3020':'#dcfce7',bottom:'-12%',left:'18%',animationDelay:'-10s'}}/>
+      </div>
+      {/* header */}
+      <div style={{position:'relative',zIndex:1,
+        paddingTop:'max(env(safe-area-inset-top,0px),20px)',
+        padding:'max(env(safe-area-inset-top,0px),20px) 18px 0'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div>
+            <div style={{fontSize:26,fontWeight:900,color:'var(--txt)',
+              letterSpacing:'-.025em',lineHeight:1.1}}>HeadBanz 🎭</div>
+            <div style={{fontSize:12,color:'var(--txt3)',fontWeight:600,marginTop:3}}>
+              Karte antippen zum Ändern
+            </div>
+          </div>
+          <button className="btn" onClick={()=>{hapT();upd('darkMode',v=>!v);}}
+            style={{width:38,height:38,borderRadius:11,background:'var(--card)',
+              border:'1px solid var(--sep)',fontSize:17}}>
+            {S.darkMode?'☀️':'🌙'}
           </button>
         </div>
       </div>
-      <div>
-        <div className="sec-hd">{players.length} Spieler</div>
-        <div style={{display:'flex',flexDirection:'column',gap:'.4rem'}}>
-          {players.map((p,i)=>(
-            <div key={i} className="card-flat" style={{display:'flex',alignItems:'center',gap:'.5rem',padding:'.5rem .65rem'}}>
-              <div style={{width:28,height:28,borderRadius:'50%',background:'var(--blue-l)',
-                display:'flex',alignItems:'center',justifyContent:'center',
-                fontSize:'.75rem',fontWeight:900,color:'var(--blue)',flexShrink:0}}>{i+1}</div>
-              {editIdx===i?(
-                <input className="inp" value={editVal} autoFocus
-                  onChange={e=>setEditVal(e.target.value)}
-                  onKeyDown={e=>{if(e.key==='Enter')saveEdit();if(e.key==='Escape'){setEditIdx(null);}}}
-                  style={{flex:1,padding:'.3rem .5rem',fontSize:'.88rem'}}/>
-              ):(
-                <span style={{flex:1,fontWeight:700,fontSize:'.9rem',color:'var(--text)'}}>{p}</span>
-              )}
-              {editIdx===i?(
-                <button className="btn btn-ghost" onClick={saveEdit}
-                  style={{padding:'3px 8px',fontSize:'.78rem',fontWeight:800,color:'var(--blue)',borderColor:'var(--blue-b)'}}>✓</button>
-              ):(
-                <button className="btn btn-icon" onClick={()=>{setEditIdx(i);setEditVal(p);}}>✏️</button>
-              )}
-              <button className="btn btn-icon" onClick={()=>removePlayer(i)}
-                style={{color:'var(--red)'}}>✕</button>
-            </div>
-          ))}
-          {players.length===0&&(
-            <div style={{textAlign:'center',padding:'1.5rem',color:'var(--text3)',fontSize:'.85rem'}}>
-              Noch keine Spieler. Füge oben Namen hinzu!
-            </div>
-          )}
-        </div>
-      </div>
-    </div>,
-
-    /* ── TAB 1: TEAMS ── */
-    <div key="t" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'.75rem'}}>
-      {!teamValid&&(
-        <div style={{background:'var(--red-l)',border:'1px solid var(--red-b)',borderRadius:var(--radius-sm),
-          padding:'.6rem .75rem',fontSize:'.82rem',color:'var(--red)',fontWeight:700}}>
-          ⚠ Jedes Team braucht min. 2 Spieler
-        </div>
-      )}
-      {teams.map((team,ti)=>(
-        <div key={ti} className="card" style={{padding:'.75rem',borderLeft:`3px solid ${team.color}`}}>
-          {/* Team name edit */}
-          <div style={{display:'flex',alignItems:'center',gap:'.5rem',marginBottom:'.6rem'}}>
-            <div style={{width:10,height:10,borderRadius:'50%',background:team.color,flexShrink:0}}/>
-            <input
-              value={team.name}
-              onChange={e=>setTeams(prev=>prev.map((t,i)=>i===ti?{...t,name:e.target.value}:t))}
-              style={{background:'transparent',border:'none',outline:'none',
-                color:'var(--text)',fontWeight:900,fontSize:'1rem',fontFamily:'Nunito',flex:1,
-                borderBottom:'1px solid transparent'}}
-              onFocus={e=>e.target.style.borderBottomColor='var(--blue)'}
-              onBlur={e=>e.target.style.borderBottomColor='transparent'}/>
-            <span className="badge" style={{background:`${team.color}18`,color:team.color,border:`1px solid ${team.color}30`}}>
-              {team.players.length} Sp.
-            </span>
-          </div>
-          {/* Players in team */}
-          <div style={{display:'flex',flexWrap:'wrap',gap:'.35rem',minHeight:30}}>
-            {team.players.map(p=>(
-              <div key={p} className="chip" style={{background:`${team.color}10`,borderColor:`${team.color}30`}}>
-                <span>{p}</span>
-                {teams.map((t2,ti2)=>ti2!==ti&&(
-                  <button key={ti2} className="btn" onClick={()=>movePlayer(p,ti,ti2)}
-                    style={{background:'none',border:'none',cursor:'pointer',
-                      color:t2.color,fontSize:'.72rem',fontWeight:900,padding:'0 2px',
-                      lineHeight:1}}>›T{ti2+1}</button>
-                ))}
+      {/* 2×2 cards */}
+      <div style={{position:'relative',zIndex:1,flex:1,
+        display:'grid',gridTemplateColumns:'1fr 1fr',gridTemplateRows:'1fr 1fr',
+        gap:11,padding:'14px 14px 6px',minHeight:0}}>
+        {homeCards.map((c,i)=>(
+          <div key={i} className="card" onClick={()=>{hapT();setView(c.id);}}
+            style={{background:c.grad,
+              boxShadow:`0 6px 24px ${c.glow},0 2px 6px rgba(0,0,0,.15)`}}>
+            <div style={{position:'absolute',top:'-20%',right:'-15%',
+              width:'65%',height:'65%',borderRadius:'50%',
+              background:'rgba(255,255,255,.1)',filter:'blur(18px)',pointerEvents:'none'}}/>
+            <div style={{position:'absolute',inset:0,display:'flex',
+              flexDirection:'column',justifyContent:'flex-end',padding:'12px 13px'}}>
+              <div style={{fontSize:26,marginBottom:4,lineHeight:1}}>{c.icon}</div>
+              <div style={{fontSize:14,fontWeight:900,color:'#fff',lineHeight:1.2}}>{c.label}</div>
+              <div style={{fontSize:11,fontWeight:600,color:'rgba(255,255,255,.58)',
+                marginTop:2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                {c.sub}
               </div>
-            ))}
-            {team.players.length<2&&(
-              <span style={{color:'var(--red)',fontSize:'.75rem',fontWeight:700,alignSelf:'center'}}>
-                min. 2 Spieler nötig
-              </span>
+            </div>
+            {c.warn&&(
+              <div style={{position:'absolute',top:9,right:9,background:'#ef4444',
+                borderRadius:7,fontSize:11,fontWeight:800,color:'#fff',padding:'2px 6px'}}>⚠</div>
             )}
           </div>
-        </div>
-      ))}
-      {teams.length<4&&(
-        <button className="btn btn-ghost" onClick={()=>{
-          hapT();
-          setTeams(p=>[...p,{name:`Team ${p.length+1}`,players:[],color:TC[p.length%TC.length]}]);
-        }} style={{padding:'.55rem',fontSize:'.85rem',fontWeight:800}}>
-          + Team hinzufügen
-        </button>
-      )}
-    </div>,
-
-    /* ── TAB 2: MODUS ── */
-    <div key="m" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
-      {/* Mode select */}
-      <div>
-        <div className="sec-hd">Spielmodus</div>
-        <div style={{display:'flex',flexDirection:'column',gap:'.4rem'}}>
-          {[{id:'rounds',ic:'🏆',lb:'Runden-Duell',desc:'Wer hat nach X Runden die meisten Punkte?'},
-            {id:'highscore',ic:'🎯',lb:'Highscore-Race',desc:'Wer erreicht zuerst die Zielpunktzahl?'},
-            {id:'1v1',ic:'⚔️',lb:'1v1 Modus',desc:'Zwei Spieler wechseln sich als Erklärer ab.'}
-          ].map(m=>(
-            <button key={m.id} className="btn" onClick={()=>{hapT();setMode(m.id);}}
-              style={{
-                display:'flex',alignItems:'flex-start',gap:'.65rem',padding:'.75rem',
-                borderRadius:var(--radius),textAlign:'left',
-                background:mode===m.id?'var(--blue-l)':'var(--off)',
-                border:`1.5px solid ${mode===m.id?'var(--blue-b)':'var(--border)'}`,
-              }}>
-              <span style={{fontSize:'1.3rem',lineHeight:1}}>{m.ic}</span>
-              <div>
-                <div style={{fontWeight:800,fontSize:'.9rem',color:mode===m.id?'var(--blue)':'var(--text)'}}>{m.lb}</div>
-                <div style={{fontSize:'.78rem',color:'var(--text2)',marginTop:'2px',fontWeight:600}}>{m.desc}</div>
-              </div>
-              {mode===m.id&&<span style={{marginLeft:'auto',color:'var(--blue)',fontSize:'.9rem',fontWeight:900,flexShrink:0}}>✓</span>}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
-
-      {/* Mode settings */}
-      {mode==='rounds'&&(
-        <div>
-          <div className="sec-hd">Runden pro Team</div>
-          <div style={{display:'flex',gap:'.4rem'}}>
-            {[1,2,3,5,7,10].map(n=>(
-              <button key={n} className="btn" onClick={()=>{hapT();setRds(n);}}
-                style={{flex:1,padding:'.45rem 0',borderRadius:var(--radius-sm),
-                  background:rds===n?'var(--blue)':'var(--off)',
-                  border:`1.5px solid ${rds===n?'var(--blue)':'var(--border)'}`,
-                  color:rds===n?'#fff':'var(--text)',fontWeight:900,fontSize:'.85rem'}}>{n}</button>
-            ))}
-          </div>
-        </div>
-      )}
-      {mode==='highscore'&&(<>
-        <div>
-          <div className="sec-hd">Zeitlimit pro Runde</div>
-          <div style={{display:'flex',flexWrap:'wrap',gap:'.35rem'}}>
-            {TO.map(o=>(
-              <button key={o.v} className="btn" onClick={()=>{hapT();setTsec(o.v);}}
-                style={{padding:'.4rem .75rem',borderRadius:var(--radius-sm),
-                  background:tsec===o.v?'var(--green)':'var(--off)',
-                  border:`1.5px solid ${tsec===o.v?'var(--green)':'var(--border)'}`,
-                  color:tsec===o.v?'#fff':'var(--text)',fontWeight:800,fontSize:'.82rem'}}>{o.l}</button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div className="sec-hd">Zielpunktzahl</div>
-          <div style={{display:'flex',gap:'.35rem'}}>
-            {[10,15,20,30,50].map(n=>(
-              <button key={n} className="btn" onClick={()=>{hapT();setTgt(n);}}
-                style={{flex:1,padding:'.4rem 0',borderRadius:var(--radius-sm),
-                  background:tgt===n?'var(--yellow)':'var(--off)',
-                  border:`1.5px solid ${tgt===n?'var(--yellow)':'var(--border)'}`,
-                  color:tgt===n?'#fff':'var(--text)',fontWeight:900,fontSize:'.85rem'}}>{n}</button>
-            ))}
-          </div>
-        </div>
-      </>)}
-      {mode==='1v1'&&(
-        <div className="card-flat" style={{padding:'.75rem'}}>
-          <div style={{fontSize:'.85rem',color:'var(--text2)',lineHeight:1.7}}>
-            Spieler beider Teams wechseln sich ab.<br/>
-            Erklärer → Rater → Erklärer…<br/>
-            <span style={{color:'var(--text3)',fontSize:'.78rem'}}>
-              Jeder bekommt gleich viele Runden als Erklärer.
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Debug toggle */}
-      <div style={{marginTop:'.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',
-        padding:'.6rem .75rem',background:'var(--off)',borderRadius:var(--radius-sm),border:'1px solid var(--border)'}}>
-        <div>
-          <div style={{fontSize:'.84rem',fontWeight:800,color:'var(--text)'}}>🛠 Debug-Modus</div>
-          <div style={{fontSize:'.72rem',color:'var(--text3)'}}>Zeigt Beta/Gamma-Werte live an</div>
-        </div>
-        <Tog on={debug} oc={setDebug}/>
-      </div>
-    </div>,
-
-    /* ── TAB 3: KATEGORIEN ── */
-    <div key="c" style={{padding:'1rem',display:'flex',flexDirection:'column',gap:'.75rem'}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <div className="sec-hd" style={{margin:0}}>{totalWords} Begriffe gewählt</div>
-        <div style={{display:'flex',gap:'.4rem'}}>
-          <button className="btn btn-ghost" onClick={()=>{hapT();setSel(Object.keys(cats));}}
-            style={{padding:'3px 8px',fontSize:'.74rem',fontWeight:800}}>Alle</button>
-          <button className="btn btn-ghost" onClick={()=>{hapT();setSel([]);}}
-            style={{padding:'3px 8px',fontSize:'.74rem',fontWeight:800}}>Keine</button>
-        </div>
-      </div>
-      {Object.entries(cats).map(([cat,words])=>(
-        <div key={cat} style={{display:'flex',alignItems:'center',justifyContent:'space-between',
-          padding:'.6rem .75rem',background:sel.includes(cat)?'var(--blue-l)':'var(--off)',
-          border:`1.5px solid ${sel.includes(cat)?'var(--blue-b)':'var(--border)'}`,
-          borderRadius:var(--radius-sm),cursor:'pointer',transition:'all .15s'}}
-          onClick={()=>{hapT();setSel(s=>s.includes(cat)?s.filter(c=>c!==cat):[...s,cat]);}}>
-          <div>
-            <div style={{fontWeight:800,fontSize:'.88rem',color:sel.includes(cat)?'var(--blue)':'var(--text)'}}>{cat}</div>
-            <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:1}}>{words.length} Begriffe</div>
-          </div>
-          <div style={{width:22,height:22,borderRadius:6,
-            background:sel.includes(cat)?'var(--blue)':'var(--white)',
-            border:`2px solid ${sel.includes(cat)?'var(--blue)':'var(--border2)'}`,
-            display:'flex',alignItems:'center',justifyContent:'center',
-            color:'#fff',fontWeight:900,fontSize:'.8rem',flexShrink:0,transition:'all .15s'}}>
-            {sel.includes(cat)?'✓':''}
-          </div>
-        </div>
-      ))}
-    </div>
-  ];
-
-  return(
-    <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',flexDirection:'column',zIndex:10}}>
-
-      {/* ── HEADER ── */}
-      <div style={{padding:'1rem 1rem .5rem',flexShrink:0,borderBottom:'1px solid var(--border)'}}>
-        <div style={{textAlign:'center',marginBottom:'.65rem'}}>
-          <div style={{fontSize:'1.5rem',fontWeight:900,color:'var(--text)',letterSpacing:'-.03em'}}>HeadBanz</div>
-        </div>
-        {/* Tab bar */}
-        <div className="tab-bar">
-          {TABS.map((t,i)=>(
-            <button key={i} className={`tab-item${tab===i?' active':''}`}
-              onClick={()=>{hapT();setTab(i);}}>
-              {i===0&&players.length>0&&<span style={{
-                background:'var(--blue)',color:'#fff',borderRadius:'50%',
-                width:15,height:15,fontSize:'.6rem',fontWeight:900,
-                display:'inline-flex',alignItems:'center',justifyContent:'center',marginRight:3
-              }}>{players.length}</span>}
-              {t}
-              {i===3&&sel.length>0&&<span style={{
-                background:sel.length===Object.keys(cats).length?'var(--green)':'var(--yellow)',
-                color:'#fff',borderRadius:'50%',
-                width:15,height:15,fontSize:'.6rem',fontWeight:900,
-                display:'inline-flex',alignItems:'center',justifyContent:'center',marginLeft:3
-              }}>{sel.length}</span>}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── TAB CONTENT ── */}
-      <div className="sc" style={{flex:1,overflowY:'auto',paddingBottom:'5rem'}}>
-        {tabContent[tab]}
-      </div>
-
-      {/* ── FIXED START BUTTON ── */}
-      <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'.75rem 1rem',
-        background:'var(--white)',borderTop:'1px solid var(--border)',
-        boxShadow:'0 -4px 12px rgba(0,0,0,.06)'}}>
+      {/* start button */}
+      <div style={{position:'relative',zIndex:1,padding:'10px 14px',
+        paddingBottom:'max(calc(env(safe-area-inset-bottom,0px)+14px),20px)'}}>
         {!valid&&(
-          <div style={{fontSize:'.75rem',color:'var(--text3)',textAlign:'center',marginBottom:'.4rem',fontWeight:700}}>
-            {!teamValid?'⚠ Teams brauchen je min. 2 Spieler':sel.length===0?'⚠ Bitte mind. 1 Kategorie wählen':''}
+          <div style={{fontSize:12,color:'#ef4444',textAlign:'center',
+            marginBottom:8,fontWeight:700}}>
+            {!teamValid?'⚠ Jedes Team braucht mind. 2 Spieler':
+             !catValid?'⚠ Mind. 1 Thema auswählen':''}
           </div>
         )}
-        <button className="btn btn-primary"
-          onClick={()=>{if(valid){hapT();onStart({teams,mode,rds,tgt,tsec,sel,cats,debug});}}}
-          style={{width:'100%',padding:'1rem',fontSize:'1.05rem',fontWeight:900,
-            opacity:valid?1:.4,pointerEvents:valid?'auto':'none',borderRadius:var(--radius)}}>
+        <button className="btn btn-primary" disabled={!valid} onClick={()=>{
+          if(valid){hapT();onStart({teams:S.teams,mode:S.mode,rds:S.rds,tgt:S.tgt,
+            tsec:S.tsec,sel:S.selCats,cats:S.cats,debug:S.debug});}}}
+          style={{width:'100%',padding:17,fontSize:18,borderRadius:16,
+            opacity:valid?1:.3,
+            boxShadow:valid?'0 6px 24px rgba(37,99,235,.45)':'none'}}>
           🚀 Spiel starten
         </button>
       </div>
     </div>
   );
+
+  /* ── MODUS ── */
+  const ModusView=(
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100%',
+      paddingBottom:'max(env(safe-area-inset-bottom,0px),20px)'}}>
+      <div className="ios-hdr">
+        <button className="back-btn" onClick={()=>{hapT();setView('home');}}>
+          <BackArrow/> Zurück
+        </button>
+        <span className="ios-hdr-title">Spielmodus</span>
+        <div style={{minWidth:80}}/>
+      </div>
+      <div className="sec"><div className="sec-label">Modus</div>
+        <div className="group">
+          {[{id:'rounds',ic:'🏆',lb:'Runden-Duell',d:'Wer hat nach X Runden die meisten Punkte?'},
+            {id:'highscore',ic:'🎯',lb:'Highscore-Race',d:'Wer erreicht zuerst das Punkteziel?'},
+            {id:'1v1',ic:'⚔️',lb:'1v1 Modus',d:'Zwei Spieler wechseln sich ab.'}
+          ].map(m=>(
+            <div key={m.id} className="row" onClick={()=>{hapT();upd('mode',m.id);}}>
+              <div className="row-check">{S.mode===m.id?'✓':''}</div>
+              <div className="row-body">
+                <div className="row-label">{m.ic} {m.lb}</div>
+                <div className="row-sub">{m.d}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {S.mode==='rounds'&&(
+        <div className="sec"><div className="sec-label">Runden pro Team</div>
+          <div className="group">
+            {[1,2,3,5,7,10].map(n=>(
+              <div key={n} className="row" onClick={()=>{hapT();upd('rds',n);}}>
+                <div className="row-check">{S.rds===n?'✓':''}</div>
+                <div className="row-body">
+                  <div className="row-label">{n} {n===1?'Runde':'Runden'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {S.mode==='highscore'&&(<>
+        <div className="sec"><div className="sec-label">Zeit pro Runde</div>
+          <div className="group">
+            {TIME_OPTS.map(o=>(
+              <div key={o.v} className="row" onClick={()=>{hapT();upd('tsec',o.v);}}>
+                <div className="row-check">{S.tsec===o.v?'✓':''}</div>
+                <div className="row-body"><div className="row-label">{o.l}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="sec"><div className="sec-label">Zielpunktzahl</div>
+          <div className="group">
+            {[10,15,20,30,50].map(n=>(
+              <div key={n} className="row" onClick={()=>{hapT();upd('tgt',n);}}>
+                <div className="row-check">{S.tgt===n?'✓':''}</div>
+                <div className="row-body"><div className="row-label">{n} Punkte</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>)}
+      <div style={{height:20}}/>
+    </div>
+  );
+
+  /* ── SPIELER & TEAMS ── */
+  const SpielerView=(
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100%',
+      paddingBottom:'max(env(safe-area-inset-bottom,0px),20px)'}}>
+      <div className="ios-hdr">
+        <button className="back-btn" onClick={()=>{hapT();setView('home');}}>
+          <BackArrow/> Zurück
+        </button>
+        <span className="ios-hdr-title">Spieler & Teams</span>
+        <div style={{minWidth:80}}/>
+      </div>
+
+      {/* Add player */}
+      <div className="sec"><div className="sec-label">Spieler hinzufügen</div>
+        <div className="group">
+          <div className="row static" style={{gap:10}}>
+            <input className="inp" placeholder="Name …" value={newName}
+              onChange={e=>setNewName(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();
+                const n=newName.trim()||'Spieler '+(S.players.length+1);
+                upd('players',p=>[...p,n]);setNewName('');hapT();}}}/>
+            <button className="btn btn-sm" onClick={()=>{
+              const n=newName.trim()||'Spieler '+(S.players.length+1);
+              upd('players',p=>[...p,n]);setNewName('');hapT();}}>＋</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Players with inline team chips + tap to edit */}
+      <div className="sec">
+        <div className="sec-label">{S.players.length} Spieler</div>
+        <div className="group">
+          {S.players.length===0&&(
+            <div className="row static">
+              <div className="row-body"><div className="row-sub">Noch keine Spieler.</div></div>
+            </div>
+          )}
+          {S.players.map((p,i)=>{
+            const ti=S.teams.findIndex(t=>t.players.includes(p));
+            return(
+              <div key={i} className="row"
+                onClick={()=>{setEditIdx(i);setEditName(p);setView('spieler-edit');}}>
+                <div style={{width:28,height:28,borderRadius:'50%',
+                  background:'var(--bg2)',display:'flex',alignItems:'center',
+                  justifyContent:'center',fontSize:12,fontWeight:900,
+                  color:'var(--acc)',flexShrink:0}}>{i+1}</div>
+                <div className="row-body" style={{paddingRight:6}}>
+                  <div className="row-label">{p}</div>
+                  {ti>=0&&<div className="row-sub" style={{color:S.teams[ti].color}}>
+                    {S.teams[ti].name}
+                  </div>}
+                </div>
+                {/* quick team chips */}
+                <div style={{display:'flex',gap:4,flexShrink:0}}>
+                  {S.teams.map((t,tIdx)=>(
+                    <button key={tIdx} className="btn"
+                      onClick={e=>{e.stopPropagation();assignTeam(p,tIdx);}}
+                      style={{fontSize:11,fontWeight:800,padding:'3px 8px',borderRadius:8,
+                        background:ti===tIdx?t.color:t.color+'20',
+                        color:ti===tIdx?'#fff':t.color,
+                        border:'1.5px solid '+(ti===tIdx?t.color:t.color+'55')}}>
+                      {tIdx+1}
+                    </button>
+                  ))}
+                </div>
+                <span className="row-arrow">›</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Teams */}
+      <div className="sec">
+        <div className="sec-label">Teams</div>
+        <div className="group">
+          {S.teams.map((t,ti)=>(
+            <div key={ti} className="row static">
+              <div className="row-icon" style={{background:t.color+'1a'}}>
+                <span style={{fontWeight:900,fontSize:12,color:t.color}}>T{ti+1}</span>
+              </div>
+              <div className="row-body">
+                <div className="row-label">{t.name}</div>
+                <div className="row-sub"
+                  style={{color:t.players.length<2?'#ef4444':'var(--txt3)'}}>
+                  {t.players.length===0?'Leer':
+                   t.players.length<2?'⚠ '+t.players.length+' (min. 2)':
+                   t.players.join(' · ')}
+                </div>
+              </div>
+            </div>
+          ))}
+          {S.teams.length<4&&(
+            <div className="row" onClick={()=>{hapT();
+              upd('teams',p=>[...p,{name:'Team '+(p.length+1),players:[],
+                color:TEAM_COLORS[p.length%TEAM_COLORS.length]}]);}}>
+              <div className="row-icon" style={{background:'var(--bg2)'}}>
+                <span style={{fontSize:18}}>＋</span>
+              </div>
+              <div className="row-body">
+                <div className="row-label" style={{color:'var(--acc)'}}>
+                  Team hinzufügen
+                </div>
+              </div>
+            </div>
+          )}
+          {S.teams.length>2&&(
+            <div className="row" onClick={()=>{hapT();
+              upd('teams',p=>{const n=[...p];n.pop();return n;});}}>
+              <div className="row-icon" style={{background:'#fef2f2'}}>
+                <span style={{fontSize:18}}>−</span>
+              </div>
+              <div className="row-body">
+                <div className="row-label" style={{color:'#ef4444'}}>
+                  Letztes Team entfernen
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{height:20}}/>
+    </div>
+  );
+
+  /* ── SPIELER EDIT ── */
+  const pName=S.players[editIdx]||'';
+  const SpielerEditView=(
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100%',
+      paddingBottom:'max(env(safe-area-inset-bottom,0px),20px)'}}>
+      <div className="ios-hdr">
+        <button className="back-btn" onClick={()=>{hapT();setView('spieler');}}>
+          <BackArrow/> Spieler
+        </button>
+        <span className="ios-hdr-title">Bearbeiten</span>
+        <button className="right-btn" onClick={()=>{
+          const n=editName.trim()||pName;
+          upd('players',prev=>prev.map((x,i)=>i===editIdx?n:x));
+          setView('spieler');hapT();}}>Sichern</button>
+      </div>
+      <div className="sec"><div className="sec-label">Name</div>
+        <div className="group">
+          <div className="row static">
+            <input className="inp" value={editName} autoFocus
+              onChange={e=>setEditName(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'){
+                const n=editName.trim()||pName;
+                upd('players',prev=>prev.map((x,i)=>i===editIdx?n:x));
+                setView('spieler');hapT();}}}
+              style={{fontSize:16,padding:'2px 0'}}/>
+          </div>
+        </div>
+      </div>
+      <div className="sec"><div className="sec-label">Team</div>
+        <div className="group">
+          {S.teams.map((t,ti)=>{
+            const inThis=t.players.includes(pName);
+            return(
+              <div key={ti} className="row" onClick={()=>assignTeam(pName,ti)}>
+                <div className="row-check">{inThis?'✓':''}</div>
+                <div className="row-icon" style={{background:t.color+'1a'}}>
+                  <span style={{fontWeight:900,fontSize:12,color:t.color}}>T{ti+1}</span>
+                </div>
+                <div className="row-body">
+                  <div className="row-label">{t.name}</div>
+                  <div className="row-sub">{t.players.length} Spieler</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="sec">
+        <div className="group">
+          <div className="row" onClick={()=>{
+            hapT();
+            upd('players',prev=>{const n=prev.filter((_,j)=>j!==editIdx);
+              return n.length?n:['Spieler 1','Spieler 2'];});
+            setView('spieler');}}>
+            <div className="row-body">
+              <div className="row-label" style={{color:'#ef4444',textAlign:'center'}}>
+                Spieler entfernen
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{height:20}}/>
+    </div>
+  );
+
+  /* ── THEMEN ── */
+  const ThemenView=(
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100%',
+      paddingBottom:'max(env(safe-area-inset-bottom,0px),20px)'}}>
+      <div className="ios-hdr">
+        <button className="back-btn" onClick={()=>{hapT();setView('home');}}>
+          <BackArrow/> Zurück
+        </button>
+        <span className="ios-hdr-title">Themen</span>
+        <button className="right-btn" onClick={()=>{hapT();
+          upd('selCats',s=>s.length===Object.keys(S.cats).length?[]:Object.keys(S.cats));}}>
+          {S.selCats.length===Object.keys(S.cats).length?'Keine':'Alle'}
+        </button>
+      </div>
+      <div className="sec">
+        <div className="sec-label">{totalW} Begriffe in {S.selCats.length} Themen</div>
+        <div className="group">
+          {Object.entries(S.cats).map(([cat,words])=>{
+            const on=S.selCats.includes(cat);
+            return(
+              <div key={cat} className="row" onClick={()=>{hapT();
+                upd('selCats',s=>s.includes(cat)?s.filter(c=>c!==cat):[...s,cat]);}}>
+                <div className="row-check">{on?'✓':''}</div>
+                <div className="row-body">
+                  <div className="row-label" style={{color:on?'var(--txt)':'var(--txt3)'}}>
+                    {cat}
+                  </div>
+                  <div className="row-sub">{words.length} Begriffe</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{height:20}}/>
+    </div>
+  );
+
+  /* ── EINSTELLUNGEN ── */
+  const EinstellungenView=(
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100%',
+      paddingBottom:'max(env(safe-area-inset-bottom,0px),20px)'}}>
+      <div className="ios-hdr">
+        <button className="back-btn" onClick={()=>{hapT();setView('home');}}>
+          <BackArrow/> Zurück
+        </button>
+        <span className="ios-hdr-title">Einstellungen</span>
+        <div style={{minWidth:80}}/>
+      </div>
+      <div className="sec"><div className="group">
+        <div className="row static">
+          <div className="row-icon" style={{background:S.darkMode?'#1e2030':'#f0f4ff'}}>
+            {S.darkMode?'🌙':'☀️'}
+          </div>
+          <div className="row-body"><div className="row-label">Dark Mode</div></div>
+          <Toggle on={S.darkMode} onChange={v=>upd('darkMode',v)}/>
+        </div>
+        <div className="row static">
+          <div className="row-icon" style={{background:'#fef3c7'}}>🛠</div>
+          <div className="row-body">
+            <div className="row-label">Sensor-Debug</div>
+            <div className="row-sub">Zeigt α β γ im Spiel</div>
+          </div>
+          <Toggle on={S.debug} onChange={v=>upd('debug',v)}/>
+        </div>
+      </div></div>
+      <div className="sec"><div className="sec-label">Kipp-Zonen (im Code änderbar)</div>
+        <div className="group">
+          <div className="row static">
+            <div className="row-icon" style={{background:'#f0fdf4',fontSize:17}}>✓</div>
+            <div className="row-body">
+              <div className="row-label">Gelöst — Zone</div>
+              <div className="row-sub">TILT_SOLVE_MAX im Code</div>
+            </div>
+            <span className="row-value">0° bis {TILT_SOLVE_MAX}°</span>
+          </div>
+          <div className="row static">
+            <div className="row-icon" style={{background:'#fffbeb',fontSize:17}}>↩</div>
+            <div className="row-body">
+              <div className="row-label">Skip — Zone</div>
+              <div className="row-sub">TILT_SKIP_MAX im Code</div>
+            </div>
+            <span className="row-value">0° bis {TILT_SKIP_MAX}°</span>
+          </div>
+          <div className="row static">
+            <div className="row-icon" style={{background:'var(--bg2)',fontSize:17}}>◎</div>
+            <div className="row-body">
+              <div className="row-label">Dead Zones</div>
+              <div className="row-sub">kein Auslösen</div>
+            </div>
+            <span className="row-value">±45–90°</span>
+          </div>
+        </div>
+      </div>
+      <div className="sec"><div className="group">
+        <div className="row static">
+          <div className="row-body" style={{padding:'12px 0'}}>
+            <div style={{fontSize:13,color:'var(--txt3)',lineHeight:1.65}}>
+              Querformat · flach über dem Kopf.<br/>
+              <strong style={{color:'var(--txt2)'}}>Links kippen</strong> (0°→−45°) = Gelöst<br/>
+              <strong style={{color:'var(--txt2)'}}>Rechts kippen</strong> (0°→+45°) = Skip<br/>
+              Zu weit (±45–90°) = kein Auslösen.
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div style={{height:20}}/>
+    </div>
+  );
+
+  const pages={
+    home:HomeView,
+    modus:ModusView,
+    spieler:SpielerView,
+    'spieler-edit':SpielerEditView,
+    themen:ThemenView,
+    einstellungen:EinstellungenView,
+  };
+
+  return(
+    <div style={{width:'100%',height:'100%',background:'var(--page)'}}>
+      <NavStack pages={pages} current={view}/>
+    </div>
+  );
 }
 
-/* ══════════════════════════════════════════
-   SCREEN: GAME (landscape)
-══════════════════════════════════════════ */
-function GameScreen({cfg,onEnd}){
-  const{teams,mode,rds,tgt,tsec,sel,cats,debug:dbgEnabled}=cfg;
-
-  /* ── word pool ── */
+/* ══════════════════════════════════════════════════
+   GAME SCREEN
+══════════════════════════════════════════════════ */
+function GameScreen({cfg,onMenu,darkMode}){
+  const{teams,mode,rds,tgt,tsec,sel,cats,debug:dbgOn}=cfg;
   const pool=useMemo(()=>{
     const w=[];sel.forEach(c=>{if(cats[c])w.push(...cats[c]);});return shuffle(w);
   },[]);
   const used=useRef(new Set());
-  const pull=()=>{
+  function pull(){
     const av=pool.filter(w=>!used.current.has(w));
-    if(!av.length){used.current.clear();return pool[Math.floor(Math.random()*pool.length)]||'???';}
-    const w=av[Math.floor(Math.random()*av.length)];used.current.add(w);return w;
-  };
+    if(!av.length){used.current.clear();}
+    const src=av.length?av:pool;
+    const w=src[0|Math.random()*src.length]||'???';
+    used.current.add(w);return w;
+  }
 
-  /* ── state ── */
   const[ti,setTi]=useState(0);
   const[rno,setRno]=useState(0);
-  const[sc,setSc]=useState(teams.map(()=>0));
-  const[ph,setPh]=useState('ready');
+  const[scores,setScores]=useState(teams.map(()=>0));
+  const[phase,setPhase]=useState('ready');
   const[word,setWord]=useState('');
-  const[fl,setFl]=useState(null);
+  const[flash,setFlash]=useState(null);
   const[log,setLog]=useState([]);
-  const[cor,setCor]=useState([]);
-  const[tmr,setTmr]=useState(tsec>0?tsec:0);
-  const[el,setEl]=useState(0);
-  const tRef=useRef(null);const fRef=useRef(null);const dRef=useRef(false);const lRef=useRef([]);
+  const[correction,setCorrection]=useState([]);
+  const[timer,setTimer]=useState(tsec>0?tsec:0);
+  const[elapsed,setElapsed]=useState(0);
+  const[showDbg,setShowDbg]=useState(dbgOn);
+  const[sensors,setSensors]=useState({alpha:null,beta:null,gamma:null});
+  const[paused,setPaused]=useState(false);
 
-  /* ── sensor ── */
-  const[beta,setBeta]=useState(null);
-  const[gamma,setGamma]=useState(null);
-  const[alpha,setAlpha]=useState(null);
-  const[showDbg,setShowDbg]=useState(dbgEnabled);
-  const THRESH=22;const THRESH_BK=45;
+  const timerRef=useRef(null);
+  const flashRef=useRef(null);
+  const debRef=useRef(false);
+  const logRef=useRef([]);
+  const phaseRef=useRef('ready');
+  const pausedRef=useRef(false);
 
-  useEffect(()=>{lRef.current=log;},[log]);
+  useEffect(()=>{phaseRef.current=phase;},[phase]);
+  useEffect(()=>{logRef.current=log;},[log]);
 
+  // Portrait → pause
   useEffect(()=>{
-    const h=e=>{
-      setBeta(e.beta);setGamma(e.gamma);setAlpha(e.alpha);
-      if(ph!=='playing'||dRef.current)return;
-      const b=e.beta;if(b===null||b===undefined)return;
-      // Forward tilt: beta goes negative (screen faces down)
-      if(b<-THRESH)deb(doSolve);
-      // Backward tilt: beta goes positive past threshold
-      else if(b>THRESH_BK)deb(doSkip);
+    function check(){
+      const portrait=window.innerHeight>window.innerWidth;
+      if(portrait&&phaseRef.current==='playing'&&!pausedRef.current){
+        pausedRef.current=true;setPaused(true);
+        clearInterval(timerRef.current);hapE();
+      }else if(!portrait&&pausedRef.current){
+        pausedRef.current=false;setPaused(false);
+        timerRef.current=setInterval(tick,1000);
+      }
+    }
+    window.addEventListener('resize',check);
+    window.addEventListener('orientationchange',check);
+    return()=>{
+      window.removeEventListener('resize',check);
+      window.removeEventListener('orientationchange',check);
     };
-    window.addEventListener('deviceorientation',h,true);
-    return()=>window.removeEventListener('deviceorientation',h,true);
-  },[ph,word]);
+  },[]);
 
-  const deb=fn=>{if(dRef.current)return;dRef.current=true;fn();setTimeout(()=>{dRef.current=false;},900);};
+  function tick(){
+    setElapsed(e=>e+1);
+    if(tsec>0)setTimer(t=>{
+      if(t<=1){clearInterval(timerRef.current);endRound();return 0;}
+      return t-1;
+    });
+  }
 
-  const startT=()=>{
-    clearInterval(tRef.current);const tl=tsec;
-    if(tl>0)setTmr(tl);setEl(0);
-    tRef.current=setInterval(()=>{
-      setEl(e=>e+1);
-      if(tl>0)setTmr(t=>{if(t<=1){clearInterval(tRef.current);endR();return 0;}return t-1;});
-    },1000);
-  };
-  const stopT=()=>clearInterval(tRef.current);
+  // Tilt detection — gamma axis
+  // SOLVE zone: 0° > gamma > TILT_SOLVE_MAX  (slight left/negative tilt)
+  // SKIP  zone: 0° < gamma < TILT_SKIP_MAX   (slight right/positive tilt)
+  // Dead zones: gamma <= TILT_SOLVE_MAX  or  gamma >= TILT_SKIP_MAX
+  useEffect(()=>{
+    function handle(e){
+      setSensors({alpha:e.alpha,beta:e.beta,gamma:e.gamma});
+      if(phaseRef.current!=='playing'||debRef.current||pausedRef.current)return;
+      const g=e.gamma;
+      if(g==null)return;
+      if(g<0&&g>TILT_SOLVE_MAX) doTrigger(doSolve);
+      else if(g>0&&g<TILT_SKIP_MAX) doTrigger(doSkip);
+    }
+    window.addEventListener('deviceorientation',handle,true);
+    return()=>window.removeEventListener('deviceorientation',handle,true);
+  },[]);
 
-  const startR=()=>{const w=pull();setWord(w);setFl(null);setLog([]);lRef.current=[];setPh('playing');startT();};
-  const doSolve=()=>{hapS();const w=word;setFl('solved');setLog(p=>{const n=[...p,{word:w,solved:true}];lRef.current=n;return n;});
-    clearTimeout(fRef.current);fRef.current=setTimeout(()=>{setWord(pull());setFl(null);},550);};
-  const doSkip=()=>{hapK();const w=word;setFl('skipped');setLog(p=>{const n=[...p,{word:w,solved:false}];lRef.current=n;return n;});
-    clearTimeout(fRef.current);fRef.current=setTimeout(()=>{setWord(pull());setFl(null);},550);};
-  const endR=()=>{stopT();setCor([...lRef.current]);setPh('correction');};
-  const confirm=()=>{
-    const pts=cor.filter(w=>w.solved).length;
-    const ns=sc.map((s,i)=>i===ti?s+pts:s);
-    if(mode==='highscore'&&ns[ti]>=tgt){setSc(ns);setPh('over');return;}
-    let nti=(ti+1)%teams.length,nrno=rno;if(nti===0)nrno++;
-    if(mode==='rounds'&&nrno>=rds){setSc(ns);setPh('over');return;}
-    setSc(ns);setTi(nti);setRno(nrno);setPh('ready');
-  };
+  function doTrigger(fn){
+    if(debRef.current)return;
+    debRef.current=true;
+    fn();
+    setTimeout(()=>{debRef.current=false;},TILT_DEBOUNCE);
+  }
+
+  function startTimer(){
+    clearInterval(timerRef.current);
+    if(tsec>0)setTimer(tsec);
+    setElapsed(0);
+    timerRef.current=setInterval(tick,1000);
+  }
+  function stopTimer(){clearInterval(timerRef.current);}
+
+  function startRound(){
+    const w=pull();setWord(w);setFlash(null);
+    setLog([]);logRef.current=[];
+    setPhase('playing');startTimer();
+  }
+
+  function doSolve(){
+    hapS();
+    const w=word;
+    setFlash('solved');
+    setLog(p=>{const n=[...p,{word:w,solved:true}];logRef.current=n;return n;});
+    clearTimeout(flashRef.current);
+    flashRef.current=setTimeout(()=>{setWord(pull());setFlash(null);},550);
+  }
+
+  function doSkip(){
+    hapK();
+    const w=word;
+    setFlash('skipped');
+    setLog(p=>{const n=[...p,{word:w,solved:false}];logRef.current=n;return n;});
+    clearTimeout(flashRef.current);
+    flashRef.current=setTimeout(()=>{setWord(pull());setFlash(null);},550);
+  }
+
+  function endRound(){
+    stopTimer();
+    setCorrection([...logRef.current]);
+    setPhase('correction');
+  }
+
+  function confirmPoints(){
+    const pts=correction.filter(w=>w.solved).length;
+    const newScores=scores.map((s,i)=>i===ti?s+pts:s);
+    if(mode==='highscore'&&newScores[ti]>=tgt){setScores(newScores);setPhase('over');return;}
+    let nti=(ti+1)%teams.length,nrno=rno;
+    if(nti===0)nrno++;
+    if(mode==='rounds'&&nrno>=rds){setScores(newScores);setPhase('over');return;}
+    setScores(newScores);setTi(nti);setRno(nrno);setPhase('ready');
+  }
 
   const team=teams[ti];
+  const dk=darkMode;
+  const glassClass=dk?'glass-dk':'glass-lt';
 
-  /* Landscape gate for playing/correction/over screens */
-  const LandscapeGate=()=>(
-    <div className="landscape-gate" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
-      position:'fixed',inset:0,zIndex:9998,background:'var(--white)',
-      '@media (orientation:landscape)':{display:'none'}}}>
-      <div style={{fontSize:'3rem'}}>📱↻</div>
-      <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)',marginTop:'.5rem'}}>Querformat nötig</div>
-      <div style={{color:'var(--text2)',fontSize:'.88rem',marginTop:'.3rem'}}>Drehe dein Gerät für das Spiel.</div>
+  /* BG */
+  const BG=()=>(
+    <div className="gbg" style={{background:dk?'#08090f':'#ffffff'}}>
+      <div className="orb" style={{width:'50vw',height:'50vw',top:'-10%',left:'-5%',
+        opacity:.6,background:dk?'#1b3d70':'#dbeafe'}}/>
+      <div className="orb" style={{width:'40vw',height:'40vw',top:'20%',right:'-5%',
+        opacity:.5,animationDelay:'-4s',background:dk?'#2c1468':'#ede9fe'}}/>
+      <div className="orb" style={{width:'35vw',height:'35vw',bottom:'-8%',left:'35%',
+        opacity:.5,animationDelay:'-8s',background:dk?'#0c3a28':'#dcfce7'}}/>
     </div>
   );
 
   /* ── READY ── */
-  if(ph==='ready')return(
-    <>
-      <style>{`@media(orientation:portrait){.game-ls-gate{display:flex!important;}}`}</style>
-      <div className="game-ls-gate" style={{display:'none',position:'fixed',inset:0,zIndex:9998,
-        background:'var(--white)',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,textAlign:'center',padding:'2rem'}}>
-        <div style={{fontSize:'3rem'}}>📱↻</div>
-        <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)'}}>Querformat für das Spiel</div>
-        <div style={{color:'var(--text2)',fontSize:'.88rem'}}>Drehe dein Gerät für das Spiel.</div>
-      </div>
-      <div className="game-bg">
-        <div className="orb o1"/><div className="orb o2"/><div className="orb o3"/>
-      </div>
-      <div style={{position:'fixed',inset:0,zIndex:10,display:'flex',alignItems:'center',
-        justifyContent:'center',flexDirection:'column',gap:'1rem',padding:'2rem'}}>
-        <div className="glass-s" style={{borderRadius:24,padding:'2rem',maxWidth:500,width:'100%',textAlign:'center'}}>
-          <div style={{fontSize:'.68rem',fontWeight:900,color:'rgba(255,255,255,.45)',
-            letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'.5rem'}}>
-            {mode==='rounds'?`Runde ${rno+1} / ${rds}`:mode==='highscore'?`Ziel: ${tgt} Punkte`:'1v1 · Abwechselnde Runden'}
+  if(phase==='ready')return(
+    <div style={{width:'100%',height:'100%',position:'relative',overflow:'hidden'}}>
+      <BG/>
+      <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',
+        justifyContent:'center',padding:'1.5rem',zIndex:1}}>
+        <div className={"word-card "+glassClass} style={{borderRadius:28,width:'100%',
+          maxWidth:560,display:'flex',flexDirection:'column',alignItems:'center',
+          padding:'28px 24px 22px'}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',
+            color:dk?'rgba(255,255,255,.4)':'rgba(0,0,0,.35)',marginBottom:12}}>
+            {mode==='rounds'?'Runde '+(rno+1)+' / '+rds
+             :mode==='highscore'?'Ziel: '+tgt+' Punkte':'1v1 Modus'}
           </div>
-          <div style={{fontSize:'2rem',fontWeight:900,color:team.color,marginBottom:'.2rem'}}>{team.name}</div>
-          <div style={{color:'rgba(255,255,255,.6)',fontSize:'.88rem',marginBottom:'1.25rem'}}>{team.players.join(' · ')}</div>
-          <div style={{display:'flex',gap:'.6rem',justifyContent:'center',flexWrap:'wrap',marginBottom:'1.5rem'}}>
+          <div style={{fontSize:36,fontWeight:900,color:team.color,
+            lineHeight:1,marginBottom:4,textAlign:'center'}}>{team.name}</div>
+          <div style={{color:dk?'rgba(255,255,255,.45)':'rgba(0,0,0,.4)',fontSize:14,
+            marginBottom:18,textAlign:'center'}}>{team.players.join(' · ')}</div>
+          {/* scores */}
+          <div style={{display:'flex',gap:8,justifyContent:'center',
+            marginBottom:18,flexWrap:'wrap'}}>
             {teams.map((t,i)=>(
-              <div key={i} style={{padding:'.4rem .9rem',borderRadius:12,
-                background:i===ti?`${t.color}25`:'rgba(255,255,255,.07)',
-                border:`1px solid ${i===ti?t.color+'55':'rgba(255,255,255,.12)'}`,textAlign:'center'}}>
-                <div style={{color:t.color,fontWeight:900,fontSize:'1.4rem'}}>{sc[i]}</div>
-                <div style={{color:'rgba(255,255,255,.45)',fontSize:'.68rem',fontWeight:700}}>{t.name}</div>
+              <div key={i} style={{padding:'8px 14px',borderRadius:12,textAlign:'center',minWidth:60,
+                background:i===ti?t.color+'28':(dk?'rgba(255,255,255,.07)':'rgba(0,0,0,.04)'),
+                border:'1px solid '+(i===ti?t.color+'55':(dk?'rgba(255,255,255,.1)':'rgba(0,0,0,.07)'))}}>
+                <div style={{color:t.color,fontWeight:900,fontSize:26,lineHeight:1}}>{scores[i]}</div>
+                <div style={{color:dk?'rgba(255,255,255,.4)':'rgba(0,0,0,.4)',
+                  fontSize:11,fontWeight:700,marginTop:2}}>{t.name}</div>
               </div>
             ))}
           </div>
-          <div style={{color:'rgba(255,255,255,.45)',fontSize:'.78rem',marginBottom:'1.25rem',lineHeight:1.7}}>
-            Erklärer hält Gerät flach über Kopf des Raters.<br/>
-            <strong style={{color:'rgba(255,255,255,.75)'}}>Vor kippen</strong> = gelöst &nbsp;·&nbsp; <strong style={{color:'rgba(255,255,255,.75)'}}>Zurück kippen</strong> = skip
+          <div style={{fontSize:12,color:dk?'rgba(255,255,255,.3)':'rgba(0,0,0,.35)',
+            marginBottom:18,lineHeight:1.7,textAlign:'center'}}>
+            Querformat · flach über dem Kopf<br/>
+            <strong style={{color:dk?'rgba(255,255,255,.6)':'rgba(0,0,0,.6)'}}>Links kippen</strong> = ✓&nbsp;&nbsp;
+            <strong style={{color:dk?'rgba(255,255,255,.6)':'rgba(0,0,0,.6)'}}>Rechts kippen</strong> = ↩
           </div>
-          <button className="btn" onClick={()=>{hapT();startR();}}
-            style={{background:'rgba(37,99,235,.35)',border:'1px solid rgba(37,99,235,.6)',
-              color:'#93c5fd',fontWeight:900,fontSize:'1rem',padding:'.9rem 2rem',
-              borderRadius:16,width:'100%',
-              backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>
-            ▶ Runde starten!
+          <button className="btn btn-primary" onClick={()=>{hapT();startRound();}}
+            style={{width:'100%',padding:14,borderRadius:13,fontSize:16}}>
+            ▶ Runde starten
+          </button>
+          <button className="btn" onClick={()=>{hapT();stopTimer();onMenu();}}
+            style={{marginTop:10,fontSize:12,color:dk?'rgba(255,255,255,.28)':'rgba(0,0,0,.3)',
+              background:'none',padding:'6px 12px',borderRadius:8,fontWeight:700}}>
+            ← Menü
           </button>
         </div>
       </div>
-      {showDbg&&<DebugOverlay beta={beta} gamma={gamma} alpha={alpha} threshold={THRESH} onClose={()=>setShowDbg(false)}/>}
-    </>
+      {showDbg&&<DebugBar sensors={sensors} onClose={()=>setShowDbg(false)}/>}
+    </div>
   );
 
   /* ── PLAYING ── */
-  if(ph==='playing'){
-    const slv=log.filter(w=>w.solved).length,skp=log.filter(w=>!w.solved).length;
+  if(phase==='playing'){
+    const solvedCount=log.filter(w=>w.solved).length;
+    const skippedCount=log.filter(w=>!w.solved).length;
     return(
-      <>
-        <style>{`@media(orientation:portrait){.game-ls-gate{display:flex!important;}}`}</style>
-        <div className="game-ls-gate" style={{display:'none',position:'fixed',inset:0,zIndex:9998,
-          background:'var(--white)',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,textAlign:'center',padding:'2rem'}}>
-          <div style={{fontSize:'3rem'}}>📱↻</div>
-          <div style={{fontWeight:900,fontSize:'1.3rem',color:'var(--text)'}}>Querformat nötig</div>
-          <div style={{color:'var(--text2)',fontSize:'.88rem'}}>Das Spiel läuft im Querformat.</div>
-        </div>
-        <div className="game-bg"><div className="orb o1"/><div className="orb o2"/><div className="orb o3"/></div>
-        <div style={{position:'fixed',inset:0,zIndex:10,display:'flex',flexDirection:'column',
-          alignItems:'center',justifyContent:'center',gap:'.75rem',padding:'1rem 1.5rem'}}>
-          {/* Top bar */}
-          <div style={{position:'absolute',top:'.75rem',left:'1rem',right:'1rem',
+      <div style={{width:'100%',height:'100%',position:'relative',overflow:'hidden'}}>
+        <BG/>
+        <div style={{position:'absolute',inset:0,zIndex:1,display:'flex',
+          flexDirection:'column',alignItems:'center',justifyContent:'center',
+          gap:10,padding:'10px 16px'}}>
+          {/* scorebar */}
+          <div style={{position:'absolute',top:8,left:10,right:10,
             display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-            <div style={{display:'flex',gap:'.45rem',flexWrap:'wrap'}}>
+            <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
               {teams.map((t,i)=>(
-                <div key={i} style={{padding:'.25rem .65rem',borderRadius:8,
-                  background:i===ti?`${t.color}28`:'rgba(255,255,255,.06)',
-                  border:`1px solid ${i===ti?t.color+'50':'rgba(255,255,255,.1)'}`,
-                  display:'flex',alignItems:'center',gap:4}}>
+                <div key={i} style={{padding:'4px 9px',borderRadius:8,
+                  display:'flex',alignItems:'center',gap:4,
+                  background:i===ti?t.color+'28':(dk?'rgba(255,255,255,.06)':'rgba(0,0,0,.04)'),
+                  border:'1px solid '+(i===ti?t.color+'50':(dk?'rgba(255,255,255,.1)':'rgba(0,0,0,.08)'))}}>
                   <div style={{width:6,height:6,borderRadius:'50%',background:t.color}}/>
-                  <span style={{color:t.color,fontWeight:900,fontSize:'.85rem'}}>{sc[i]}</span>
-                  <span style={{color:'rgba(255,255,255,.4)',fontSize:'.65rem'}}>{t.name}</span>
+                  <span style={{color:t.color,fontWeight:900,fontSize:13}}>{scores[i]}</span>
+                  <span style={{color:dk?'rgba(255,255,255,.35)':'rgba(0,0,0,.4)',fontSize:11}}>
+                    {t.name}
+                  </span>
                 </div>
               ))}
             </div>
-            <div style={{display:'flex',alignItems:'center',gap:'.6rem'}}>
-              <span style={{color:'#4ade80',fontWeight:900,fontSize:'.95rem'}}>✓{slv}</span>
-              <span style={{color:'#fbbf24',fontWeight:900,fontSize:'.95rem'}}>↩{skp}</span>
-              {tsec>0?<TRing sec={tmr} mx={tsec} sz={66}/>:
-                <div style={{color:'rgba(255,255,255,.5)',fontWeight:700,fontSize:'.82rem'}}>{el}s</div>}
+            <div style={{display:'flex',alignItems:'center',gap:7}}>
+              <span style={{color:'#4ade80',fontWeight:900,fontSize:14}}>✓{solvedCount}</span>
+              <span style={{color:'#fbbf24',fontWeight:900,fontSize:14}}>↩{skippedCount}</span>
+              {tsec>0?<Ring sec={timer} max={tsec} size={58}/>:
+                <span style={{color:dk?'rgba(255,255,255,.4)':'rgba(0,0,0,.4)',
+                  fontWeight:700,fontSize:12}}>{elapsed}s</span>}
             </div>
           </div>
-          {/* Word card */}
-          <div className={`word-card glass-s ${fl||''}`}
-            style={{borderRadius:26,padding:'1.75rem 2.5rem',width:'100%',maxWidth:600,
-              minHeight:140,display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center'}}>
-            {fl==='solved'?<div style={{fontSize:'3.5rem'}}>✓</div>:
-             fl==='skipped'?<div style={{fontSize:'3.5rem'}}>↩</div>:
-             <div className="big-word">{word}</div>}
+
+          {/* word card */}
+          <div className={"word-card "+glassClass+' '+(flash||'')} style={{
+            borderRadius:28,width:'100%',maxWidth:640,flex:1,maxHeight:'56vh',
+            display:'flex',flexDirection:'column',alignItems:'center',
+            justifyContent:'center',padding:'18px 28px',textAlign:'center',gap:12,
+            marginTop:48}}>
+            {flash==='solved'?<div style={{fontSize:'4rem'}}>✓</div>
+            :flash==='skipped'?<div style={{fontSize:'4rem'}}>↩</div>
+            :<>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:'.08em',
+                textTransform:'uppercase',
+                color:dk?'rgba(255,255,255,.35)':'rgba(0,0,0,.35)'}}>
+                {team.name} erklärt
+              </div>
+              <div className="bigword"
+                style={{color:dk?'#fff':'#111',
+                  textShadow:dk?'0 2px 20px rgba(0,0,0,.3)':'none'}}>
+                {word}
+              </div>
+              <div style={{display:'flex',gap:14,fontSize:12,fontWeight:600,
+                color:dk?'rgba(255,255,255,.28)':'rgba(0,0,0,.3)'}}>
+                <span>{mode==='rounds'?'R.'+(rno+1)+'/'+rds
+                  :mode==='highscore'?'Ziel '+tgt:'1v1'}</span>
+                {tsec>0&&<span>{timer}s</span>}
+              </div>
+            </>}
           </div>
-          {/* Touch fallback */}
-          <div style={{display:'flex',gap:'.75rem',width:'100%',maxWidth:520}}>
+
+          {/* action buttons */}
+          <div style={{display:'flex',gap:10,width:'100%',maxWidth:540}}>
             <button className="btn" onClick={doSkip}
-              style={{flex:1,padding:'.65rem',borderRadius:14,fontWeight:900,fontSize:'.9rem',
-                background:'rgba(217,119,6,.25)',border:'1px solid rgba(217,119,6,.45)',color:'#fbbf24',
-                backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>↩ Überspringen</button>
+              style={{flex:1,padding:12,borderRadius:12,fontWeight:900,fontSize:15,
+                background:'rgba(217,119,6,.25)',border:'1px solid rgba(217,119,6,.45)',
+                color:'#fbbf24',backdropFilter:'blur(10px)'}}>↩ Skip</button>
             <button className="btn" onClick={doSolve}
-              style={{flex:1,padding:'.65rem',borderRadius:14,fontWeight:900,fontSize:'.9rem',
-                background:'rgba(22,163,74,.25)',border:'1px solid rgba(22,163,74,.45)',color:'#4ade80',
-                backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}>✓ Gelöst</button>
+              style={{flex:1,padding:12,borderRadius:12,fontWeight:900,fontSize:15,
+                background:'rgba(22,163,74,.25)',border:'1px solid rgba(22,163,74,.5)',
+                color:'#4ade80',backdropFilter:'blur(10px)'}}>✓ Gelöst</button>
           </div>
-          <button className="btn" onClick={endR}
-            style={{fontSize:'.72rem',padding:'.3rem .8rem',borderRadius:8,
-              background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.12)',
-              color:'rgba(255,255,255,.4)',fontWeight:700}}>Runde beenden</button>
+          <button className="btn" onClick={endRound}
+            style={{fontSize:12,padding:'5px 14px',borderRadius:8,fontWeight:700,
+              background:dk?'rgba(255,255,255,.07)':'rgba(0,0,0,.05)',
+              border:'1px solid '+(dk?'rgba(255,255,255,.12)':'rgba(0,0,0,.08)'),
+              color:dk?'rgba(255,255,255,.3)':'rgba(0,0,0,.4)'}}>
+            Runde beenden
+          </button>
         </div>
-        {showDbg&&<DebugOverlay beta={beta} gamma={gamma} alpha={alpha} threshold={THRESH} onClose={()=>setShowDbg(false)}/>}
-      </>
+        {paused&&(
+          <div className="pause-overlay">
+            <div style={{fontSize:'3.5rem',lineHeight:1}}>⏸</div>
+            <div style={{fontSize:22,fontWeight:900,color:'#fff'}}>Pausiert</div>
+            <div style={{fontSize:14,color:'rgba(255,255,255,.45)',lineHeight:1.7}}>
+              Drehe ins <strong style={{color:'rgba(255,255,255,.8)'}}>Querformat</strong><br/>
+              um weiterzuspielen 🔄
+            </div>
+          </div>
+        )}
+        {showDbg&&<DebugBar sensors={sensors} onClose={()=>setShowDbg(false)}/>}
+      </div>
     );
   }
 
   /* ── CORRECTION ── */
-  if(ph==='correction'){
-    const pts=cor.filter(w=>w.solved).length;
+  if(phase==='correction'){
+    const pts=correction.filter(w=>w.solved).length;
     return(
-      <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',
-        flexDirection:'column',zIndex:10}}>
-        {/* Header */}
-        <div style={{padding:'1rem',borderBottom:'1px solid var(--border)',flexShrink:0,textAlign:'center'}}>
-          <div style={{fontSize:'1.25rem',fontWeight:900,color:'var(--text)'}}>Rundenkorrektur</div>
-          <div style={{fontSize:'.82rem',color:'var(--text2)',marginTop:2}}>
-            {team.name} · Runde {rno+1}
-            &nbsp;·&nbsp;<span style={{color:'var(--green)',fontWeight:800}}>{pts} Punkte</span>
+      <div style={{width:'100%',height:'100%',background:'var(--bg)',
+        display:'flex',flexDirection:'column'}}>
+        <div className="ios-hdr">
+          <button className="back-btn" onClick={()=>{hapT();stopTimer();onMenu();}}>
+            <BackArrow/> Menü
+          </button>
+          <span className="ios-hdr-title">Korrektur</span>
+          <div style={{minWidth:80,textAlign:'right',fontSize:13,
+            color:'var(--txt3)',fontWeight:700,paddingRight:10}}>
+            {team.name}
           </div>
         </div>
-        {/* List */}
-        <div className="sc" style={{flex:1,padding:'.75rem',overflowY:'auto'}}>
-          {cor.length===0&&(
-            <div style={{textAlign:'center',padding:'2rem',color:'var(--text3)',fontSize:'.88rem'}}>
+        <div style={{padding:'10px 16px',background:'var(--bg2)',
+          borderBottom:'1px solid var(--sep)',
+          display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{fontSize:14,color:'var(--txt2)',fontWeight:700}}>
+            Runde {rno+1} · {team.name}
+          </span>
+          <span style={{fontSize:16,fontWeight:900,color:'#16a34a'}}>{pts} Punkte</span>
+        </div>
+        <div className="scroll" style={{flex:1}}>
+          {correction.length===0&&(
+            <div style={{textAlign:'center',padding:'2rem',color:'var(--txt3)',fontSize:14}}>
               Keine Begriffe gespielt.
             </div>
           )}
-          {cor.map((item,idx)=>(
-            <div key={idx} style={{display:'flex',alignItems:'center',justifyContent:'space-between',
-              padding:'.55rem .4rem',borderBottom:'1px solid var(--border)',gap:'.5rem'}}>
-              <span style={{fontWeight:700,fontSize:'.9rem',color:'var(--text)'}}>{item.word}</span>
-              <button className="btn" onClick={()=>{hapT();setCor(p=>p.map((w,i)=>i===idx?{...w,solved:!w.solved}:w));}}
-                style={{padding:'.28rem .75rem',borderRadius:8,fontSize:'.78rem',fontWeight:800,whiteSpace:'nowrap',
-                  background:item.solved?'var(--green-l)':'var(--red-l)',
-                  border:`1px solid ${item.solved?'var(--green-b)':'var(--red-b)'}`,
-                  color:item.solved?'var(--green)':'var(--red)'}}>
+          {correction.map((item,idx)=>(
+            <div key={idx} style={{display:'flex',alignItems:'center',
+              justifyContent:'space-between',padding:'12px 16px',
+              borderBottom:'1px solid var(--sep)',gap:8}}>
+              <span style={{fontWeight:700,fontSize:16,color:'var(--txt)'}}>{item.word}</span>
+              <button className="btn" onClick={()=>{
+                hapT();
+                setCorrection(p=>p.map((w,i)=>i===idx?{...w,solved:!w.solved}:w));
+              }} style={{padding:'7px 13px',borderRadius:10,fontSize:13,fontWeight:800,
+                whiteSpace:'nowrap',
+                background:item.solved?'#f0fdf4':'#fef2f2',
+                border:'1.5px solid '+(item.solved?'#bbf7d0':'#fecaca'),
+                color:item.solved?'#16a34a':'#dc2626'}}>
                 {item.solved?'✓ Gelöst':'✗ Falsch'}
               </button>
             </div>
           ))}
         </div>
-        {/* Confirm */}
-        <div style={{padding:'.75rem',borderTop:'1px solid var(--border)',
-          boxShadow:'0 -4px 12px rgba(0,0,0,.05)'}}>
-          <button className="btn btn-primary" onClick={confirm}
-            style={{width:'100%',padding:'1rem',fontSize:'1rem',fontWeight:900,borderRadius:var(--radius)}}>
-            ✓ {pts} Punkte für {team.name} bestätigen
+        <div style={{padding:'12px 16px',
+          paddingBottom:'max(calc(env(safe-area-inset-bottom,0px)+12px),16px)',
+          borderTop:'1px solid var(--sep)',background:'var(--card)',
+          boxShadow:'0 -4px 16px rgba(0,0,0,.06)'}}>
+          <button className="btn btn-primary" onClick={confirmPoints}
+            style={{width:'100%',padding:15,fontSize:16,borderRadius:14}}>
+            ✓ {pts} Punkte für {team.name}
           </button>
         </div>
       </div>
@@ -902,40 +1284,52 @@ function GameScreen({cfg,onEnd}){
   }
 
   /* ── GAME OVER ── */
-  if(ph==='over'){
-    const mx=Math.max(...sc),wi=sc.indexOf(mx),tie=sc.filter(s=>s===mx).length>1,win=teams[wi];
+  if(phase==='over'){
+    const mx=Math.max(...scores);
+    const wi=scores.indexOf(mx);
+    const tie=scores.filter(s=>s===mx).length>1;
+    const win=teams[wi];
     return(
-      <div style={{position:'fixed',inset:0,background:'var(--white)',display:'flex',
-        alignItems:'center',justifyContent:'center',padding:'2rem',zIndex:10}}>
-        <div className="card" style={{maxWidth:480,width:'100%',padding:'2rem',textAlign:'center'}}>
-          <div style={{fontSize:'4rem',marginBottom:'.6rem'}}>{tie?'🤝':'🏆'}</div>
-          <div style={{fontSize:'2rem',fontWeight:900,color:tie?'var(--text)':win.color,
-            letterSpacing:'-.025em',marginBottom:'.25rem'}}>
-            {tie?'Unentschieden!':`${win.name} gewinnt!`}
+      <div style={{width:'100%',height:'100%',background:'var(--bg)',
+        display:'flex',alignItems:'center',justifyContent:'center',
+        padding:'2rem',overflow:'hidden',position:'relative'}}>
+        <div style={{position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}}>
+          <div className="blob" style={{width:'70vw',height:'70vw',
+            background:dk?'#1a3360':'#dbeafe',top:'-20%',left:'-15%'}}/>
+          <div className="blob" style={{width:'55vw',height:'55vw',
+            background:dk?'#2a1860':'#ede9fe',bottom:'-10%',right:'-10%',animationDelay:'-7s'}}/>
+        </div>
+        <div style={{position:'relative',zIndex:1,background:'var(--card)',
+          border:'1px solid var(--sep)',borderRadius:24,maxWidth:420,width:'100%',
+          padding:'2rem',textAlign:'center',boxShadow:'0 8px 40px rgba(0,0,0,.1)'}}>
+          <div style={{fontSize:'4rem',marginBottom:10}}>{tie?'🤝':'🏆'}</div>
+          <div style={{fontSize:30,fontWeight:900,letterSpacing:'-.025em',
+            marginBottom:4,color:tie?'var(--txt)':win.color}}>
+            {tie?'Unentschieden!':win.name+' gewinnt!'}
           </div>
-          {!tie&&<div style={{color:'var(--text2)',fontWeight:700,fontSize:'.88rem',marginBottom:'1.25rem'}}>
+          {!tie&&<div style={{color:'var(--txt2)',fontWeight:700,fontSize:14,marginBottom:18}}>
             {win.players.join(', ')}
           </div>}
-          <div style={{display:'flex',gap:'.6rem',justifyContent:'center',margin:'1.25rem 0',flexWrap:'wrap'}}>
+          <div style={{display:'flex',gap:8,justifyContent:'center',
+            margin:'16px 0 22px',flexWrap:'wrap'}}>
             {teams.map((t,i)=>(
-              <div key={i} style={{padding:'.65rem 1.1rem',borderRadius:14,
-                background:i===wi&&!tie?`${t.color}10`:'var(--off)',
-                border:`1.5px solid ${i===wi&&!tie?t.color+'40':'var(--border)'}`,textAlign:'center',minWidth:80}}>
-                <div style={{color:t.color,fontWeight:900,fontSize:'2rem',lineHeight:1}}>{sc[i]}</div>
-                <div style={{color:'var(--text2)',fontSize:'.7rem',fontWeight:700,marginTop:2}}>{t.name}</div>
+              <div key={i} style={{padding:'10px 16px',borderRadius:12,textAlign:'center',
+                minWidth:72,
+                background:i===wi&&!tie?t.color+'18':'var(--bg2)',
+                border:'1.5px solid '+(i===wi&&!tie?t.color+'55':'var(--sep)')}}>
+                <div style={{color:t.color,fontWeight:900,fontSize:30,lineHeight:1}}>
+                  {scores[i]}
+                </div>
+                <div style={{color:'var(--txt3)',fontSize:11,fontWeight:700,marginTop:2}}>
+                  {t.name}
+                </div>
               </div>
             ))}
           </div>
-          <div style={{display:'flex',gap:'.6rem'}}>
-            <button className="btn btn-primary" onClick={()=>{hapT();onEnd();}}
-              style={{flex:1,padding:'.9rem',fontSize:'.95rem',fontWeight:900,borderRadius:var(--radius)}}>
-              🔄 Neues Spiel
-            </button>
-            <button className="btn btn-ghost" onClick={()=>{hapT();location.reload();}}
-              style={{flex:1,padding:'.9rem',fontSize:'.95rem',fontWeight:800}}>
-              ↩ Hauptmenü
-            </button>
-          </div>
+          <button className="btn btn-primary" onClick={()=>{hapT();onMenu();}}
+            style={{width:'100%',padding:14,fontSize:16,borderRadius:13}}>
+            🔄 Neues Spiel
+          </button>
         </div>
       </div>
     );
@@ -943,34 +1337,69 @@ function GameScreen({cfg,onEnd}){
   return null;
 }
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    ROOT APP
-══════════════════════════════════════════ */
+══════════════════════════════════════════════════ */
 function App(){
-  const[screen,setScreen]=useState('perm');
-  const[players,setPlayers]=useState([]);
+  const[screen,setScreen]=useState('perm'); // perm | menu | game
   const[cfg,setCfg]=useState(null);
+  const[S,setS]=useState({
+    players:['Spieler 1','Spieler 2','Spieler 3','Spieler 4'],
+    teams:[
+      {name:'Team 1',players:[],color:TEAM_COLORS[0]},
+      {name:'Team 2',players:[],color:TEAM_COLORS[1]},
+    ],
+    mode:'rounds',rds:3,tgt:20,tsec:60,
+    selCats:Object.keys(CATS),cats:CATS,
+    debug:false,darkMode:false,
+  });
+
+  function upd(k,v){
+    setS(prev=>({...prev,[k]:typeof v==='function'?v(prev[k]):v}));
+  }
 
   useEffect(()=>{
-    const raw=new URLSearchParams(location.search).get('players');
-    if(raw){
-      const p=raw.split(',').map(s=>s.trim()).filter(Boolean);
-      setPlayers(p.length>0?p:['Spieler 1','Spieler 2','Spieler 3','Spieler 4']);
-    }else{
-      setPlayers(['Spieler 1','Spieler 2','Spieler 3','Spieler 4']);
-    }
-  },[]);
+    document.body.classList.toggle('dark',S.darkMode);
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.setAttribute('content',S.darkMode?'#0d0f1a':'#ffffff');
+  },[S.darkMode]);
+
+  // Screens animate in/out
+  // perm → menu: perm slides left, menu comes from right
+  // menu → game: menu slides left, game from right
+  // game → menu: game slides right, menu comes from left
+  function screenState(name){
+    const order={perm:0,menu:1,game:2};
+    const cur=order[screen]??1;
+    const tgt=order[name]??1;
+    if(name===screen)return'show';
+    return tgt<cur?'hide-left':'hide-right';
+  }
 
   return(
-    <>
-      {screen==='perm'&&<PermScreen onDone={()=>setScreen('setup')}/>}
-      {screen==='setup'&&<SetupScreen initialPlayers={players} onStart={c=>{setCfg(c);setScreen('game');}}/>}
-      {screen==='game'&&cfg&&<GameScreen cfg={cfg} onEnd={()=>setScreen('setup')}/>}
-    </>
+    <div style={{width:'100%',height:'100%',position:'relative',overflow:'hidden'}}>
+
+      <div className={"screen "+screenState('perm')}>
+        <PermScreen onDone={()=>setScreen('menu')}/>
+      </div>
+
+      <div className={"screen "+screenState('menu')}>
+        <Settings S={S} upd={upd}
+          onStart={c=>{setCfg(c);setScreen('game');}}/>
+      </div>
+
+      <div className={"screen "+screenState('game')}>
+        {cfg&&<GameScreen cfg={cfg} darkMode={S.darkMode}
+          onMenu={()=>setScreen('menu')}/>}
+      </div>
+
+    </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')).render(
+  React.createElement(App)
+);
 </script>
 </body>
 </html>
