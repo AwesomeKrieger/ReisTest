@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Purity | Liquid Glass</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>window.onerror=function(m,s,l,c,e){document.getElementById("start-view").style.display="";console.error(e);};</script>
+    <style>
+        :root {
+            --bg: #ffffff; --glass: rgba(255,255,255,0.75);
+            --glass-border: rgba(0,0,0,0.08); --text: #000000;
+            --accent: #007aff; --sub-text: rgba(0,0,0,0.5);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000; --glass: rgba(25,25,25,0.75);
+                --glass-border: rgba(255,255,255,0.1); --text: #ffffff;
+                --accent: #0a84ff; --sub-text: rgba(255,255,255,0.5);
+            }
+        }
+        * { box-sizing: border-box; }
+        body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; display:flex; justify-content:center; }
+        .container { width:100%; max-width:720px; padding:60px 20px; }
+        h1 { font-size:2.8rem; font-weight:800; text-align:center; margin-bottom:10px; letter-spacing:-1px; }
+
+        .glass-shell { background:var(--glass); backdrop-filter:blur(35px) saturate(160%); -webkit-backdrop-filter:blur(35px) saturate(160%); border:1px solid var(--glass-border); border-radius:32px; box-shadow:0 25px 50px rgba(0,0,0,0.1); overflow:hidden; margin-bottom:30px; }
+
+        .q-row { padding:22px 28px; display:flex; align-items:flex-start; border-bottom:1px solid var(--glass-border); cursor:pointer; transition:0.2s ease; }
+        .q-row:hover { background:rgba(128,128,128,0.05); }
+        .indicator { width:26px; height:26px; border:2px solid var(--glass-border); border-radius:9px; margin-right:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:0.3s; }
+        .selected .indicator { background:var(--accent); border-color:var(--accent); box-shadow:0 0 15px var(--accent); }
+        .selected .indicator::after { content:"✓"; color:white; font-weight:bold; }
+        .glossary { display:block; margin-top:6px; font-size:0.82rem; color:var(--sub-text); font-style:italic; }
+
+        .calc-btn { width:100%; padding:24px; border-radius:20px; border:none; background:var(--accent); color:white; font-size:1.3rem; font-weight:700; cursor:pointer; transition:0.3s; }
+        .calc-btn:hover { opacity:0.85; transform:scale(1.01); }
+
+        .legal-notice { font-size:0.75rem; color:var(--sub-text); text-align:center; margin-top:15px; line-height:1.4; }
+        .legal-notice span { color:var(--accent); cursor:pointer; text-decoration:underline; }
+
+        #ds-modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); align-items:center; justify-content:center; }
+        .modal-content { background:var(--bg); color:var(--text); padding:30px; border-radius:24px; max-width:500px; width:90%; max-height:70vh; overflow-y:auto; border:1px solid var(--glass-border); }
+        .close-btn { background:var(--accent); color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer; float:right; margin-top:20px; }
+
+        .purity-scale { width:100%; margin:20px 0; }
+        .scale-bar { height:10px; background:linear-gradient(to right,#4a148c,#e91e63,#ffb300); border-radius:5px; position:relative; }
+        .indicator-arrow { position:absolute; top:-15px; transform:translateX(-50%); transition:left 1s ease-out; font-size:12px; }
+        .scale-labels { display:flex; justify-content:space-between; font-size:10px; margin-bottom:5px; font-weight:bold; opacity:0.5; }
+        .score-box { background:#6a1b9a; color:white; padding:30px; border-radius:25px; margin:20px 0; }
+        .big-number { font-size:5rem; font-weight:900; }
+        .result-text { font-size:1rem; margin-top:15px; line-height:1.4; }
+
+        .impurity-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-top:30px; }
+        .stat-circle { text-align:center; }
+        @property --p { syntax:'<number>'; inherits:true; initial-value:0; }
+        .circle-visual { width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 5px; font-weight:bold; font-size:1.2rem; --p:0; transition:--p 1.2s cubic-bezier(0.4,0,0.2,1); background:radial-gradient(closest-side,var(--bg) 80%,transparent 0%),conic-gradient(var(--circle-color,var(--accent)) calc(var(--p) * 1%),var(--glass-border) 0); }
+        .c-minor{--circle-color:#4cd964} .c-immortal{--circle-color:#007aff} .c-raunchy{--circle-color:#ffcc00} .c-scandalous{--circle-color:#ff3b30} .c-unspeakable{--circle-color:#ff2d55}
+        .cat-label { font-size:0.78rem; color:var(--sub-text); margin-top:4px; line-height:1.3; }
+
+        #result-view { display:none; text-align:center; padding:80px 20px; }
+        .final-score { font-size:9rem; font-weight:900; color:var(--accent); letter-spacing:-5px; }
+
+        /* LOBBY */
+        #lobby-view { display:none; padding:60px 20px; }
+        .input-group { margin-bottom:20px; }
+        .input-group label { display:block; font-weight:600; margin-bottom:8px; font-size:0.9rem; }
+        .input-group input { width:100%; padding:16px 20px; border-radius:16px; border:1px solid var(--glass-border); background:var(--glass); color:var(--text); font-size:1rem; backdrop-filter:blur(20px); outline:none; transition:0.2s; }
+        .input-group input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,122,255,0.15); }
+        .lobby-card { background:var(--glass); backdrop-filter:blur(30px) saturate(160%); border:1px solid var(--glass-border); border-radius:24px; padding:28px; margin-bottom:20px; }
+        .lobby-card h3 { margin:0 0 16px; font-size:1.1rem; }
+        .code-display { font-size:3rem; font-weight:900; letter-spacing:8px; color:var(--accent); text-align:center; padding:20px; background:rgba(0,122,255,0.08); border-radius:16px; margin:16px 0; cursor:pointer; transition:0.2s; user-select:all; }
+        .code-display:hover { background:rgba(0,122,255,0.15); }
+        .share-link { font-size:0.8rem; color:var(--sub-text); word-break:break-all; background:rgba(128,128,128,0.1); padding:10px 14px; border-radius:10px; cursor:pointer; transition:0.2s; margin-top:8px; display:block; }
+        .share-link:hover { opacity:0.7; }
+        .player-list { list-style:none; padding:0; margin:0; }
+        .player-list li { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--glass-border); font-weight:500; }
+        .player-list li:last-child { border-bottom:none; }
+
+        /* WAITING */
+        #waiting-view { display:none; padding:60px 20px; text-align:center; }
+        .waiting-big { font-size:4rem; margin-bottom:20px; display:inline-block; animation:wspin 4s linear infinite; }
+        @keyframes wspin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        .waiting-pulse { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); animation:wpulse 1.4s infinite; }
+        @keyframes wpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+        /* RANGLISTE */
+        #rangliste-view { display:none; padding:60px 20px; }
+        .rangliste-title { font-size:2.4rem; font-weight:800; text-align:center; margin-bottom:8px; letter-spacing:-1px; }
+        .rangliste-sub { text-align:center; color:var(--sub-text); margin-bottom:40px; font-size:0.95rem; }
+        .rank-card { background:var(--glass); backdrop-filter:blur(30px) saturate(160%); border:1px solid var(--glass-border); border-radius:24px; padding:24px 28px; margin-bottom:16px; display:flex; align-items:center; gap:20px; transition:transform 0.2s; animation:slideUp 0.5s ease both; }
+        .rank-card:hover { transform:translateY(-2px); }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .rank-medal { font-size:2rem; min-width:48px; text-align:center; }
+        .rank-info { flex:1; }
+        .rank-name { font-size:1.25rem; font-weight:700; margin-bottom:4px; }
+        .rank-score-big { font-size:2.5rem; font-weight:900; min-width:80px; text-align:right; }
+        .rank-bar-bg { height:6px; background:var(--glass-border); border-radius:3px; overflow:hidden; margin-top:10px; }
+        .rank-bar-fill { height:100%; border-radius:3px; transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
+        .rank-cats { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+        .rank-cat-chip { font-size:0.72rem; padding:3px 10px; border-radius:20px; font-weight:600; }
+        .chip-minor{background:rgba(76,217,100,0.15);color:#4cd964} .chip-immortal{background:rgba(10,132,255,0.15);color:#0a84ff} .chip-raunchy{background:rgba(255,204,0,0.15);color:#ffcc00} .chip-scandalous{background:rgba(255,59,48,0.15);color:#ff3b30} .chip-unspeakable{background:rgba(255,45,85,0.15);color:#ff2d55}
+        .summary-table { width:100%; border-collapse:collapse; }
+        .summary-table th { padding:10px 16px; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; color:var(--sub-text); border-bottom:1px solid var(--glass-border); }
+        .summary-table td { padding:14px 16px; border-bottom:1px solid var(--glass-border); font-size:0.9rem; }
+        .summary-table tr:last-child td { border-bottom:none; }
+        .tbl-name{font-weight:700} .tbl-score{font-weight:800;color:var(--accent);font-size:1.1rem} .tbl-label{font-size:0.8rem;color:var(--sub-text)}
+        .section-header { font-size:1.1rem; font-weight:700; margin:36px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--glass-border); }
+        .restart-btn { margin-top:40px; background:var(--accent); color:white; border:none; padding:18px 40px; border-radius:16px; font-size:1.1rem; font-weight:700; cursor:pointer; width:100%; transition:0.3s; }
+        .restart-btn:hover { opacity:0.85; }
+
+        /* TOAST */
+        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:rgba(0,0,0,0.85); color:white; padding:14px 24px; border-radius:14px; font-size:0.9rem; font-weight:500; transition:transform 0.3s ease; z-index:9999; backdrop-filter:blur(10px); white-space:nowrap; }
+        #toast.show { transform:translateX(-50%) translateY(0); }
+
+        /* MODE SELECTION */
+        .mode-btns { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:30px; }
+        .mode-btn { padding:28px 20px; border-radius:24px; border:1px solid var(--glass-border); background:var(--glass); cursor:pointer; text-align:center; transition:0.2s; backdrop-filter:blur(20px); }
+        .mode-btn:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,122,255,0.15); }
+        .mode-icon { font-size:2.5rem; margin-bottom:10px; }
+        .mode-label { font-size:1.1rem; font-weight:700; }
+        .mode-desc { font-size:0.82rem; color:var(--sub-text); margin-top:4px; }
+
+        /* PLAYER BANNER */
+        .player-banner { background:var(--glass); backdrop-filter:blur(30px) saturate(160%); border:1px solid var(--glass-border); border-radius:20px; padding:20px 28px; margin-bottom:30px; text-align:center; }
+        .player-banner .player-label { font-size:0.85rem; color:var(--sub-text); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+        .player-banner .player-name { font-size:2rem; font-weight:800; color:var(--accent); }
+        .player-banner .player-progress { font-size:0.85rem; color:var(--sub-text); margin-top:4px; }
+
+        /* PROMO */
+        .next-test-promo { animation:pulse-red 2s infinite; }
+        @keyframes pulse-red { 0%{box-shadow:0 0 0 0 rgba(255,45,85,0.4)} 70%{box-shadow:0 0 0 15px rgba(255,45,85,0)} 100%{box-shadow:0 0 0 0 rgba(255,45,85,0)} }
+
+        .back-btn { background:none; border:none; color:var(--sub-text); cursor:pointer; margin-top:16px; font-size:0.9rem; }
+        .back-btn:hover { color:var(--text); }
+        .divider { text-align:center; margin:24px 0; color:var(--sub-text); font-size:0.9rem; }
+    </style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="init-error" style="display:none;position:fixed;top:0;left:0;width:100%;padding:20px;background:#ff3b30;color:white;text-align:center;font-weight:600;z-index:9999;font-family:sans-serif;">
+    ⚠️ Fehler beim Laden — <button onclick="location.reload()" style="background:white;color:#ff3b30;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:700;">Neu laden</button>
+</div>
+
+<!-- ── START ── -->
+<div class="container" id="start-view">
+    <h1>Rice Purity Test</h1>
+    <p style="text-align:center;color:var(--sub-text);margin-bottom:40px;">Wie rein bist du wirklich?</p>
+    <div class="mode-btns">
+        <div class="mode-btn" onclick="startSolo()">
+            <div class="mode-icon">🧍</div>
+            <div class="mode-label">Alleine</div>
+            <div class="mode-desc">Mach den Test für dich</div>
+        </div>
+        <div class="mode-btn" onclick="showLobby()">
+            <div class="mode-icon">👥</div>
+            <div class="mode-label">Mehrspieler</div>
+            <div class="mode-desc">Jeder auf eigenem Gerät</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── LOBBY ── -->
+<div id="lobby-view" class="container" style="display:none;">
+    <h1 style="font-size:2rem;">👥 Mehrspieler</h1>
+    <p style="text-align:center;color:var(--sub-text);margin-bottom:36px;">Jeder macht den Test auf seinem eigenen Gerät — am Ende seht ihr alle den Vergleich.</p>
+
+    <div class="lobby-card" id="create-section">
+        <h3>🎯 Session erstellen</h3>
+        <div class="input-group">
+            <label>Dein Name</label>
+            <input type="text" id="creator-name" placeholder="z.B. Anna" maxlength="20" />
+        </div>
+        <button class="calc-btn" onclick="createSession()" style="font-size:1rem;padding:16px;">Session erstellen</button>
+
+        <div class="divider">── oder ──</div>
+
+        <h3>🔗 Session beitreten</h3>
+        <div class="input-group">
+            <label>Dein Name</label>
+            <input type="text" id="joiner-name" placeholder="z.B. Ben" maxlength="20" />
+        </div>
+        <div class="input-group">
+            <label>Session-Code (4 Zeichen)</label>
+            <input type="text" id="join-code" placeholder="AB12" maxlength="6"
+                   style="letter-spacing:6px;font-size:1.4rem;font-weight:800;text-transform:uppercase;text-align:center;"
+                   oninput="this.value=this.value.toUpperCase()" />
+        </div>
+        <button class="calc-btn" onclick="joinSession()" style="font-size:1rem;padding:16px;background:#34c759;">Beitreten</button>
+    </div>
+
+    <div class="lobby-card" id="session-section" style="display:none;">
+        <h3>✅ Session aktiv — warte auf Freunde</h3>
+        <p style="color:var(--sub-text);font-size:0.9rem;margin:0 0 4px;">Teile diesen Code:</p>
+        <div class="code-display" id="session-code-display" onclick="copyCode()">----</div>
+        <span class="share-link" id="share-link-display" onclick="copyLink()">🔗 Link kopieren</span>
+
+        <div style="margin-top:24px;">
+            <div style="font-weight:600;margin-bottom:12px;">Teilnehmer (<span id="player-count">0</span>):</div>
+            <ul class="player-list" id="lobby-player-list"></ul>
+        </div>
+
+        <button class="calc-btn" onclick="startSessionTest(false)" style="margin-top:24px;font-size:1rem;padding:16px;">
+            Test starten →
+        </button>
+        <p style="font-size:0.78rem;color:var(--sub-text);text-align:center;margin-top:8px;">Alle Teilnehmer starten gleichzeitig auf ihrem Gerät</p>
+    </div>
+
+    <button class="back-btn" onclick="showView('start-view')">← Zurück</button>
+    <div id="db-setup-hint" style="display:none;margin-top:24px;padding:20px 24px;background:rgba(255,149,0,0.1);border:1px solid rgba(255,149,0,0.3);border-radius:16px;font-size:0.88rem;line-height:1.6;">
+        <strong>⚙️ Einmalige Einrichtung nötig:</strong><br>
+        Der Mehrspieler-Modus braucht eine Datenbanktabelle in Supabase.<br><br>
+        1. Geh auf <strong>supabase.com</strong> → dein Projekt → <strong>SQL Editor</strong><br>
+        2. Führe den Code aus der <code>supabase_setup.sql</code> aus<br>
+        3. Dann hier neu laden
+    </div>
+</div>
+
+<!-- ── QUIZ ── -->
+<div class="container" id="quiz-view" style="display:none;">
+    <h1>Rice Purity Test</h1>
+    <div id="player-banner-container"></div>
+    <div class="glass-shell" id="questions-list"></div>
+    <button class="calc-btn" onclick="sendData()">Berechnen</button>
+    <div class="legal-notice">
+        Mit Klick auf "Berechnen" akzeptierst du die <span onclick="toggleModal(true)">Datenschutzerklärung</span>.
+    </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div id="ds-modal">
+    <div class="modal-content">
+        <h2>Datenschutzerklärung</h2>
+        <p>Folgende Informationen werden anonymisiert gespeichert:</p>
+        <ul><li>Score</li><li>Bearbeitungsdauer</li><li>Technische Gerätedaten</li><li>Klick-Muster</li></ul>
+        <p><strong>Keine</strong> Namen oder persönlichen Identifikationsmerkmale werden öffentlich gespeichert.</p>
+        <button class="close-btn" onclick="toggleModal(false)">Schließen</button>
+    </div>
+</div>
+
+<!-- ── ERGEBNIS ── -->
+<div id="result-view" class="container" style="display:none;">
+    <div style="font-size:1.5rem;opacity:0.6;" id="result-player-label">Dein Score:</div>
+    <div class="final-score" id="quick-score">100</div>
+
+    <div id="stage-1-actions">
+        <button class="calc-btn" id="details-btn" onclick="revealDetails()" style="max-width:300px;margin:0 auto;display:block;">DETAILS AUSWERTEN</button>
+        <div id="next-player-action" style="margin-top:16px;max-width:300px;margin-left:auto;margin-right:auto;"></div>
+    </div>
+
+    <div id="stage-2" style="display:none;margin-top:40px;">
+        <div class="purity-scale">
+            <div class="scale-labels"><span>I2</span><span>I1</span><span>P1</span><span>P2</span><span>Anständig</span></div>
+            <div class="scale-bar"><div id="purity-indicator" class="indicator-arrow">▼</div></div>
+            <div style="text-align:left;font-size:10px;font-weight:bold;margin-top:5px;">Dreckig</div>
+        </div>
+        <div class="score-box">
+            <div id="score-val" class="big-number">100</div>
+            <p id="result-msg" class="result-text"></p>
+        </div>
+        <div class="impurity-grid">
+            <div class="stat-circle"><div class="circle-visual c-minor" id="val-minor">0</div><div class="cat-label">Kleine Sünden<br><small>/19</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-immortal" id="val-immortal">0</div><div class="cat-label">Unmoralisch<br><small>/28</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-raunchy" id="val-raunchy">0</div><div class="cat-label">Versaut<br><small>/21</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-scandalous" id="val-scandalous">0</div><div class="cat-label">Skandalös<br><small>/23</small></div></div>
+            <div class="stat-circle"><div class="circle-visual c-unspeakable" id="val-unspeakable">0</div><div class="cat-label">Extrem<br><small>/9</small></div></div>
+        </div>
+    </div>
+
+    <div id="promo-section" style="display:none;margin-top:50px;">
+        <div class="next-test-promo" style="padding:32px;background:rgba(255,45,85,0.08);border-radius:24px;border:1px solid rgba(255,45,85,0.2);">
+            <h3 style="color:#ff2d55;margin-top:0;font-size:1.5rem;">🔥 Hardcore Edition</h3>
+            <p style="font-size:0.95rem;color:var(--sub-text);margin-bottom:26px;line-height:1.5;">Bereit für das nächste Level? 100 extreme Fragen ohne Tabus.</p>
+            <button style="background:#ff2d55;color:white;border:none;border-radius:14px;padding:14px 28px;font-size:0.95rem;font-weight:600;cursor:pointer;" onclick="location.href='hardcore.html'">Jetzt starten →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── WARTEN ── -->
+<div id="waiting-view" class="container" style="display:none;text-align:center;">
+    <div class="waiting-big">⏳</div>
+    <h2 style="font-size:1.6rem;margin-bottom:8px;">Warten auf die anderen…</h2>
+    <p style="color:var(--sub-text);margin-bottom:40px;">Du bist fertig! Die Rangliste erscheint sobald alle gemacht haben.</p>
+    <div class="glass-shell" style="padding:24px 28px;text-align:left;">
+        <ul class="player-list" id="waiting-player-list"></ul>
+    </div>
+</div>
+
+<!-- ── RANGLISTE ── -->
+<div id="rangliste-view" class="container" style="display:none;">
+    <div class="rangliste-title">🏆 Rangliste</div>
+    <div class="rangliste-sub" id="rangliste-sub"></div>
+    <div id="rank-cards-container"></div>
+
+    <div class="section-header">📊 Detaillierte Übersicht</div>
+    <div class="glass-shell" style="overflow:auto;">
+        <table class="summary-table">
+            <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Kleine<br>Sünden</th><th>Unmoral.</th><th>Versaut</th><th>Skandal.</th><th>Extrem</th><th>Einschätzung</th></tr></thead>
+            <tbody id="summary-tbody"></tbody>
+        </table>
+    </div>
+
+    <div class="section-header">📈 Score-Vergleich</div>
+    <div class="glass-shell" style="padding:24px 28px;">
+        <div id="compare-bars"></div>
+    </div>
+
+    <button class="restart-btn" onclick="location.href=location.pathname">🔄 Neue Runde</button>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
+    const _supabase = (typeof supabase !== 'undefined')
+        ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+        : null;
+
+    // ─── State ───
+    let myName = '';
+    let sessionCode = '';
+    let sessionPlayers = {};
+    let isMultiPlayer = false;
+    let startTime = Date.now();
+    let pattern = [];
+    let finalScoreVal = 100;
+    let finalStats = { minor:0, immortal:0, raunchy:0, scandalous:0, unspeakable:0 };
+    let realtimeChannel = null;
+    let warnBeforeLeave = false;
+
+    // ─── Name in localStorage ───
+    function loadSavedName() { return localStorage.getItem('rpt_name') || ''; }
+    function saveName(n) { if (n) localStorage.setItem('rpt_name', n); }
+
+    // ─── View-Switcher ───
+    const VIEWS = ['start-view','lobby-view','quiz-view','result-view','waiting-view','rangliste-view'];
+    function showView(id) {
+        VIEWS.forEach(v => document.getElementById(v).style.display = v === id ? '' : 'none');
+        window.scrollTo(0,0);
+    }
+
+    function toast(msg, ms = 2500) {
+        const el = document.getElementById('toast');
+        el.textContent = msg; el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), ms);
+    }
+    function toggleModal(show) {
+        document.getElementById('ds-modal').style.display = show ? 'flex' : 'none';
+    }
+
+    // ─── Kategorie / Text ───
+    function getDetailedCategory(id) {
+        if ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,44,45,46,53,55].includes(id)) return "minor";
+        if ([15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,54,56,57,58].includes(id)) return "immortal";
+        if ([35,36,37,38,39,40,41,42,43,67,68,69,70,71,72,73,74,75,80,81,92].includes(id)) return "raunchy";
+        if ([51,52,59,60,61,62,63,64,65,66,76,77,78,79,82,83,84,85,86,87,88,89,90].includes(id)) return "scandalous";
+        return "unspeakable";
+    }
+    function getResultText(s) {
+        if (s>=98) return "Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich.";
+        if (s>=85) return "Sehr anständig. Ein Vorbild für die Gesellschaft.";
+        if (s>=65) return "Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind.";
+        if (s>=35) return "Du lebst das Leben! Ziemlich versaut.";
+        if (s>=10) return "Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast.";
+        return "Legende! Du hast das Leben im Hardcore-Modus durchgespielt.";
+    }
+    function getScoreColor(s) {
+        if (s>=85) return '#4cd964'; if (s>=65) return '#0a84ff';
+        if (s>=35) return '#ffcc00'; if (s>=10) return '#ff3b30'; return '#ff2d55';
+    }
+    function getMedal(r) { return r===0?'🥇':r===1?'🥈':r===2?'🥉':`${r+1}.`; }
+    function randCode() { return Math.random().toString(36).substring(2,6).toUpperCase(); }
+
+    // ─── Solo ───
+    function startSolo() {
+        isMultiPlayer = false;
+        warnBeforeLeave = true;
+        document.getElementById('player-banner-container').innerHTML = '';
+        document.getElementById('promo-section').style.display = 'block';
+        document.getElementById('next-player-action').innerHTML = '';
+        document.getElementById('stage-1-actions').style.display = 'block';
+        document.getElementById('stage-2').style.display = 'none';
+        resetCircles();
+        renderQuestions();
+        showView('quiz-view');
+    }
+
+    // ─── Lobby ───
+    function showLobby() {
+        const saved = loadSavedName();
+        if (saved) {
+            document.getElementById('creator-name').value = saved;
+            document.getElementById('joiner-name').value = saved;
+        }
+        const codeFromUrl = new URLSearchParams(location.search).get('session');
+        if (codeFromUrl) document.getElementById('join-code').value = codeFromUrl.toUpperCase();
+        showView('lobby-view');
+    }
+
+    // ─── Session erstellen ───
+    async function createSession() {
+        const name = document.getElementById('creator-name').value.trim();
+        if (!name) { toast('Bitte deinen Namen eingeben!'); return; }
+        saveName(name);
+        myName = name;
+        sessionCode = randCode();
+
+        if (!_supabase) { showDbError(); return; }
+        const { error } = await _supabase.from('purity_sessions').insert([{
+            code: sessionCode,
+            players: { [name]: { done:false, score:null, stats:null } },
+            started: false
+        }]);
+        if (error) { toast('Fehler beim Erstellen. Nochmal versuchen.'); console.error(error); return; }
+
+        sessionPlayers = { [name]: { done:false, score:null, stats:null } };
+        activateSessionUI();
+        subscribeToSession();
+    }
+
+    // ─── Session beitreten ───
+    async function joinSession() {
+        const name = document.getElementById('joiner-name').value.trim();
+        const code = document.getElementById('join-code').value.trim().toUpperCase();
+        if (!name) { toast('Bitte deinen Namen eingeben!'); return; }
+        if (code.length < 4) { toast('Bitte einen gültigen Code eingeben!'); return; }
+        saveName(name);
+        myName = name;
+        sessionCode = code;
+
+        if (!_supabase) { showDbError(); return; }
+        const { data, error } = await _supabase.from('purity_sessions').select('*').eq('code', code).single();
+        if (error || !data) { toast('Session nicht gefunden! Code prüfen.'); return; }
+        if (data.started) { toast('Diese Session hat bereits begonnen.'); return; }
+
+        const players = data.players || {};
+        players[name] = { done:false, score:null, stats:null };
+        await _supabase.from('purity_sessions').update({ players }).eq('code', code);
+
+        sessionPlayers = players;
+        activateSessionUI();
+        subscribeToSession();
+    }
+
+    function activateSessionUI() {
+        document.getElementById('create-section').style.display = 'none';
+        document.getElementById('session-section').style.display = 'block';
+        document.getElementById('session-code-display').textContent = sessionCode;
+        const link = `${location.origin}${location.pathname}?session=${sessionCode}`;
+        document.getElementById('share-link-display').textContent = '🔗 ' + link;
+        renderLobbyPlayers();
+    }
+
+    // ─── Realtime ───
+    function subscribeToSession() {
+        if (realtimeChannel) realtimeChannel.unsubscribe();
+        realtimeChannel = _supabase.channel('session:' + sessionCode)
+            .on('postgres_changes', {
+                event:'UPDATE', schema:'public', table:'purity_sessions', filter:`code=eq.${sessionCode}`
+            }, payload => {
+                const data = payload.new;
+                sessionPlayers = data.players || {};
+
+                renderLobbyPlayers();
+
+                // Wenn gestartet und wir noch in der Lobby sind → Test starten
+                if (data.started && document.getElementById('lobby-view').style.display !== 'none') {
+                    beginTest();
+                }
+                // Wenn wir im Wartezimmer sind → updaten
+                if (document.getElementById('waiting-view').style.display !== 'none') {
+                    renderWaitingPlayers();
+                    checkAllDone();
+                }
+            })
+            .subscribe();
+    }
+
+    function renderLobbyPlayers() {
+        const list = document.getElementById('lobby-player-list');
+        const count = document.getElementById('player-count');
+        const names = Object.keys(sessionPlayers);
+        count.textContent = names.length;
+        list.innerHTML = names.map(n => `
+            <li>
+                <span>${n === myName ? '<strong>👤 ' + n + ' (du)</strong>' : '👤 ' + n}</span>
+                <span class="waiting-pulse"></span>
+            </li>`).join('');
+    }
+
+    // ─── Session starten (Host drückt Button) ───
+    async function startSessionTest(fromRealtime) {
+        if (!fromRealtime) {
+            await _supabase.from('purity_sessions').update({ started:true }).eq('code', sessionCode);
+            // Realtime wird dann bei allen die beginTest() triggern, inkl. Host selbst
+        }
+    }
+
+    function beginTest() {
+        isMultiPlayer = true;
+        warnBeforeLeave = true;
+        document.getElementById('player-banner-container').innerHTML = `
+            <div class="player-banner">
+                <div class="player-label">Dein Test</div>
+                <div class="player-name">${myName}</div>
+                <div class="player-progress">Session: ${sessionCode}</div>
+            </div>`;
+        document.getElementById('promo-section').style.display = 'none';
+        document.getElementById('next-player-action').innerHTML = '';
+        document.getElementById('stage-1-actions').style.display = 'block';
+        document.getElementById('stage-2').style.display = 'none';
+        resetCircles();
+        renderQuestions();
+        showView('quiz-view');
+    }
+
+    function showDbError() {
+        document.getElementById('db-setup-hint').style.display = 'block';
+        toast('⚠️ Datenbank-Tabelle fehlt — siehe Hinweis unten', 4000);
+    }
+
+    // ─── Fragen ───
+    function renderQuestions() {
+        const list = document.getElementById('questions-list');
+        list.innerHTML = ''; pattern = []; startTime = Date.now();
+        rawQuestions.forEach((q, i) => {
+            const row = document.createElement('div');
+            row.className = 'q-row';
+            const expl = q[1] ? `<span class="glossary">Erläuterung: ${q[1]}</span>` : '';
+            const txt = q[0] ? `${i+1}. ${q[0]}${expl}` : `<span style="opacity:0.2;font-size:0.85rem">${i+1}.</span>`;
+            row.innerHTML = `<div class="indicator"></div><div>${txt}</div>`;
+            row.onclick = () => {
+                const sel = row.classList.toggle('selected');
+                pattern.push({ id:i+1, t:Date.now()-startTime, action:sel?"select":"deselect", cat:getDetailedCategory(i+1) });
+            };
+            list.appendChild(row);
+        });
+    }
+
+    // ─── Berechnen ───
+    async function sendData() {
+        const selected = document.querySelectorAll('.q-row.selected');
+        finalScoreVal = 100 - selected.length;
+        const duration = (Date.now()-startTime)/1000;
+
+        finalStats = { minor:0, immortal:0, raunchy:0, scandalous:0, unspeakable:0 };
+        selected.forEach(row => {
+            const id = parseInt(row.innerText.split('.')[0]);
+            finalStats[getDetailedCategory(id)]++;
+        });
+
+        warnBeforeLeave = false;
+        document.getElementById('result-player-label').textContent = isMultiPlayer ? `${myName}s Score:` : 'Dein Score:';
+
+        showView('result-view');
+
+        // Countdown
+        let cur = 100;
+        const qEl = document.getElementById('quick-score');
+        const timer = setInterval(() => { if(cur<=finalScoreVal) clearInterval(timer); else { cur--; qEl.innerText=cur; } }, 70);
+
+        // Mehrspieler: in Session speichern + Warte-Button
+        if (isMultiPlayer && sessionCode) {
+            const { data } = await _supabase.from('purity_sessions').select('players').eq('code', sessionCode).single();
+            const players = data?.players || {};
+            players[myName] = { done:true, score:finalScoreVal, stats:finalStats };
+            await _supabase.from('purity_sessions').update({ players }).eq('code', sessionCode);
+
+            document.getElementById('next-player-action').innerHTML =
+                `<button class="calc-btn" onclick="goWaiting()" style="background:#34c759;color:#000;margin-top:0;">⏳ Auf andere warten</button>`;
+        }
+
+        if (!isMultiPlayer) document.getElementById('promo-section').style.display = 'block';
+
+        // Anonym in DB
+        try {
+            let loc = { city:"Anonym", country:"Anonym" };
+            try {
+                const c = new AbortController(); setTimeout(()=>c.abort(), 2000);
+                const g = await fetch('https://ipapi.co/json/',{signal:c.signal});
+                const j = await g.json();
+                if (!j.error) loc = { city:j.city, country:j.country_name };
+            } catch(e) {}
+            await _supabase.from('purity_results').insert([{ data:{
+                score:finalScoreVal, duration:duration.toFixed(1)+"s",
+                device:navigator.userAgent, screen:screen.width+"x"+screen.height,
+                location:loc, timestamp:new Date().toISOString(), ver:"4.0"
+            }}]);
+        } catch(e) {}
+    }
+
+    function goWaiting() {
+        // Prüf ob schon alle fertig
+        const all = Object.values(sessionPlayers);
+        if (all.length > 0 && all.every(p => p.done)) {
+            const results = Object.entries(sessionPlayers).map(([n,d]) => ({name:n, score:d.score, stats:d.stats}));
+            showRangliste(results);
+            return;
+        }
+        showView('waiting-view');
+        renderWaitingPlayers();
+    }
+
+    function renderWaitingPlayers() {
+        document.getElementById('waiting-player-list').innerHTML =
+            Object.entries(sessionPlayers).map(([n,d]) => `
+                <li>
+                    <span>${n===myName?'<strong>'+n+'</strong>':n}</span>
+                    <span>${d.done ? '✅' : '<span class="waiting-pulse"></span>'}</span>
+                </li>`).join('');
+    }
+
+    function checkAllDone() {
+        const entries = Object.entries(sessionPlayers);
+        if (entries.length > 0 && entries.every(([,d]) => d.done)) {
+            const results = entries.map(([n,d]) => ({name:n, score:d.score, stats:d.stats}));
+            showRangliste(results);
+        }
+    }
+
+    // ─── Details ───
+    function revealDetails() {
+        document.getElementById('details-btn').style.display = 'none';
+        document.getElementById('stage-2').style.display = 'block';
+
+        const scoreEl = document.getElementById('score-val');
+        const ind = document.getElementById('purity-indicator');
+        document.getElementById('result-msg').innerText = getResultText(finalScoreVal);
+
+        const maxV = { minor:19, immortal:28, raunchy:21, scandalous:23, unspeakable:9 };
+        let cur = 100;
+        const t = setInterval(() => {
+            if (cur<=finalScoreVal) {
+                clearInterval(t);
+                setTimeout(() => {
+                    Object.keys(finalStats).forEach((k,i) => {
+                        const el = document.getElementById('val-'+k);
+                        if (el) { el.innerText=finalStats[k]; setTimeout(()=>el.style.setProperty('--p',((finalStats[k]/maxV[k])*100).toFixed(0)), i*150); }
+                    });
+                }, 200);
+            } else { cur--; scoreEl.innerText=cur; if(ind) ind.style.left=cur+'%'; }
+        }, 40);
+    }
+
+    function resetCircles() {
+        ['minor','immortal','raunchy','scandalous','unspeakable'].forEach(k => {
+            const el = document.getElementById('val-'+k);
+            if (el) { el.innerText='0'; el.style.setProperty('--p','0'); }
+        });
+        document.getElementById('details-btn').style.display = 'block';
+        const qEl = document.getElementById('quick-score');
+        if (qEl) qEl.innerText = '100';
+    }
+
+    // ─── Rangliste ───
+    function showRangliste(results) {
+        const sorted = [...results].sort((a,b) => b.score - a.score);
+        document.getElementById('rangliste-sub').textContent = `${sorted.length} Teilnehmer · Wer ist am reinsten?`;
+
+        const cards = document.getElementById('rank-cards-container');
+        cards.innerHTML = '';
+        sorted.forEach((r, rank) => {
+            const color = getScoreColor(r.score);
+            const chips = [
+                {key:'minor',label:'Kleine Sünden',cls:'chip-minor'},
+                {key:'immortal',label:'Unmoralisch',cls:'chip-immortal'},
+                {key:'raunchy',label:'Versaut',cls:'chip-raunchy'},
+                {key:'scandalous',label:'Skandalös',cls:'chip-scandalous'},
+                {key:'unspeakable',label:'Extrem',cls:'chip-unspeakable'},
+            ].filter(c => (r.stats?.[c.key]??0) > 0)
+             .map(c => `<span class="rank-cat-chip ${c.cls}">${c.label}: ${r.stats[c.key]}</span>`).join('');
+
+            const card = document.createElement('div');
+            card.className = 'rank-card';
+            card.style.animationDelay = `${rank*0.1}s`;
+            card.innerHTML = `
+                <div class="rank-medal">${getMedal(rank)}</div>
+                <div class="rank-info">
+                    <div class="rank-name">${r.name}${r.name===myName?' <span style="font-size:0.7rem;opacity:0.45;font-weight:400">(du)</span>':''}</div>
+                    <div style="font-size:0.85rem;color:var(--sub-text)">${getResultText(r.score)}</div>
+                    <div class="rank-cats">${chips||'<span style="color:var(--sub-text);font-size:0.8rem">Keine Einträge 👼</span>'}</div>
+                    <div class="rank-bar-bg"><div class="rank-bar-fill" id="bar-${rank}" style="width:0%;background:${color}"></div></div>
+                </div>
+                <div class="rank-score-big" style="color:${color}">${r.score}</div>`;
+            cards.appendChild(card);
+            setTimeout(() => { const b=document.getElementById('bar-'+rank); if(b) b.style.width=r.score+'%'; }, 300+rank*100);
+        });
+
+        document.getElementById('summary-tbody').innerHTML = sorted.map((r,rank) => `
+            <tr>
+                <td>${getMedal(rank)}</td><td class="tbl-name">${r.name}</td>
+                <td class="tbl-score">${r.score}</td>
+                <td>${r.stats?.minor??0}</td><td>${r.stats?.immortal??0}</td>
+                <td>${r.stats?.raunchy??0}</td><td>${r.stats?.scandalous??0}</td>
+                <td>${r.stats?.unspeakable??0}</td>
+                <td class="tbl-label">${getResultText(r.score)}</td>
+            </tr>`).join('');
+
+        const bars = document.getElementById('compare-bars');
+        bars.innerHTML = '';
+        sorted.forEach((r,rank) => {
+            const color = getScoreColor(r.score);
+            const div = document.createElement('div');
+            div.style.marginBottom = '16px';
+            div.innerHTML = `
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-weight:600">${getMedal(rank)} ${r.name}</span>
+                    <span style="font-weight:800;color:${color}">${r.score}</span>
+                </div>
+                <div style="height:12px;background:var(--glass-border);border-radius:6px;overflow:hidden;">
+                    <div id="cbar-${rank}" style="height:100%;width:0%;background:${color};border-radius:6px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)"></div>
+                </div>`;
+            bars.appendChild(div);
+            setTimeout(() => { const b=document.getElementById('cbar-'+rank); if(b) b.style.width=r.score+'%'; }, 400+rank*80);
+        });
+
+        showView('rangliste-view');
+    }
+
+    // ─── Copy ───
+    function copyCode() { navigator.clipboard?.writeText(sessionCode); toast('Code kopiert! ' + sessionCode); }
+    function copyLink() {
+        const link = `${location.origin}${location.pathname}?session=${sessionCode}`;
+        navigator.clipboard?.writeText(link); toast('Link kopiert!');
+    }
+
+    // ─── Warnung bei Verlassen ───
+    window.addEventListener('beforeunload', e => {
+        if (warnBeforeLeave) { e.preventDefault(); e.returnValue='Du bist noch mitten im Test — wirklich verlassen?'; }
+    });
+
+    // ─── Init ───
+    // Seite sofort zeigen
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            const codeFromUrl = new URLSearchParams(location.search).get('session');
+            if (codeFromUrl) showLobby();
+            else showView('start-view');
+        } catch(e) {
+            console.error('Init Fehler:', e);
+            document.getElementById('init-error').style.display = 'block';
+            document.getElementById('start-view').style.display = '';
+        }
+    });
+    
+    window.addEventListener('error', () => {
+        document.getElementById('start-view').style.display = '';
+    });
+
+    function showDbError() {
+        document.getElementById('db-setup-hint').style.display = 'block';
+        toast('⚠️ Datenbank-Tabelle fehlt — siehe Hinweis unten', 4000);
+    }
+
+    // ─── Fragen ───
+    const rawQuestions = [
+        ["Romantisch Händchen gehalten?",""],
+        ["Ein Date gehabt?",""],
+        ["In einer Beziehung gewesen?",""],
+        ["Eng getanzt?","Ohne Abstand zwischen den Körpern"],
+        ["Jemanden geküsst?","Keine Familienmitglieder"],
+        ["Auf den Mund geküsst?",""],
+        ["Einen Zungenkuss gehabt?","French Kiss"],
+        ["Zungenkuss in der Öffentlichkeit gehabt?",""],
+        ["Am Hals geküsst?",""],
+        ["Liegend geküsst?","Horizontal, also liegend"],
+        ["Einen Knutschfleck gegeben oder bekommen?","Hickey = Saugfleck am Hals"],
+        ["An der Brust geküsst oder dort geküsst worden?",""],
+        ["Unterhalb des Gürtels geküsst oder dort geküsst worden?",""],
+        ["Mehr als zwei Stunden am Stück geküsst?",""],
+        ["Bei einem Spiel mitgemacht, bei dem man sich auszieht?",""],
+        ["Jemanden in einem sinnlichen Kontext gesehen oder selbst so gesehen worden?",""],
+        ["Masturbiert?",""],
+        ["Zu einem Bild oder Video masturbiert?",""],
+        ["Masturbiert, während jemand anderes im Raum war?",""],
+        ["Beim Masturbieren erwischt worden?",""],
+        ["Mit einem unbelebten Gegenstand masturbiert?",""],
+        ["Pornografisches Material gesehen oder gelesen?",""],
+        ["Sinnlich massiert oder sinnlich massiert worden?",""],
+        ["Voll angezogen die Bewegungen von Geschlechtsverkehr nachgeahmt?","Dry humping oder Grinding"],
+        ["Von einer Person deines bevorzugten Geschlechts ausgezogen oder jemanden ausgezogen?",""],
+        ["Mit einer Person deines bevorzugten Geschlechts zusammen geduscht?",""],
+        ["Den Po begrapscht oder den Po begrapschen lassen?",""],
+        ["Die Brüste begrapscht oder die Brüste begrapschen lassen?",""],
+        ["Die Genitalien begrapscht oder die Genitalien begrapschen lassen?",""],
+        ["Blue Balls gegeben oder bekommen?","Schmerzhafte Erregung ohne Erlösung"],
+        ["Einen Orgasmus durch Manipulation von jemand anderem gehabt?",""],
+        ["Sexuell explizite Textnachrichten oder Chats geschickt?",""],
+        ["Sexuell explizite Fotos geschickt oder erhalten?",""],
+        ["Sexuell explizite Aktivitäten per Videochat gemacht?",""],
+        ["In einer Beziehung jemanden betrogen?",""],
+        ["Verhütungsmittel gekauft?",""],
+        ["Oralverkehr gegeben?",""],
+        ["Oralverkehr erhalten?",""],
+        ["Genitalsekret von jemand anderem geschluckt?",""],
+        ["Ein Sexspielzeug mit einem Partner benutzt?",""],
+        ["Die Nacht mit einer Person deines bevorzugten Geschlechts verbracht?",""],
+        ["Beim Ausüben einer sexuellen Handlung hereingekommen worden?",""],
+        ["Einen Mitbewohner rausgeschickt, um eine sexuelle Handlung zu begehen?",""],
+        ["Alkohol in einem nicht-religiösen Kontext getrunken?",""],
+        ["Ein Trinkspiel gespielt?",""],
+        ["Betrunken gewesen?",""],
+        ["Nüchternheit vor Eltern oder Lehrern vorgetäuscht?",""],
+        ["Schweren Gedächtnisverlust durch Alkohol gehabt?",""],
+        ["Tabak konsumiert?",""],
+        ["Marihuana konsumiert?",""],
+        ["Eine Droge stärker als Marihuana konsumiert?",""],
+        ["Methamphetamin, Crack-Cocain, PCP, Pferdetranquilizer oder Heroin konsumiert?",""],
+        ["Wegen eines disziplinarischen Verstoßes zum Schulleiter, Dekan oder Justizbeauftragten geschickt worden?",""],
+        ["Auf disziplinarische Probe oder suspendiert worden?",""],
+        ["In der Öffentlichkeit uriniert?",""],
+        ["Nacktbaden gegangen?","Skinny-dipping"],
+        ["Nackt durch die Gegend gelaufen?","Streaking"],
+        ["Einen Stripper gesehen?",""],
+        ["Die Polizei wegen dir gerufen worden?",""],
+        ["Vor der Polizei weggelaufen?",""],
+        ["Von der Polizei befragt worden?",""],
+        ["Von der Polizei Handschellen angelegt bekommen?",""],
+        ["Verhaftet worden?",""],
+        ["Verurteilt worden?",""],
+        ["Wegen eines Verbrechens verurteilt worden?","Felony = Schweres Verbrechen"],
+        ["Einen Akt des Vandalismus begangen?",""],
+        ["Geschlechtsverkehr gehabt?",""],
+        ["Dreimal oder öfter in einer Nacht Geschlechtsverkehr gehabt?",""],
+        ["Die Sexstellung 69 praktiziert?",""],
+        ["Zehnmal oder öfter Geschlechtsverkehr gehabt?",""],
+        ["Geschlechtsverkehr in vier oder mehr Positionen gehabt?",""],
+        ["Geschlechtsverkehr mit einem Fremden oder einer Person gehabt, die du innerhalb von 24 Stunden kennengelernt hast?",""],
+        ["Geschlechtsverkehr in einem Fahrzeug gehabt?",""],
+        ["Geschlechtsverkehr im Freien gehabt?",""],
+        ["Geschlechtsverkehr in der Öffentlichkeit gehabt?",""],
+        ["Geschlechtsverkehr in einem Schwimmbad oder Whirlpool gehabt?",""],
+        ["Geschlechtsverkehr in einem Bett gehabt, das weder dir noch deinem Partner gehört?",""],
+        ["Geschlechtsverkehr gehabt, während die Eltern von dir oder deinem Partner im selben Haus waren?",""],
+        ["Geschlechtsverkehr mit einer nicht-beteiligten dritten Person im selben Raum gehabt?",""],
+        ["Dem Mile-High-Club beigetreten?","Sex im Flugzeug"],
+        ["Einen Booty Call gemacht oder bekommen?","Spontan jemanden nur für Sex angerufen/geschrieben, ohne Beziehung (z. B. 'u up?')"],
+        ["160 km oder mehr gereist, hauptsächlich für Geschlechtsverkehr?",""],
+        ["Geschlechtsverkehr mit einem Partner gehabt, der 3 oder mehr Jahre Altersunterschied hat?",""],
+        ["Geschlechtsverkehr mit einer Jungfrau gehabt?",""],
+        ["Geschlechtsverkehr ohne Kondom gehabt?",""],
+        ["Auf eine STI getestet worden wegen begründeten Verdachts?","STI = Sexuell übertragbare Infektion"],
+        ["Eine STI gehabt?",""],
+        ["Einen Dreier gehabt?",""],
+        ["An einer Orgie teilgenommen?",""],
+        ["Zwei oder mehr separate Akte von Geschlechtsverkehr mit zwei oder mehr Personen innerhalb von 24 Stunden gehabt?",""],
+        ["Geschlechtsverkehr mit fünf oder mehr Partnern gehabt?",""],
+        ["Während Geschlechtsverkehr fotografiert oder gefilmt worden?",""],
+        ["Sex während der Menstruation gehabt?",""],
+        ["Analverkehr gehabt?",""],
+        ["Einen Schwangerschaftsschreck gehabt?",""],
+        ["Jemanden geschwängert oder selbst geschwängert worden?",""],
+        ["Für eine sexuelle Handlung bezahlt oder bezahlt worden?",""],
+        ["Einen Akt des Voyeurismus begangen?","Heimlich zugeschaut"],
+        ["Einen Akt des Inzests begangen?",""],
+        ["An Bestialität teilgenommen?","Sex mit Tieren"]
+    ];
+</script>
+</body>
+</html>
