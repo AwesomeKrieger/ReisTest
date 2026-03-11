@@ -5,23 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rice Purity Test</title>
 <style>
-:root {
-    --bg:#fff; --glass:rgba(255,255,255,0.75); --border:rgba(0,0,0,0.08);
-    --text:#000; --accent:#007aff; --sub:rgba(0,0,0,0.5);
-}
-@media(prefers-color-scheme:dark){
-    :root{ --bg:#000; --glass:rgba(25,25,25,0.75); --border:rgba(255,255,255,0.1); --text:#fff; --accent:#0a84ff; --sub:rgba(255,255,255,0.5); }
-}
+:root{--bg:#fff;--glass:rgba(255,255,255,0.75);--border:rgba(0,0,0,0.08);--text:#000;--accent:#007aff;--sub:rgba(0,0,0,0.5)}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--glass:rgba(25,25,25,0.75);--border:rgba(255,255,255,0.1);--text:#fff;--accent:#0a84ff;--sub:rgba(255,255,255,0.5)}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;justify-content:center}
 .page{width:100%;max-width:720px;padding:60px 20px;display:none}
 .page.active{display:block}
 h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-spacing:-1px}
 
-/* Glass */
 .glass{background:var(--glass);backdrop-filter:blur(35px) saturate(160%);-webkit-backdrop-filter:blur(35px) saturate(160%);border:1px solid var(--border);border-radius:28px;box-shadow:0 20px 40px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:24px}
 
-/* Questions */
 .q{padding:20px 26px;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s}
 .q:last-child{border-bottom:none}
 .q:hover{background:rgba(128,128,128,0.05)}
@@ -30,21 +23,18 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
 .q.on .box::after{content:"✓";color:#fff;font-weight:bold;font-size:.85rem}
 .hint{display:block;margin-top:4px;font-size:.8rem;color:var(--sub);font-style:italic}
 
-/* Buttons */
-.btn{width:100%;padding:22px;border-radius:18px;border:none;background:var(--accent);color:#fff;font-size:1.2rem;font-weight:700;cursor:pointer;transition:.2s;margin-bottom:12px}
+.btn{width:100%;padding:22px;border-radius:18px;border:none;background:var(--accent);color:#fff;font-size:1.2rem;font-weight:700;cursor:pointer;transition:.2s;margin-bottom:12px;display:block}
 .btn:hover{opacity:.88;transform:scale(1.01)}
 .btn.green{background:#34c759;color:#000}
-.btn.purple{background:#6a1b9a}
 .btn.sm{font-size:1rem;padding:16px}
 .btn.ghost{background:none;border:1px solid var(--border);color:var(--text);font-size:.9rem;padding:12px}
+.btn.orange{background:#ff9500;color:#000}
 
-/* Inputs */
 .field{margin-bottom:18px}
 .field label{display:block;font-weight:600;margin-bottom:7px;font-size:.9rem}
 .field input{width:100%;padding:15px 18px;border-radius:14px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-size:1rem;outline:none;transition:.2s;backdrop-filter:blur(20px)}
 .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
 
-/* Result */
 .score-big{font-size:9rem;font-weight:900;color:var(--accent);letter-spacing:-5px;text-align:center}
 .score-sub{font-size:1.4rem;opacity:.55;text-align:center}
 .scale-wrap{margin:20px 0}
@@ -55,15 +45,13 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
 .score-box .n{font-size:5rem;font-weight:900}
 .score-box p{margin:12px 0 0;line-height:1.5;font-size:1rem}
 
-/* Circles */
 .circles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px;text-align:center}
 @property --p{syntax:'<number>';inherits:true;initial-value:0}
 .ring{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-weight:bold;font-size:1.1rem;--p:0;transition:--p 1.2s cubic-bezier(.4,0,.2,1);background:radial-gradient(closest-side,var(--bg) 78%,transparent 0%),conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--border) 0)}
 .r-m{--c:#4cd964}.r-i{--c:#007aff}.r-r{--c:#ffcc00}.r-s{--c:#ff3b30}.r-u{--c:#ff2d55}
 .clabel{font-size:.75rem;color:var(--sub);line-height:1.3}
 
-/* Rank cards */
-.rcard{background:var(--glass);backdrop-filter:blur(30px) saturate(160%);border:1px solid var(--border);border-radius:22px;padding:22px 26px;margin-bottom:14px;display:flex;align-items:center;gap:18px;animation:sup .5s ease both}
+.rcard{background:var(--glass);backdrop-filter:blur(30px) saturate(160%);border:1px solid var(--border);border-radius:22px;padding:22px 26px;margin-bottom:14px;display:flex;align-items:center;gap:18px;animation:sup .5s ease both;transition:transform .2s}
 .rcard:hover{transform:translateY(-2px)}
 @keyframes sup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .medal{font-size:2rem;min-width:44px;text-align:center}
@@ -75,17 +63,14 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .chip{font-size:.7rem;padding:3px 9px;border-radius:20px;font-weight:600}
 .cm{background:rgba(76,217,100,.15);color:#4cd964}.ci{background:rgba(10,132,255,.15);color:#0a84ff}
-.cr{background:rgba(255,204,0,.15);color:#ffcc00}.cs{background:rgba(255,59,48,.15);color:#ff3b30}
-.cu{background:rgba(255,45,85,.15);color:#ff2d55}
+.cr{background:rgba(255,204,0,.15);color:#ffcc00}.cs{background:rgba(255,59,48,.15);color:#ff3b30}.cu{background:rgba(255,45,85,.15);color:#ff2d55}
 
-/* Table */
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{padding:10px 14px;text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--sub);border-bottom:1px solid var(--border)}
 .tbl td{padding:13px 14px;border-bottom:1px solid var(--border);font-size:.88rem}
 .tbl tr:last-child td{border-bottom:none}
 .sec{font-size:1rem;font-weight:700;margin:30px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 
-/* Lobby */
 .code-box{font-size:3.2rem;font-weight:900;letter-spacing:10px;color:var(--accent);text-align:center;padding:18px;background:rgba(0,122,255,.07);border-radius:14px;margin:14px 0;cursor:pointer;user-select:all}
 .code-box:hover{background:rgba(0,122,255,.14)}
 .link-box{font-size:.78rem;color:var(--sub);word-break:break-all;background:rgba(128,128,128,.1);padding:10px 14px;border-radius:10px;cursor:pointer;margin-top:8px;display:block}
@@ -95,25 +80,19 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
 .pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);animation:wp 1.4s infinite}
 @keyframes wp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 
-/* Mode cards */
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
-.mcard{padding:26px 18px;border-radius:22px;border:1px solid var(--border);background:var(--glass);cursor:pointer;text-align:center;transition:.2s;backdrop-filter:blur(20px)}
-.mcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,122,255,.14)}
-.mcard .ico{font-size:2.4rem;margin-bottom:9px}
-.mcard .lbl{font-size:1.05rem;font-weight:700}
-.mcard .dsc{font-size:.8rem;color:var(--sub);margin-top:3px}
-
-/* Banner */
-.banner{background:var(--glass);backdrop-filter:blur(30px) saturate(160%);border:1px solid var(--border);border-radius:18px;padding:18px 26px;margin-bottom:26px;text-align:center}
+.banner{background:var(--glass);backdrop-filter:blur(30px) saturate(160%);border:1px solid var(--border);border-radius:18px;padding:18px 26px;margin-bottom:16px;text-align:center}
 .banner .bl{font-size:.8rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
 .banner .bn{font-size:1.8rem;font-weight:800;color:var(--accent)}
 .banner .bs{font-size:.82rem;color:var(--sub);margin-top:3px}
 
-/* Toast */
+/* Switch-to-online banner */
+.switch-banner{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.25);border-radius:16px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.88rem}
+.switch-banner span{color:var(--sub)}
+.switch-btn{background:#ff9500;color:#000;border:none;border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(0,0,0,.85);color:#fff;padding:13px 22px;border-radius:12px;font-size:.88rem;font-weight:500;transition:transform .3s;z-index:9999;backdrop-filter:blur(10px);white-space:nowrap;pointer-events:none}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Modal */
 #modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);align-items:center;justify-content:center}
 .modal-box{background:var(--bg);padding:28px;border-radius:22px;max-width:480px;width:90%;max-height:70vh;overflow-y:auto;border:1px solid var(--border)}
 </style>
@@ -121,21 +100,21 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
 <body>
 <div id="toast"></div>
 
-<!-- SOLO / START -->
+<!-- ── SOLO ── -->
 <div id="p-start" class="page active">
     <h1>Rice Purity Test</h1>
-    <p style="text-align:center;color:var(--sub);margin-bottom:36px">Wie rein bist du wirklich?</p>
+    <button class="btn ghost" onclick="goLobby()" style="margin-bottom:20px">👥 Online Mehrspieler-Session</button>
+    <p style="text-align:center;color:var(--sub);margin-bottom:16px;font-size:.9rem">Wie rein bist du wirklich?</p>
     <div class="glass" id="q-list"></div>
     <button class="btn" onclick="calc()">Berechnen</button>
-    <button class="btn ghost" onclick="goLobby()">👥 Mehrspieler-Session erstellen</button>
-    <p style="font-size:.75rem;color:var(--sub);text-align:center;margin-top:10px">
+    <p style="font-size:.75rem;color:var(--sub);text-align:center;margin-top:8px">
         Mit "Berechnen" akzeptierst du die <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="showModal()">Datenschutzerklärung</span>.
     </p>
 </div>
 
-<!-- LOBBY -->
+<!-- ── LOBBY ── -->
 <div id="p-lobby" class="page">
-    <h1 style="font-size:2rem">👥 Mehrspieler</h1>
+    <h1 style="font-size:2rem">👥 Online Mehrspieler</h1>
     <p style="text-align:center;color:var(--sub);margin-bottom:30px">Jeder macht den Test auf seinem Gerät — am Ende seht ihr alle den Vergleich</p>
 
     <div id="lobby-setup">
@@ -143,9 +122,7 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
             <h3 style="margin:0 0 18px">🎯 Neue Session</h3>
             <div class="field"><label>Dein Name</label><input id="inp-create-name" placeholder="z.B. Anna" maxlength="20"></div>
             <button class="btn sm" onclick="createSession()">Session erstellen</button>
-
             <div style="text-align:center;margin:22px 0;color:var(--sub);font-size:.9rem">── oder beitreten ──</div>
-
             <h3 style="margin:0 0 18px">🔗 Session beitreten</h3>
             <div class="field"><label>Dein Name</label><input id="inp-join-name" placeholder="z.B. Ben" maxlength="20"></div>
             <div class="field">
@@ -174,28 +151,31 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
     <button class="btn ghost" style="margin-top:12px" onclick="go('p-start')">← Zurück</button>
 </div>
 
-<!-- QUIZ (Multiplayer) -->
+<!-- ── QUIZ ── -->
 <div id="p-quiz" class="page">
     <h1>Rice Purity Test</h1>
     <div id="quiz-banner"></div>
+    <div id="switch-to-online-banner" style="display:none" class="switch-banner">
+        <span>📱 Lieber jeder auf eigenem Gerät?</span>
+        <button class="switch-btn" onclick="switchToOnline()">Online-Session →</button>
+    </div>
     <div class="glass" id="mp-q-list"></div>
-    <button class="btn" onclick="calcMP()">Berechnen</button>
-    <p style="font-size:.75rem;color:var(--sub);text-align:center;margin-top:10px">
+    <button class="btn" id="calc-btn" onclick="handleCalc()">Berechnen</button>
+    <p style="font-size:.75rem;color:var(--sub);text-align:center;margin-top:8px">
         Mit "Berechnen" akzeptierst du die <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="showModal()">Datenschutzerklärung</span>.
     </p>
 </div>
 
-<!-- ERGEBNIS SOLO -->
+<!-- ── ERGEBNIS SOLO ── -->
 <div id="p-result" class="page" style="text-align:center">
     <div class="score-sub">Dein Score:</div>
     <div class="score-big" id="r-num">100</div>
-
-    <div id="r-stage1">
-        <button class="btn" id="r-detail-btn" onclick="showDetails('r')" style="max-width:300px;margin:0 auto 12px">DETAILS AUSWERTEN</button>
+    <div id="r-s1" style="margin-top:20px">
+        <button class="btn" onclick="showDetails('r')" style="max-width:300px;margin:0 auto 12px">DETAILS AUSWERTEN</button>
     </div>
-    <div id="r-stage2" style="display:none;text-align:left;margin-top:30px">
+    <div id="r-s2" style="display:none;text-align:left;margin-top:30px">
         <div class="scale-wrap">
-            <div class="scale-labels"><span>I2</span><span>I1</span><span>P1</span><span>P2</span><span>Anständig</span></div>
+            <div class="scale-labels"><span>🔥 Legende</span><span>Versaut</span><span>Mittelmaß</span><span>Brav</span><span>👼 Engel</span></div>
             <div class="scale-bar"><div class="arrow" id="r-arrow">▼</div></div>
         </div>
         <div class="score-box"><div class="n" id="r-score">100</div><p id="r-msg"></p></div>
@@ -210,17 +190,19 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
     <button class="btn ghost" style="margin-top:30px;max-width:300px;margin-left:auto;margin-right:auto;display:block" onclick="location.reload()">🔄 Nochmal</button>
 </div>
 
-<!-- ERGEBNIS MP -->
+<!-- ── ERGEBNIS MP ── -->
 <div id="p-mp-result" class="page" style="text-align:center">
     <div class="score-sub" id="mp-r-label">Score:</div>
     <div class="score-big" id="mp-r-num">100</div>
-    <div id="mp-r-stage1" style="margin-top:20px">
+    <div id="mp-s1" style="margin-top:20px">
         <button class="btn" onclick="showDetails('mp')" style="max-width:300px;margin:0 auto 12px">DETAILS AUSWERTEN</button>
-        <button class="btn green" id="mp-next-btn" style="max-width:300px;margin:0 auto;display:none" onclick="goWait()">⏳ Auf andere warten</button>
+        <div id="mp-next-wrap" style="max-width:300px;margin:0 auto;display:none">
+            <button class="btn green" id="mp-next-btn" onclick="handleNext()">Weiter</button>
+        </div>
     </div>
-    <div id="mp-r-stage2" style="display:none;text-align:left;margin-top:30px">
+    <div id="mp-s2" style="display:none;text-align:left;margin-top:30px">
         <div class="scale-wrap">
-            <div class="scale-labels"><span>I2</span><span>I1</span><span>P1</span><span>P2</span><span>Anständig</span></div>
+            <div class="scale-labels"><span>🔥 Legende</span><span>Versaut</span><span>Mittelmaß</span><span>Brav</span><span>👼 Engel</span></div>
             <div class="scale-bar"><div class="arrow" id="mp-arrow">▼</div></div>
         </div>
         <div class="score-box"><div class="n" id="mp-score">100</div><p id="mp-msg"></p></div>
@@ -231,11 +213,13 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
             <div><div class="ring r-s" id="mp-v-s">0</div><div class="clabel">Skandalös<br><small>/23</small></div></div>
             <div><div class="ring r-u" id="mp-v-u">0</div><div class="clabel">Extrem<br><small>/9</small></div></div>
         </div>
-        <button class="btn green" style="margin-top:24px" onclick="goWait()">⏳ Auf andere warten</button>
+        <div id="mp-next-wrap2" style="margin-top:24px;display:none">
+            <button class="btn green" onclick="handleNext()">Weiter</button>
+        </div>
     </div>
 </div>
 
-<!-- WARTEN -->
+<!-- ── WARTEN (Online-MP) ── -->
 <div id="p-wait" class="page" style="text-align:center">
     <div style="font-size:3.5rem;margin-bottom:18px">⏳</div>
     <h2 style="font-size:1.5rem;margin-bottom:8px">Warten auf die anderen…</h2>
@@ -245,100 +229,104 @@ h1{font-size:2.8rem;font-weight:800;text-align:center;margin-bottom:10px;letter-
     </div>
 </div>
 
-<!-- RANGLISTE -->
+<!-- ── RANGLISTE ── -->
 <div id="p-rank" class="page">
     <div style="font-size:2.2rem;font-weight:800;text-align:center;margin-bottom:6px">🏆 Rangliste</div>
     <div style="text-align:center;color:var(--sub);margin-bottom:36px" id="rank-sub"></div>
     <div id="rank-cards"></div>
-    <div class="sec">📊 Übersicht</div>
-    <div class="glass" style="overflow:auto">
+    <div class="sec" id="rank-overview-sec" style="display:none">📊 Übersicht</div>
+    <div class="glass" id="rank-overview-glass" style="overflow:auto;display:none">
         <table class="tbl"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Kl. Sünden</th><th>Unmoral.</th><th>Versaut</th><th>Skandal.</th><th>Extrem</th><th>Einschätzung</th></tr></thead><tbody id="rank-tbody"></tbody></table>
     </div>
-    <div class="sec">📈 Vergleich</div>
-    <div class="glass" style="padding:22px 26px"><div id="rank-bars"></div></div>
     <button class="btn" style="margin-top:32px" onclick="location.href=location.pathname">🔄 Neue Runde</button>
 </div>
 
-<!-- MODAL -->
+<!-- ── MODAL ── -->
 <div id="modal">
     <div class="modal-box">
-        <h2>Datenschutz</h2>
-        <p>Folgendes wird anonymisiert gespeichert: Score, Bearbeitungsdauer, Gerätedaten, Klick-Muster. <strong>Keine</strong> Namen oder persönliche Daten.</p>
-        <button class="btn sm" onclick="closeModal()" style="margin-top:16px">Schließen</button>
+        <h2>Datenschutzerklärung</h2>
+        <p>Der Rice Purity Test speichert folgende Daten anonym in einer Datenbank, um den <strong>Mehrspieler-Vergleich</strong> zu ermöglichen:</p>
+        <ul>
+            <li>🎯 Dein erzielter Score</li>
+            <li>👤 Dein gewählter Anzeigename (nur im Mehrspieler-Modus)</li>
+            <li>📊 Kategorie-Auswertung (Kleine Sünden, Unmoralisch, Versaut, Skandalös, Extrem)</li>
+            <li>⏱ Bearbeitungsdauer</li>
+            <li>📱 Technische Gerätedaten (Bildschirmauflösung, Browser)</li>
+        </ul>
+        <p>Die Daten werden <strong>nicht</strong> mit deiner echten Identität verknüpft und dienen ausschließlich der Auswertung und dem Spielervergleich. Du kannst jederzeit verlangen, dass deine Daten gelöscht werden.</p>
+        <button class="btn sm" onclick="closeModal()" style="margin-top:16px">Verstanden & Schließen</button>
     </div>
 </div>
 
 <script>
-// ── Supabase (nur für Multiplayer) ──────────────────────────────────────────
+// ── Config ──────────────────────────────────────────────────────────────────
 const SB_URL = 'https://bouakrnvctugyjqxjyin.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdWFrcm52Y3R1Z3lqcXhqeWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MTY0MjcsImV4cCI6MjA4NzE5MjQyN30.C5o8xjY_f63oID50xIB4h1hSL6AFpwraM8YrZTR1jO0';
 let db = null;
 
-function initDB() {
-    if (db) return true;
-    try {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        document.head.appendChild(s);
-        return false; // async — will be ready after load
-    } catch(e) { return false; }
-}
+// ── URL Params ──────────────────────────────────────────────────────────────
+const _p = new URLSearchParams(location.search);
+const urlSession = _p.get('session');
+const urlPlayers = (_p.get('players') || '').split(',').map(n => n.trim()).filter(Boolean);
 
 // ── State ───────────────────────────────────────────────────────────────────
+// Lokaler MP (players param)
+let localMP = urlPlayers.length > 1;
+let localPlayers = urlPlayers;
+let localIdx = 0;
+let localResults = [];
+
+// Online MP (session)
 let myName = '';
 let sessCode = '';
 let sessPlayers = {};
 let channel = null;
-let t0 = Date.now();
-let clicks = [];
+
+// Shared
 let myScore = 0;
 let myStats = {};
 let warnLeave = false;
-
-// ── URL check ───────────────────────────────────────────────────────────────
-const urlSession = new URLSearchParams(location.search).get('session');
+let currentMode = 'solo'; // 'solo' | 'local' | 'online'
+let quizStartTime = 0;
+const MIN_QUIZ_SECONDS = 180; // 3 Minuten Mindestzeit für 100 Fragen
 
 // ── Init ────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    // Gespeicherten Namen laden
     const saved = localStorage.getItem('rpt_name') || '';
     if (saved) {
         document.getElementById('inp-create-name').value = saved;
         document.getElementById('inp-join-name').value = saved;
     }
 
-    // Fragen für Solo rendern
-    renderQ('q-list', true);
-
-    if (urlSession) {
-        // Auto-Lobby mit Session-Code aus URL
+    if (localMP) {
+        currentMode = 'local';
+        startLocalMP();
+    } else if (urlSession) {
         document.getElementById('inp-code').value = urlSession.toUpperCase();
         go('p-lobby');
+    } else {
+        renderQ('q-list');
     }
-    // Sonst bleibt p-start aktiv (default)
 });
 
-// ── Seiten-Switcher ─────────────────────────────────────────────────────────
+// ── Navigation ──────────────────────────────────────────────────────────────
 function go(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
 }
 
-// ── Toast ────────────────────────────────────────────────────────────────────
-function toast(msg, ms=2500) {
+// ── Toast / Modal ────────────────────────────────────────────────────────────
+function toast(msg, ms = 2500) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
+    el.textContent = msg; el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), ms);
 }
-
-// ── Modal ────────────────────────────────────────────────────────────────────
 function showModal() { document.getElementById('modal').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
-document.getElementById('modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 
-// ── Kategorien ───────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function cat(id) {
     if ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,44,45,46,53,55].includes(id)) return 'm';
     if ([15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,54,56,57,58].includes(id)) return 'i';
@@ -346,116 +334,387 @@ function cat(id) {
     if ([51,52,59,60,61,62,63,64,65,66,76,77,78,79,82,83,84,85,86,87,88,89,90].includes(id)) return 's';
     return 'u';
 }
-function catFull(k) { return {m:'minor',i:'immortal',r:'raunchy',s:'scandalous',u:'unspeakable'}[k]; }
+// ── Beschreibungs-JSON ───────────────────────────────────────────────────────
+const DESCRIPTIONS_URL = 'https://awesomekrieger.github.io/ReisTest/reisebeschreibung.json';
+let customDescriptions = null; // wird beim ersten Aufruf geladen
+
+const FALLBACK_DESCRIPTIONS = [
+    { min: 98, max: 100, texts: ["Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich."] },
+    { min: 85, max: 97,  texts: ["Sehr anständig. Ein Vorbild für die Gesellschaft."] },
+    { min: 65, max: 84,  texts: ["Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind."] },
+    { min: 35, max: 64,  texts: ["Du lebst das Leben! Ziemlich versaut."] },
+    { min: 10, max: 34,  texts: ["Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast."] },
+    { min: 0,  max: 9,   texts: ["Legende! Du hast das Leben im Hardcore-Modus durchgespielt."] }
+];
+
+async function loadDescriptions() {
+    if (customDescriptions !== null) return;
+    if (!DESCRIPTIONS_URL) { customDescriptions = false; return; }
+
+    const tryFetch = async (url) => {
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+    };
+
+    const parseRanges = (json) => {
+        if (Array.isArray(json)) return json;
+        if (Array.isArray(json.ranges)) return json.ranges;
+        return null;
+    };
+
+    // Versuche direkt, dann über CORS-Proxy
+    const attempts = [
+        DESCRIPTIONS_URL,
+        'https://corsproxy.io/?' + encodeURIComponent(DESCRIPTIONS_URL),
+    ];
+
+    for (const url of attempts) {
+        try {
+            const json = await tryFetch(url);
+            const ranges = parseRanges(json);
+            if (ranges && ranges.length) {
+                customDescriptions = ranges;
+                console.log('[RPT] Beschreibungen geladen via', url === DESCRIPTIONS_URL ? 'direkt' : 'Proxy', '— Ranges:', ranges.length);
+                return;
+            }
+        } catch(e) {
+            console.warn('[RPT] Versuch fehlgeschlagen:', url, e.message);
+        }
+    }
+
+    console.warn('[RPT] Alle Versuche fehlgeschlagen — nutze Fallback');
+    customDescriptions = false;
+}
+
 function txt(s) {
-    if(s>=98) return "Ein wahrer Engel! Deine Reinheit ist fast schon unheimlich.";
-    if(s>=85) return "Sehr anständig. Ein Vorbild für die Gesellschaft.";
-    if(s>=65) return "Ein gesundes Mittelmaß. Du weißt, wo die Grenzen sind.";
-    if(s>=35) return "Du lebst das Leben! Ziemlich versaut.";
-    if(s>=10) return "Ganz schön wild! Es gibt kaum etwas, das du nicht probiert hast.";
-    return "Legende! Du hast das Leben im Hardcore-Modus durchgespielt.";
+    const list = (customDescriptions || FALLBACK_DESCRIPTIONS);
+    const range = list.find(r => s >= r.min && s <= r.max);
+    if (!range || !range.texts?.length) {
+        // hard fallback falls Score in keiner Range
+        if (s >= 85) return "Sehr anständig.";
+        if (s >= 65) return "Solides Mittelmaß.";
+        if (s >= 35) return "Ziemlich versaut.";
+        return "Absoluter Ausreißer.";
+    }
+    // Zufällig einen Text auswählen
+    return range.texts[Math.floor(Math.random() * range.texts.length)];
 }
 function col(s) {
-    if(s>=85) return '#4cd964'; if(s>=65) return '#0a84ff';
-    if(s>=35) return '#ffcc00'; if(s>=10) return '#ff3b30'; return '#ff2d55';
+    if (s >= 85) return '#4cd964'; if (s >= 65) return '#0a84ff';
+    if (s >= 35) return '#ffcc00'; if (s >= 10) return '#ff3b30'; return '#ff2d55';
 }
 function medal(r) { return ['🥇','🥈','🥉'][r] || (r+1)+'.'; }
 
-// ── Fragen rendern ───────────────────────────────────────────────────────────
-function renderQ(containerId, isSolo) {
-    const c = document.getElementById(containerId);
+// ── Easter Eggs ───────────────────────────────────────────────────────────────
+const EASTER_EGGS = [
+    {
+        id: 'nice',
+        check: (score, stats) => score === 69,
+        title: '😏 Nice.',
+        desc: 'Score 69. Das war mit Sicherheit kein Zufall.',
+        color: '#ff2d55'
+    },
+    {
+        id: 'perfect',
+        check: (score, stats) => score === 100,
+        title: '👼 Heiligenschein freigeschaltet',
+        desc: 'Du hast keines der 100 Dinge getan. Ein Leben in makelloser Reinheit.',
+        color: '#4cd964'
+    },
+    {
+        id: 'zero',
+        check: (score, stats) => score === 0,
+        title: '💀 Speedrun abgeschlossen',
+        desc: 'Score 0. Du hast alles gemacht. Wirklich alles. Respekt und Bedenken zugleich.',
+        color: '#ff3b30'
+    },
+    {
+        id: 'half',
+        check: (score, stats) => score === 50,
+        title: '⚖️ Perfekte Balance',
+        desc: 'Genau 50 Punkte — halb Engel, halb Teufel. Die Waage hält sich exakt die Waage.',
+        color: '#ffcc00'
+    },
+    {
+        id: 'extreme_only',
+        check: (score, stats) => stats.u >= 5 && stats.m === 0,
+        title: '🎯 Selektiver Sünder',
+        desc: 'Keine kleinen Sünden, aber 5+ extreme? Du überspring die Vorspeise direkt zum Dessert.',
+        color: '#af52de'
+    },
+    {
+        id: 'minor_only',
+        check: (score, stats) => stats.m >= 10 && stats.u === 0 && stats.s === 0 && stats.r === 0,
+        title: '🍪 Cookie-Dieb',
+        desc: 'Nur kleine Sünden — du bist der Typ, der Kekse klaut aber brav ins Bett geht.',
+        color: '#ff9500'
+    }
+];
+
+function checkEasterEggs(score, stats) {
+    const found = EASTER_EGGS.filter(e => e.check(score, stats));
+    if (!found.length) return;
+    // Kleine Verzögerung damit der Score-Count fertig ist
+    setTimeout(() => {
+        found.forEach((egg, i) => {
+            setTimeout(() => showAchievement(egg), i * 800);
+        });
+    }, 1400);
+}
+
+function showAchievement(egg) {
+    const el = document.createElement('div');
+    el.style.cssText = `
+        position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(30px);
+        background:var(--bg); border:2px solid ${egg.color}; border-radius:18px;
+        padding:16px 22px; max-width:340px; width:90%; z-index:8888;
+        box-shadow:0 8px 32px ${egg.color}44; backdrop-filter:blur(20px);
+        animation:achieveIn .5s cubic-bezier(.34,1.56,.64,1) both;
+        display:flex; align-items:center; gap:14px; cursor:pointer;
+    `;
+    el.innerHTML = `
+        <div style="font-size:2.2rem;flex-shrink:0">${egg.title.split(' ')[0]}</div>
+        <div>
+            <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${egg.color};margin-bottom:3px">🏆 Achievement freigeschaltet</div>
+            <div style="font-weight:700;font-size:.95rem;margin-bottom:3px">${egg.title.substring(egg.title.indexOf(' ')+1)}</div>
+            <div style="font-size:.8rem;color:var(--sub);line-height:1.4">${egg.desc}</div>
+        </div>`;
+    
+    // Add animation keyframe once
+    if (!document.getElementById('achieve-style')) {
+        const s = document.createElement('style');
+        s.id = 'achieve-style';
+        s.textContent = '@keyframes achieveIn{from{opacity:0;transform:translateX(-50%) translateY(30px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+        document.head.appendChild(s);
+    }
+
+    document.body.appendChild(el);
+    el.addEventListener('click', () => el.remove());
+    setTimeout(() => {
+        el.style.transition = 'opacity .4s, transform .4s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => el.remove(), 400);
+    }, 5000);
+}
+
+// ── Fragen rendern ────────────────────────────────────────────────────────────
+function renderQ(cId) {
+    const c = document.getElementById(cId);
     c.innerHTML = '';
-    t0 = Date.now();
-    clicks = [];
     Qs.forEach((q, i) => {
         const d = document.createElement('div');
         d.className = 'q';
         const label = q[0]
-            ? `${i+1}. ${q[0]}${q[1]?`<span class="hint">Erläuterung: ${q[1]}</span>`:''}`
+            ? `${i+1}. ${q[0]}${q[1] ? `<span class="hint">Erläuterung: ${q[1]}</span>` : ''}`
             : `<span style="opacity:.2;font-size:.85rem">${i+1}.</span>`;
         d.innerHTML = `<div class="box"></div><div>${label}</div>`;
-        d.addEventListener('click', () => {
-            const on = d.classList.toggle('on');
-            clicks.push({id:i+1, t:Date.now()-t0, a:on?1:0, c:cat(i+1)});
-        });
+        d.addEventListener('click', () => d.classList.toggle('on'));
         c.appendChild(d);
     });
 }
 
-// ── Solo berechnen ───────────────────────────────────────────────────────────
-function calc() {
-    const sel = document.querySelectorAll('#q-list .q.on');
-    myScore = 100 - sel.length;
-    myStats = {m:0,i:0,r:0,s:0,u:0};
-    sel.forEach(r => { myStats[cat(parseInt(r.innerText))]++; });
-    warnLeave = false;
-
-    go('p-result');
-    countTo('r-num', myScore);
-    uploadAnon();
-}
-
-function showDetails(prefix) {
-    const isMP = prefix === 'mp';
-    document.getElementById(prefix+'-r-stage1').style.display = 'none';
-    document.getElementById(prefix+'-r-stage2').style.display = 'block';
-
-    const max = {m:19,i:28,r:21,s:23,u:9};
-    let cur = 100;
-    const scoreEl = document.getElementById(prefix+'-score');
-    const arrow = document.getElementById(prefix+'-arrow');
-    document.getElementById(prefix+'-msg').innerText = txt(myScore);
-
-    const t = setInterval(() => {
-        if (cur <= myScore) {
-            clearInterval(t);
-            setTimeout(() => {
-                Object.keys(myStats).forEach((k,idx) => {
-                    const el = document.getElementById(prefix === 'r' ? `v-${k}` : `mp-v-${k}`);
-                    if (el) { el.innerText=myStats[k]; setTimeout(()=>el.style.setProperty('--p',((myStats[k]/max[k])*100).toFixed(0)), idx*140); }
-                });
-            }, 200);
-        } else { cur--; scoreEl.innerText=cur; if(arrow) arrow.style.left=cur+'%'; }
-    }, 40);
-}
-
-async function uploadAnon() {
-    try {
-        if (!db) return;
-        let loc = {};
-        try { const g=await fetch('https://ipapi.co/json/'); const j=await g.json(); loc={city:j.city,country:j.country_name}; } catch(e){}
-        await db.from('purity_results').insert([{data:{score:myScore,timestamp:new Date().toISOString(),ver:'5.0',...loc}}]);
-    } catch(e) {}
+function getSelected(cId) {
+    const sel = document.querySelectorAll(`#${cId} .q.on`);
+    const score = 100 - sel.length;
+    const stats = {m:0,i:0,r:0,s:0,u:0};
+    sel.forEach(r => { stats[cat(parseInt(r.innerText))]++; });
+    return { score, stats };
 }
 
 function countTo(elId, target) {
     const el = document.getElementById(elId);
     let n = 100;
-    const t = setInterval(() => { if(n<=target){clearInterval(t);}else{n--;el.innerText=n;} }, 65);
+    const t = setInterval(() => { if (n <= target) clearInterval(t); else { n--; el.innerText = n; } }, 65);
 }
 
-// ── Lobby ────────────────────────────────────────────────────────────────────
+// ── SOLO ─────────────────────────────────────────────────────────────────────
+async function calc() {
+    const { score, stats } = getSelected('q-list');
+    myScore = score; myStats = stats;
+    warnLeave = false;
+    await loadDescriptions();
+    go('p-result');
+    countTo('r-num', myScore);
+    checkEasterEggs(myScore, myStats);
+    uploadAnon(null);
+}
+
+function showDetails(prefix) {
+    document.getElementById(prefix + '-s1').style.display = 'none';
+    document.getElementById(prefix + '-s2').style.display = 'block';
+    const max = {m:19,i:28,r:21,s:23,u:9};
+    document.getElementById(prefix + '-msg').innerText = txt(myScore);
+    let cur = 100;
+    const scoreEl = document.getElementById(prefix + '-score');
+    const arrow = document.getElementById(prefix + '-arrow');
+    const t = setInterval(() => {
+        if (cur <= myScore) {
+            clearInterval(t);
+            setTimeout(() => {
+                Object.keys(myStats).forEach((k, idx) => {
+                    const id = prefix === 'r' ? `v-${k}` : `mp-v-${k}`;
+                    const el = document.getElementById(id);
+                    if (el) { el.innerText = myStats[k]; setTimeout(() => el.style.setProperty('--p', ((myStats[k]/max[k])*100).toFixed(0)), idx*140); }
+                });
+            }, 200);
+        } else { cur--; scoreEl.innerText = cur; if (arrow) arrow.style.left = cur + '%'; }
+    }, 40);
+    // Zeige auch den Weiter-Button in Stage2
+    if (prefix === 'mp') {
+        document.getElementById('mp-next-wrap2').style.display = 'block';
+    }
+}
+
+// ── GESCHWINDIGKEITS-WARNUNG ─────────────────────────────────────────────────
+function showSpeedWarning(remaining) {
+    return new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px';
+        overlay.innerHTML = `
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:32px;max-width:400px;width:100%;text-align:center">
+                <div style="font-size:3rem;margin-bottom:12px">⚡</div>
+                <h2 style="margin:0 0 10px;font-size:1.5rem">Zu schnell!</h2>
+                <p style="color:var(--sub);margin:0 0 8px;line-height:1.6">Du hast den Test in unter 3 Minuten ausgefüllt. Für 100 Fragen ist das zu schnell — hast du wirklich jede Frage gelesen?</p>
+                <p style="color:var(--sub);font-size:.85rem;margin:0 0 26px">Noch <strong style="color:var(--text)">${remaining} Sekunden</strong> übrig für ein ehrliches Ergebnis.</p>
+                <div style="display:flex;gap:12px;flex-direction:column">
+                    <button id="spd-back" style="padding:16px;border-radius:14px;border:1px solid var(--border);background:none;color:var(--text);font-size:1rem;font-weight:700;cursor:pointer">← Zurück & nochmal lesen</button>
+                    <button id="spd-cont" style="padding:16px;border-radius:14px;border:none;background:var(--sub);color:var(--bg);font-size:.9rem;cursor:pointer;opacity:.7">Trotzdem abschicken</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#spd-back').onclick = () => { document.body.removeChild(overlay); resolve(false); };
+        overlay.querySelector('#spd-cont').onclick = () => { document.body.removeChild(overlay); resolve(true); };
+    });
+}
+
+// ── LOKALER MP ───────────────────────────────────────────────────────────────
+function startLocalMP() {
+    localIdx = 0;
+    localResults = [];
+    beginLocalRound();
+}
+
+function beginLocalRound() {
+    const name = localPlayers[localIdx];
+    warnLeave = true;
+    currentMode = 'local';
+
+    document.getElementById('quiz-banner').innerHTML = `
+        <div class="banner">
+            <div class="bl">Jetzt dran · ${localIdx+1} von ${localPlayers.length}</div>
+            <div class="bn">${name}</div>
+            <div class="bs">${localPlayers.map((n,i) =>
+                i < localIdx ? '✅ ' + n : i === localIdx ? '▶ <strong>' + n + '</strong>' : '⏳ ' + n
+            ).join(' &nbsp;·&nbsp; ')}</div>
+        </div>`;
+
+    // Switch-to-online Banner nur beim ersten Spieler zeigen
+    document.getElementById('switch-to-online-banner').style.display = localIdx === 0 ? 'flex' : 'none';
+
+    quizStartTime = Date.now();
+    renderQ('mp-q-list');
+    go('p-quiz');
+}
+
+function handleCalc() {
+    if (currentMode === 'local') calcLocal();
+    else if (currentMode === 'online') calcOnline();
+}
+
+async function calcLocal() {
+    // Geschwindigkeits-Warnung
+    const elapsed = (Date.now() - quizStartTime) / 1000;
+    if (elapsed < MIN_QUIZ_SECONDS) {
+        const remaining = Math.ceil(MIN_QUIZ_SECONDS - elapsed);
+        const doIt = await showSpeedWarning(remaining);
+        if (!doIt) return;
+    }
+    const { score, stats } = getSelected('mp-q-list');
+    myScore = score; myStats = stats;
+    warnLeave = false;
+
+    const name = localPlayers[localIdx];
+    const tooFast = (Date.now() - quizStartTime) / 1000 < MIN_QUIZ_SECONDS;
+    localResults.push({ name, score: myScore, stats: {...myStats}, tooFast });
+
+    document.getElementById('mp-r-label').textContent = name + 's Score:';
+    checkEasterEggs(myScore, myStats);
+
+    // Reset MP result view
+    document.getElementById('mp-s1').style.display = 'block';
+    document.getElementById('mp-s2').style.display = 'none';
+    ['mp-v-m','mp-v-i','mp-v-r','mp-v-s','mp-v-u'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.innerText = '0'; el.style.setProperty('--p', '0'); }
+    });
+
+    await loadDescriptions();
+    go('p-mp-result');
+    countTo('mp-r-num', myScore);
+
+    // Nächster-Button
+    const wrap = document.getElementById('mp-next-wrap');
+    const wrap2 = document.getElementById('mp-next-wrap2');
+    const btn = document.getElementById('mp-next-btn');
+    wrap.style.display = 'block';
+    wrap2.style.display = 'none';
+
+    const isLast = localIdx >= localPlayers.length - 1;
+    if (isLast) {
+        btn.textContent = '🏆 Rangliste anzeigen';
+        btn.className = 'btn orange';
+    } else {
+        btn.textContent = `Weiter → ${localPlayers[localIdx + 1]} ist dran`;
+        btn.className = 'btn green';
+    }
+
+    uploadAnon(name);
+}
+
+function handleNext() {
+    const isLast = localIdx >= localPlayers.length - 1;
+    if (isLast) {
+        showRank(localResults);
+    } else {
+        localIdx++;
+        beginLocalRound();
+    }
+}
+
+// ── SWITCH: lokal → online ───────────────────────────────────────────────────
+function switchToOnline() {
+    // Namen aus localPlayers vorausfüllen
+    const firstName = localPlayers[localIdx] || '';
+    document.getElementById('inp-create-name').value = firstName;
+    document.getElementById('inp-join-name').value = firstName;
+    go('p-lobby');
+    loadSupabase();
+}
+
+// ── SUPABASE LADEN ────────────────────────────────────────────────────────────
+function loadSupabase(cb) {
+    if (db) { if (cb) cb(); return; }
+    if (typeof supabase !== 'undefined') {
+        db = supabase.createClient(SB_URL, SB_KEY);
+        if (cb) cb(); return;
+    }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload = () => { db = supabase.createClient(SB_URL, SB_KEY); if (cb) cb(); };
+    s.onerror = () => toast('⚠️ Netzwerkfehler — Internetverbindung prüfen');
+    document.head.appendChild(s);
+}
+
 function goLobby() {
     go('p-lobby');
     loadSupabase();
 }
 
-function loadSupabase(cb) {
-    if (db) { if(cb) cb(); return; }
-    if (typeof supabase !== 'undefined') {
-        db = supabase.createClient(SB_URL, SB_KEY);
-        if(cb) cb();
-        return;
-    }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    s.onload = () => { db = supabase.createClient(SB_URL, SB_KEY); if(cb) cb(); };
-    s.onerror = () => toast('Netzwerkfehler — Internetverbindung prüfen');
-    document.head.appendChild(s);
-}
-
 function randCode() { return Math.random().toString(36).substring(2,6).toUpperCase(); }
 
+// ── SESSION ERSTELLEN ────────────────────────────────────────────────────────
 async function createSession() {
     const name = document.getElementById('inp-create-name').value.trim();
     if (!name) { toast('Bitte deinen Namen eingeben!'); return; }
@@ -464,18 +723,19 @@ async function createSession() {
     sessCode = randCode();
 
     loadSupabase(async () => {
-        const {error} = await db.from('purity_sessions').insert([{
+        const { error } = await db.from('purity_sessions').insert([{
             code: sessCode,
-            players: {[name]:{done:false,score:null,stats:null}},
+            players: { [name]: { done:false, score:null, stats:null } },
             started: false
         }]);
-        if (error) { toast('Fehler: ' + (error.message||'Tabelle fehlt — Supabase SQL ausführen!')); return; }
-        sessPlayers = {[name]:{done:false,score:null,stats:null}};
+        if (error) { toast('Fehler: ' + (error.message || 'Tabelle fehlt → Supabase SQL ausführen')); return; }
+        sessPlayers = { [name]: { done:false, score:null, stats:null } };
         activateLobby();
         subscribeSession();
     });
 }
 
+// ── SESSION BEITRETEN ────────────────────────────────────────────────────────
 async function joinSession() {
     const name = document.getElementById('inp-join-name').value.trim();
     const code = document.getElementById('inp-code').value.trim().toUpperCase();
@@ -486,12 +746,12 @@ async function joinSession() {
     sessCode = code;
 
     loadSupabase(async () => {
-        const {data,error} = await db.from('purity_sessions').select('*').eq('code',code).single();
-        if (error||!data) { toast('Session nicht gefunden! Code prüfen.'); return; }
+        const { data, error } = await db.from('purity_sessions').select('*').eq('code', code).single();
+        if (error || !data) { toast('Session nicht gefunden! Code prüfen.'); return; }
         if (data.started) { toast('Diese Session hat schon begonnen.'); return; }
-        const p = data.players||{};
-        p[name] = {done:false,score:null,stats:null};
-        await db.from('purity_sessions').update({players:p}).eq('code',code);
+        const p = data.players || {};
+        p[name] = { done:false, score:null, stats:null };
+        await db.from('purity_sessions').update({ players: p }).eq('code', code);
         sessPlayers = p;
         activateLobby();
         subscribeSession();
@@ -511,76 +771,96 @@ function renderLobbyPlayers() {
     const names = Object.keys(sessPlayers);
     document.getElementById('pcount').textContent = names.length;
     document.getElementById('lobby-plist').innerHTML = names.map(n =>
-        `<li><span>${n===myName?'<strong>👤 '+n+' (du)</strong>':'👤 '+n}</span><span class="pulse"></span></li>`
+        `<li><span>${n === myName ? '<strong>👤 ' + n + ' (du)</strong>' : '👤 ' + n}</span><span class="pulse"></span></li>`
     ).join('');
 }
 
+// ── REALTIME ─────────────────────────────────────────────────────────────────
 function subscribeSession() {
     if (channel) channel.unsubscribe();
-    channel = db.channel('sess:'+sessCode)
-        .on('postgres_changes',{event:'UPDATE',schema:'public',table:'purity_sessions',filter:`code=eq.${sessCode}`}, payload => {
+    channel = db.channel('sess:' + sessCode)
+        .on('postgres_changes', { event:'UPDATE', schema:'public', table:'purity_sessions', filter:`code=eq.${sessCode}` }, payload => {
             sessPlayers = payload.new.players || {};
             renderLobbyPlayers();
 
-            // Gestartet? → Test beginnen
             if (payload.new.started && document.getElementById('p-lobby').classList.contains('active')) {
-                startTest();
+                startOnlineTest();
             }
-            // Im Warteraum → updaten
             if (document.getElementById('p-wait').classList.contains('active')) {
                 renderWait();
-                checkDone();
+                checkAllDone();
             }
         })
         .subscribe();
 }
 
 async function startAll() {
-    // Markiert Session als gestartet → Realtime triggert bei allen startTest()
-    await db.from('purity_sessions').update({started:true}).eq('code',sessCode);
+    await db.from('purity_sessions').update({ started: true }).eq('code', sessCode);
 }
 
-function startTest() {
+function startOnlineTest() {
+    currentMode = 'online';
     warnLeave = true;
+    quizStartTime = Date.now();
+    document.getElementById('switch-to-online-banner').style.display = 'none';
     document.getElementById('quiz-banner').innerHTML = `
         <div class="banner">
-            <div class="bl">Dein Test</div>
+            <div class="bl">Dein Test · Online Session</div>
             <div class="bn">${myName}</div>
             <div class="bs">Session: ${sessCode}</div>
         </div>`;
-    renderQ('mp-q-list', false);
+    renderQ('mp-q-list');
     go('p-quiz');
 }
 
-// ── MP Berechnen ─────────────────────────────────────────────────────────────
-async function calcMP() {
-    const sel = document.querySelectorAll('#mp-q-list .q.on');
-    myScore = 100 - sel.length;
-    myStats = {m:0,i:0,r:0,s:0,u:0};
-    sel.forEach(r => { myStats[cat(parseInt(r.innerText))]++; });
+// ── ONLINE BERECHNEN ─────────────────────────────────────────────────────────
+async function calcOnline() {
+    // Geschwindigkeits-Warnung
+    const elapsed = (Date.now() - quizStartTime) / 1000;
+    if (elapsed < MIN_QUIZ_SECONDS) {
+        const remaining = Math.ceil(MIN_QUIZ_SECONDS - elapsed);
+        const doIt = await showSpeedWarning(remaining);
+        if (!doIt) return;
+    }
+    const { score, stats } = getSelected('mp-q-list');
+    myScore = score; myStats = stats;
     warnLeave = false;
 
-    // In Session speichern
     try {
-        const {data} = await db.from('purity_sessions').select('players').eq('code',sessCode).single();
-        const p = data?.players||{};
-        p[myName] = {done:true, score:myScore, stats:myStats};
-        await db.from('purity_sessions').update({players:p}).eq('code',sessCode);
+        const { data } = await db.from('purity_sessions').select('players').eq('code', sessCode).single();
+        const p = data?.players || {};
+        const tooFastOnline = (Date.now() - quizStartTime) / 1000 < MIN_QUIZ_SECONDS;
+        p[myName] = { done: true, score: myScore, stats: myStats, tooFast: tooFastOnline };
+        await db.from('purity_sessions').update({ players: p }).eq('code', sessCode);
         sessPlayers = p;
     } catch(e) { toast('Speichern fehlgeschlagen'); }
 
     document.getElementById('mp-r-label').textContent = myName + 's Score:';
+    checkEasterEggs(myScore, myStats);
+    document.getElementById('mp-s1').style.display = 'block';
+    document.getElementById('mp-s2').style.display = 'none';
+    ['mp-v-m','mp-v-i','mp-v-r','mp-v-s','mp-v-u'].forEach(id => {
+        const el = document.getElementById(id); if (el) { el.innerText='0'; el.style.setProperty('--p','0'); }
+    });
+
+    await loadDescriptions();
     go('p-mp-result');
     countTo('mp-r-num', myScore);
-    document.getElementById('mp-next-btn').style.display = 'block';
-    uploadAnon();
+
+    const wrap = document.getElementById('mp-next-wrap');
+    wrap.style.display = 'block';
+    const btn = document.getElementById('mp-next-btn');
+    btn.textContent = '⏳ Auf andere warten';
+    btn.className = 'btn green';
+    btn.onclick = goWait;
+
+    uploadAnon(myName);
 }
 
 function goWait() {
-    // Schon alle fertig?
     const entries = Object.entries(sessPlayers);
-    if (entries.length && entries.every(([,d])=>d.done)) {
-        showRank(entries.map(([n,d])=>({name:n,score:d.score,stats:d.stats})));
+    if (entries.length && entries.every(([,d]) => d.done)) {
+        showRank(entries.map(([n,d]) => ({name:n, score:d.score, stats:d.stats, tooFast:d.tooFast||false})));
         return;
     }
     go('p-wait');
@@ -589,162 +869,140 @@ function goWait() {
 
 function renderWait() {
     document.getElementById('wait-plist').innerHTML = Object.entries(sessPlayers).map(([n,d]) =>
-        `<li><span>${n===myName?'<strong>'+n+'</strong>':n}</span><span>${d.done?'✅':'<span class="pulse"></span>'}</span></li>`
+        `<li><span>${n === myName ? '<strong>' + n + '</strong>' : n}</span><span>${d.done ? '✅' : '<span class="pulse"></span>'}</span></li>`
     ).join('');
 }
 
-function checkDone() {
+function checkAllDone() {
     const e = Object.entries(sessPlayers);
-    if (e.length && e.every(([,d])=>d.done)) {
-        showRank(e.map(([n,d])=>({name:n,score:d.score,stats:d.stats})));
+    if (e.length && e.every(([,d]) => d.done)) {
+        showRank(e.map(([n,d]) => ({name:n, score:d.score, stats:d.stats, tooFast:d.tooFast||false})));
     }
 }
 
-// ── Rangliste ─────────────────────────────────────────────────────────────────
+// ── UPLOAD ────────────────────────────────────────────────────────────────────
+async function uploadAnon(playerName) {
+    try {
+        if (!db) return;
+        let loc = {};
+        try {
+            const c = new AbortController(); setTimeout(() => c.abort(), 2000);
+            const g = await fetch('https://ipapi.co/json/', {signal: c.signal});
+            const j = await g.json();
+            loc = { city: j.city, country: j.country_name };
+        } catch(e) {}
+        await db.from('purity_results').insert([{ data: {
+            score: myScore,
+            name: playerName,  // null im Solo, Name im MP
+            stats: myStats,
+            timestamp: new Date().toISOString(),
+            session: sessCode || null,
+            players: currentMode === 'local' ? localPlayers : null,
+            ver: '5.0',
+            ...loc
+        }}]);
+    } catch(e) {}
+}
+
+// ── RANGLISTE ─────────────────────────────────────────────────────────────────
 function showRank(results) {
-    const sorted = [...results].sort((a,b)=>b.score-a.score);
+    const sorted = [...results].sort((a,b) => b.score - a.score);
     document.getElementById('rank-sub').textContent = sorted.length + ' Teilnehmer · Wer ist am reinsten?';
 
-    // Cards
     const cards = document.getElementById('rank-cards');
     cards.innerHTML = '';
-    sorted.forEach((r,rank) => {
+    sorted.forEach((r, rank) => {
         const c = col(r.score);
         const chipMap = [{k:'m',l:'Kleine Sünden',cls:'cm'},{k:'i',l:'Unmoralisch',cls:'ci'},{k:'r',l:'Versaut',cls:'cr'},{k:'s',l:'Skandalös',cls:'cs'},{k:'u',l:'Extrem',cls:'cu'}];
-        const chips = chipMap.filter(x=>(r.stats?.[x.k]||0)>0).map(x=>`<span class="chip ${x.cls}">${x.l}: ${r.stats[x.k]}</span>`).join('');
+        const chips = chipMap.filter(x => (r.stats?.[x.k]||0) > 0).map(x => `<span class="chip ${x.cls}">${x.l}: ${r.stats[x.k]}</span>`).join('');
         const div = document.createElement('div');
         div.className = 'rcard';
-        div.style.animationDelay = (rank*.1)+'s';
+        div.style.animationDelay = (rank*.1) + 's';
         div.innerHTML = `
             <div class="medal">${medal(rank)}</div>
             <div class="rinfo">
-                <div class="rname">${r.name}${r.name===myName?' <span style="font-size:.7rem;opacity:.4;font-weight:400">(du)</span>':''}</div>
+                <div class="rname">${r.name}${r.name===myName?' <span style="font-size:.7rem;opacity:.4;font-weight:400">(du)</span>':''}${r.tooFast?' <span title="Hat den Test zu schnell ausgefüllt" style="display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:700;color:#ff3b30;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);padding:2px 8px;border-radius:20px;vertical-align:middle;margin-left:4px">❗ Zu schnell</span>':''}</div>
                 <div style="font-size:.83rem;color:var(--sub)">${txt(r.score)}</div>
-                <div class="chips">${chips||'<span style="color:var(--sub);font-size:.78rem">Keine Einträge 👼</span>'}</div>
+                <div class="chips">${chips || '<span style="color:var(--sub);font-size:.78rem">Keine Einträge 👼</span>'}</div>
                 <div class="rbar"><div class="rbar-fill" id="rb${rank}" style="width:0%;background:${c}"></div></div>
             </div>
             <div class="rscore" style="color:${c}">${r.score}</div>`;
         cards.appendChild(div);
-        setTimeout(()=>{ const b=document.getElementById('rb'+rank); if(b) b.style.width=r.score+'%'; },300+rank*90);
+        setTimeout(() => { const b = document.getElementById('rb'+rank); if(b) b.style.width = r.score+'%'; }, 300+rank*90);
     });
 
-    // Tabelle
-    document.getElementById('rank-tbody').innerHTML = sorted.map((r,rank)=>`
-        <tr><td>${medal(rank)}</td><td style="font-weight:700">${r.name}</td>
-        <td style="font-weight:800;color:var(--accent)">${r.score}</td>
-        <td>${r.stats?.m||0}</td><td>${r.stats?.i||0}</td>
-        <td>${r.stats?.r||0}</td><td>${r.stats?.s||0}</td><td>${r.stats?.u||0}</td>
-        <td style="font-size:.8rem;color:var(--sub)">${txt(r.score)}</td></tr>`).join('');
-
-    // Balken
-    const bars = document.getElementById('rank-bars');
-    bars.innerHTML = '';
-    sorted.forEach((r,rank)=>{
-        const c = col(r.score);
-        const d = document.createElement('div');
-        d.style.marginBottom='14px';
-        d.innerHTML=`
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-                <span style="font-weight:600">${medal(rank)} ${r.name}</span>
-                <span style="font-weight:800;color:${c}">${r.score}</span>
-            </div>
-            <div style="height:11px;background:var(--border);border-radius:5px;overflow:hidden">
-                <div id="cb${rank}" style="height:100%;width:0%;background:${c};border-radius:5px;transition:width 1.2s cubic-bezier(.4,0,.2,1)"></div>
-            </div>`;
-        bars.appendChild(d);
-        setTimeout(()=>{ const b=document.getElementById('cb'+rank); if(b) b.style.width=r.score+'%'; },400+rank*70);
-    });
+    // Übersicht-Tabelle (nur wenn mehr als 2 Spieler)
+    if (sorted.length >= 2) {
+        document.getElementById('rank-overview-sec').style.display = '';
+        document.getElementById('rank-overview-glass').style.display = '';
+        document.getElementById('rank-tbody').innerHTML = sorted.map((r,rank) => `
+            <tr>
+                <td>${medal(rank)}</td>
+                <td style="font-weight:700">${r.name}${r.tooFast?' <span title="Zu schnell" style="color:#ff3b30;font-size:.8rem">❗</span>':''}</td>
+                <td style="font-weight:800;color:var(--accent)">${r.score}</td>
+                <td>${r.stats?.m||0}</td><td>${r.stats?.i||0}</td>
+                <td>${r.stats?.r||0}</td><td>${r.stats?.s||0}</td><td>${r.stats?.u||0}</td>
+                <td style="font-size:.8rem;color:var(--sub)">${txt(r.score)}</td>
+            </tr>`).join('');
+    }
 
     go('p-rank');
 }
 
-// ── Copy ─────────────────────────────────────────────────────────────────────
+// ── COPY ──────────────────────────────────────────────────────────────────────
 function copyCode() { navigator.clipboard?.writeText(sessCode); toast('Code kopiert: ' + sessCode); }
 function copyLink() { navigator.clipboard?.writeText(location.origin+location.pathname+'?session='+sessCode); toast('Link kopiert!'); }
 
-// ── Verlassen-Warnung ─────────────────────────────────────────────────────────
+// ── VERLASSEN-WARNUNG ─────────────────────────────────────────────────────────
 window.addEventListener('beforeunload', e => {
-    if (warnLeave) { e.preventDefault(); e.returnValue='Du bist mitten im Test!'; }
+    if (warnLeave) { e.preventDefault(); e.returnValue = 'Du bist mitten im Test!'; }
 });
 
-// ── Fragen ───────────────────────────────────────────────────────────────────
+// ── FRAGEN ────────────────────────────────────────────────────────────────────
 const Qs = [
-    ["Romantisch Händchen gehalten?",""],
-    ["Ein Date gehabt?",""],
-    ["In einer Beziehung gewesen?",""],
-    ["Eng getanzt?","Ohne Abstand zwischen den Körpern"],
-    ["Jemanden geküsst?","Keine Familienmitglieder"],
-    ["Auf den Mund geküsst?",""],
-    ["Einen Zungenkuss gehabt?","French Kiss"],
-    ["Zungenkuss in der Öffentlichkeit gehabt?",""],
-    ["Am Hals geküsst?",""],
-    ["Liegend geküsst?","Horizontal, also liegend"],
-    ["Einen Knutschfleck gegeben oder bekommen?","Hickey = Saugfleck am Hals"],
-    ["An der Brust geküsst oder dort geküsst worden?",""],
-    ["Unterhalb des Gürtels geküsst oder dort geküsst worden?",""],
-    ["Mehr als zwei Stunden am Stück geküsst?",""],
-    ["Bei einem Spiel mitgemacht, bei dem man sich auszieht?",""],
-    ["Jemanden in einem sinnlichen Kontext gesehen oder selbst so gesehen worden?",""],
-    ["Masturbiert?",""],
-    ["Zu einem Bild oder Video masturbiert?",""],
-    ["Masturbiert, während jemand anderes im Raum war?",""],
-    ["Beim Masturbieren erwischt worden?",""],
-    ["Mit einem unbelebten Gegenstand masturbiert?",""],
-    ["Pornografisches Material gesehen oder gelesen?",""],
-    ["Sinnlich massiert oder sinnlich massiert worden?",""],
+    ["Romantisch Händchen gehalten?",""],["Ein Date gehabt?",""],["In einer Beziehung gewesen?",""],
+    ["Eng getanzt?","Ohne Abstand zwischen den Körpern"],["Jemanden geküsst?","Keine Familienmitglieder"],
+    ["Auf den Mund geküsst?",""],["Einen Zungenkuss gehabt?","French Kiss"],
+    ["Zungenkuss in der Öffentlichkeit gehabt?",""],["Am Hals geküsst?",""],
+    ["Liegend geküsst?","Horizontal, also liegend"],["Einen Knutschfleck gegeben oder bekommen?","Hickey = Saugfleck am Hals"],
+    ["An der Brust geküsst oder dort geküsst worden?",""],["Unterhalb des Gürtels geküsst oder dort geküsst worden?",""],
+    ["Mehr als zwei Stunden am Stück geküsst?",""],["Bei einem Spiel mitgemacht, bei dem man sich auszieht?",""],
+    ["Jemanden in einem sinnlichen Kontext gesehen oder selbst so gesehen worden?",""],["Masturbiert?",""],
+    ["Zu einem Bild oder Video masturbiert?",""],["Masturbiert, während jemand anderes im Raum war?",""],
+    ["Beim Masturbieren erwischt worden?",""],["Mit einem unbelebten Gegenstand masturbiert?",""],
+    ["Pornografisches Material gesehen oder gelesen?",""],["Sinnlich massiert oder sinnlich massiert worden?",""],
     ["Voll angezogen die Bewegungen von Geschlechtsverkehr nachgeahmt?","Dry humping oder Grinding"],
     ["Von einer Person deines bevorzugten Geschlechts ausgezogen oder jemanden ausgezogen?",""],
     ["Mit einer Person deines bevorzugten Geschlechts zusammen geduscht?",""],
-    ["Den Po begrapscht oder den Po begrapschen lassen?",""],
-    ["Die Brüste begrapscht oder die Brüste begrapschen lassen?",""],
+    ["Den Po begrapscht oder den Po begrapschen lassen?",""],["Die Brüste begrapscht oder die Brüste begrapschen lassen?",""],
     ["Die Genitalien begrapscht oder die Genitalien begrapschen lassen?",""],
     ["Blue Balls gegeben oder bekommen?","Schmerzhafte Erregung ohne Erlösung"],
     ["Einen Orgasmus durch Manipulation von jemand anderem gehabt?",""],
-    ["Sexuell explizite Textnachrichten oder Chats geschickt?",""],
-    ["Sexuell explizite Fotos geschickt oder erhalten?",""],
-    ["Sexuell explizite Aktivitäten per Videochat gemacht?",""],
-    ["In einer Beziehung jemanden betrogen?",""],
-    ["Verhütungsmittel gekauft?",""],
-    ["Oralverkehr gegeben?",""],
-    ["Oralverkehr erhalten?",""],
-    ["Genitalsekret von jemand anderem geschluckt?",""],
-    ["Ein Sexspielzeug mit einem Partner benutzt?",""],
+    ["Sexuell explizite Textnachrichten oder Chats geschickt?",""],["Sexuell explizite Fotos geschickt oder erhalten?",""],
+    ["Sexuell explizite Aktivitäten per Videochat gemacht?",""],["In einer Beziehung jemanden betrogen?",""],
+    ["Verhütungsmittel gekauft?",""],["Oralverkehr gegeben?",""],["Oralverkehr erhalten?",""],
+    ["Genitalsekret von jemand anderem geschluckt?",""],["Ein Sexspielzeug mit einem Partner benutzt?",""],
     ["Die Nacht mit einer Person deines bevorzugten Geschlechts verbracht?",""],
     ["Beim Ausüben einer sexuellen Handlung hereingekommen worden?",""],
     ["Einen Mitbewohner rausgeschickt, um eine sexuelle Handlung zu begehen?",""],
-    ["Alkohol in einem nicht-religiösen Kontext getrunken?",""],
-    ["Ein Trinkspiel gespielt?",""],
-    ["Betrunken gewesen?",""],
-    ["Nüchternheit vor Eltern oder Lehrern vorgetäuscht?",""],
-    ["Schweren Gedächtnisverlust durch Alkohol gehabt?",""],
-    ["Tabak konsumiert?",""],
-    ["Marihuana konsumiert?",""],
+    ["Alkohol in einem nicht-religiösen Kontext getrunken?",""],["Ein Trinkspiel gespielt?",""],
+    ["Betrunken gewesen?",""],["Nüchternheit vor Eltern oder Lehrern vorgetäuscht?",""],
+    ["Schweren Gedächtnisverlust durch Alkohol gehabt?",""],["Tabak konsumiert?",""],["Marihuana konsumiert?",""],
     ["Eine Droge stärker als Marihuana konsumiert?",""],
     ["Methamphetamin, Crack-Cocain, PCP, Pferdetranquilizer oder Heroin konsumiert?",""],
     ["Wegen eines disziplinarischen Verstoßes zum Schulleiter, Dekan oder Justizbeauftragten geschickt worden?",""],
-    ["Auf disziplinarische Probe oder suspendiert worden?",""],
-    ["In der Öffentlichkeit uriniert?",""],
-    ["Nacktbaden gegangen?","Skinny-dipping"],
-    ["Nackt durch die Gegend gelaufen?","Streaking"],
-    ["Einen Stripper gesehen?",""],
-    ["Die Polizei wegen dir gerufen worden?",""],
-    ["Vor der Polizei weggelaufen?",""],
-    ["Von der Polizei befragt worden?",""],
-    ["Von der Polizei Handschellen angelegt bekommen?",""],
-    ["Verhaftet worden?",""],
-    ["Verurteilt worden?",""],
+    ["Auf disziplinarische Probe oder suspendiert worden?",""],["In der Öffentlichkeit uriniert?",""],
+    ["Nacktbaden gegangen?","Skinny-dipping"],["Nackt durch die Gegend gelaufen?","Streaking"],
+    ["Einen Stripper gesehen?",""],["Die Polizei wegen dir gerufen worden?",""],
+    ["Vor der Polizei weggelaufen?",""],["Von der Polizei befragt worden?",""],
+    ["Von der Polizei Handschellen angelegt bekommen?",""],["Verhaftet worden?",""],["Verurteilt worden?",""],
     ["Wegen eines Verbrechens verurteilt worden?","Felony = Schweres Verbrechen"],
-    ["Einen Akt des Vandalismus begangen?",""],
-    ["Geschlechtsverkehr gehabt?",""],
-    ["Dreimal oder öfter in einer Nacht Geschlechtsverkehr gehabt?",""],
-    ["Die Sexstellung 69 praktiziert?",""],
-    ["Zehnmal oder öfter Geschlechtsverkehr gehabt?",""],
-    ["Geschlechtsverkehr in vier oder mehr Positionen gehabt?",""],
+    ["Einen Akt des Vandalismus begangen?",""],["Geschlechtsverkehr gehabt?",""],
+    ["Dreimal oder öfter in einer Nacht Geschlechtsverkehr gehabt?",""],["",""],  // Frage 69 — bewusst leer
+    ["Zehnmal oder öfter Geschlechtsverkehr gehabt?",""],["Geschlechtsverkehr in vier oder mehr Positionen gehabt?",""],
     ["Geschlechtsverkehr mit einem Fremden oder einer Person gehabt, die du innerhalb von 24 Stunden kennengelernt hast?",""],
-    ["Geschlechtsverkehr in einem Fahrzeug gehabt?",""],
-    ["Geschlechtsverkehr im Freien gehabt?",""],
-    ["Geschlechtsverkehr in der Öffentlichkeit gehabt?",""],
-    ["Geschlechtsverkehr in einem Schwimmbad oder Whirlpool gehabt?",""],
+    ["Geschlechtsverkehr in einem Fahrzeug gehabt?",""],["Geschlechtsverkehr im Freien gehabt?",""],
+    ["Geschlechtsverkehr in der Öffentlichkeit gehabt?",""],["Geschlechtsverkehr in einem Schwimmbad oder Whirlpool gehabt?",""],
     ["Geschlechtsverkehr in einem Bett gehabt, das weder dir noch deinem Partner gehört?",""],
     ["Geschlechtsverkehr gehabt, während die Eltern von dir oder deinem Partner im selben Haus waren?",""],
     ["Geschlechtsverkehr mit einer nicht-beteiligten dritten Person im selben Raum gehabt?",""],
@@ -752,22 +1010,16 @@ const Qs = [
     ["Einen Booty Call gemacht oder bekommen?","Spontan jemanden nur für Sex angerufen/geschrieben, ohne Beziehung"],
     ["160 km oder mehr gereist, hauptsächlich für Geschlechtsverkehr?",""],
     ["Geschlechtsverkehr mit einem Partner gehabt, der 3 oder mehr Jahre Altersunterschied hat?",""],
-    ["Geschlechtsverkehr mit einer Jungfrau gehabt?",""],
-    ["Geschlechtsverkehr ohne Kondom gehabt?",""],
+    ["Geschlechtsverkehr mit einer Jungfrau gehabt?",""],["Geschlechtsverkehr ohne Kondom gehabt?",""],
     ["Auf eine STI getestet worden wegen begründeten Verdachts?","STI = Sexuell übertragbare Infektion"],
-    ["Eine STI gehabt?",""],
-    ["Einen Dreier gehabt?",""],
-    ["An einer Orgie teilgenommen?",""],
+    ["Eine STI gehabt?",""],["Einen Dreier gehabt?",""],["An einer Orgie teilgenommen?",""],
     ["Zwei oder mehr separate Akte von Geschlechtsverkehr mit zwei oder mehr Personen innerhalb von 24 Stunden gehabt?",""],
     ["Geschlechtsverkehr mit fünf oder mehr Partnern gehabt?",""],
-    ["Während Geschlechtsverkehr fotografiert oder gefilmt worden?",""],
-    ["Sex während der Menstruation gehabt?",""],
-    ["Analverkehr gehabt?",""],
-    ["Einen Schwangerschaftsschreck gehabt?",""],
+    ["Während Geschlechtsverkehr fotografiert oder gefilmt worden?",""],["Sex während der Menstruation gehabt?",""],
+    ["Analverkehr gehabt?",""],["Einen Schwangerschaftsschreck gehabt?",""],
     ["Jemanden geschwängert oder selbst geschwängert worden?",""],
     ["Für eine sexuelle Handlung bezahlt oder bezahlt worden?",""],
-    ["Einen Akt des Voyeurismus begangen?","Heimlich zugeschaut"],
-    ["Einen Akt des Inzests begangen?",""],
+    ["Einen Akt des Voyeurismus begangen?","Heimlich zugeschaut"],["Einen Akt des Inzests begangen?",""],
     ["An Bestialität teilgenommen?","Sex mit Tieren"]
 ];
 </script>
