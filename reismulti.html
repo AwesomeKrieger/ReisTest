@@ -288,7 +288,7 @@ let myStats = {};
 let warnLeave = false;
 let currentMode = 'solo'; // 'solo' | 'local' | 'online'
 let quizStartTime = 0;
-const MIN_QUIZ_SECONDS = 180; // 3 Minuten Mindestzeit für 100 Fragen
+const MIN_QUIZ_SECONDS = 360; // 3 Minuten Mindestzeit für 100 Fragen
 
 // ── Init ────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -576,7 +576,11 @@ function showSpeedWarning(remaining) {
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:32px;max-width:400px;width:100%;text-align:center">
                 <div style="font-size:3rem;margin-bottom:12px">⚡</div>
                 <h2 style="margin:0 0 10px;font-size:1.5rem">Zu schnell!</h2>
-                <p style="color:var(--sub);margin:0 0 8px;line-height:1.6">Du hast den Test in unter 3 Minuten ausgefüllt. Für 100 Fragen ist das zu schnell — hast du wirklich jede Frage gelesen?</p>
+                <p style="color:var(--sub);margin:0 0 8px;line-height:1.6">Unter 6 Minuten? Entweder du liest schneller als du kommst,
+oder du hast die Fragen so oft bejaht, dass du sie blind anklickst.
+Bist du dir sicher?
+
+</p>
                 <p style="color:var(--sub);font-size:.85rem;margin:0 0 26px">Noch <strong style="color:var(--text)">${remaining} Sekunden</strong> übrig für ein ehrliches Ergebnis.</p>
                 <div style="display:flex;gap:12px;flex-direction:column">
                     <button id="spd-back" style="padding:16px;border-radius:14px;border:1px solid var(--border);background:none;color:var(--text);font-size:1rem;font-weight:700;cursor:pointer">← Zurück & nochmal lesen</button>
